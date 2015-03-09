@@ -2,17 +2,21 @@ package org.kryptose.client;
 
 import org.kryptose.server.Request;
 import java.io.*;
-import java.net.*;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 public class RequestHandler {
 
 	static String serverHostname;
 	static int serverPort;
 	
+    SSLSocketFactory sslsocketfactory; 
+    SSLSocket sock; 
+
 	ObjectInputStream in;
 	ObjectOutputStream out;
-	Socket sock;
+//	Socket sock;
 	
 	static String getServerHostname() {
 		return serverHostname;
@@ -30,12 +34,22 @@ public class RequestHandler {
 	RequestHandler(){
 		serverHostname = "127.0.0.1";
 		serverPort = 5002;
+//		System.setProperty("javax.net.debug", "all");
+		System.setProperty("javax.net.ssl.trustStore", "src/org/kryptose/certificates/ClientTrustStore.jks");
+		System.setProperty("javax.net.ssl.trustStorePassword", "aaaaaa");
+
+		
+		sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 	}
 
 	Request send(Request req){
         try {
-            sock = new Socket(serverHostname, serverPort);
-
+        	
+//            sock = new Socket(serverHostname, serverPort);
+    	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
+    	    
+//    	    sock.startHandshake();
+    	    
             out = new ObjectOutputStream(sock.getOutputStream());                
 
             out.writeObject(req);

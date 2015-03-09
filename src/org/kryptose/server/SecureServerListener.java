@@ -6,7 +6,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 
 
 
@@ -46,12 +49,21 @@ class SecureServerListener{
 
 	
 	SecureServerListener(int port){
-//	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
+//		System.setProperty("javax.net.ssl.trustStore", "src/org/kryptose/certificates/ClientKeyStore.jks");
+//		System.setProperty("javax.net.ssl.trustStorePassword", "aaaaaa");
+	    System.setProperty("javax.net.ssl.keyStore", "src/org/kryptose/certificates/ServerKeyStore.jks");
+	    System.setProperty("javax.net.ssl.keyStorePassword", "aaaaaa");
+	    
+	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
 	    try {
-//		    ServerSocket serverListener = ssocketFactory.createServerSocket(port);
-	    	ServerSocket serverListener = new ServerSocket(port);
+		    SSLServerSocket serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
+		    
+		    printServerSocketInfo(serverListener);
+		    
+//	    	ServerSocket serverListener = new ServerSocket(port);
             while(true) {
-        	    Socket clientSocket = serverListener.accept();
+        	    SSLSocket clientSocket = (SSLSocket) serverListener.accept();
+        	    printSocketInfo(clientSocket);
                 Runnable job = new ClientHandler(clientSocket);
         	    Thread t = new Thread(job);
 //                System.out.println("Thread created");
@@ -63,10 +75,41 @@ class SecureServerListener{
 	}
 	
 	public static void main(String[] args) {
+//		System.setProperty("javax.net.debug", "all");
 		System.out.println("Server is running");
 		SecureServerListener listener = new SecureServerListener(5002);
 	}
 
+//For debug purposes only (code was copied from a website)	
+	 private static void printSocketInfo(SSLSocket s) {
+	      System.out.println("Socket class: "+s.getClass());
+	      System.out.println("   Remote address = "
+	         +s.getInetAddress().toString());
+	      System.out.println("   Remote port = "+s.getPort());
+	      System.out.println("   Local socket address = "
+	         +s.getLocalSocketAddress().toString());
+	      System.out.println("   Local address = "
+	         +s.getLocalAddress().toString());
+	      System.out.println("   Local port = "+s.getLocalPort());
+	      System.out.println("   Need client authentication = "
+	         +s.getNeedClientAuth());
+	      SSLSession ss = s.getSession();
+	      System.out.println("   Cipher suite = "+ss.getCipherSuite());
+	      System.out.println("   Protocol = "+ss.getProtocol());
+	   }
+	   private static void printServerSocketInfo(SSLServerSocket s) {
+	      System.out.println("Server socket class: "+s.getClass());
+	      System.out.println("   Socket address = "
+	         +s.getInetAddress().toString());
+	      System.out.println("   Socket port = "
+	         +s.getLocalPort());
+	      System.out.println("   Need client authentication = "
+	         +s.getNeedClientAuth());
+	      System.out.println("   Want client authentication = "
+	         +s.getWantClientAuth());
+	      System.out.println("   Use client mode = "
+	         +s.getUseClientMode());
+	   } 
 	
 }
 
