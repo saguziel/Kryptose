@@ -1,0 +1,19 @@
+- Creating a CA certificate (password is aaaaaa):
+  http://docs.oracle.com/cd/E19509-01/820-3503/ggeyj/index.html
+	
+	openssl  req  -new  -x509  -keyout  ca-key.pem -out  ca-certificate.pem  -days  365
+
+- Creating a keypair for the server and issuing a certificate request
+  keytool -genkey -keyalg RSA -alias KryptoseCert -keystore ServerKeystore.jks -storepass aaaaaa -validity 90 -keysize 2048 -dname "CN=kryptose.org, OU=Security Development, O=Kryptose, L=Ithaca, S=New York, C=US"
+
+  keytool -certreq -alias KryptoseCert -keystore ServerKeystore.jks -file KryptoseCertReq.csr
+
+- Signing the certificate request with the CA key
+  http://docs.oracle.com/cd/E19509-01/820-3503/ggezu/index.html
+  openssl  x509  -req  -CA ca-certificate.pem -CAkey ca-key.pem -in KryptoseCertReq.csr -out KryptoseCert.cer  -days 90 -CAcreateserial
+
+- Importing the CA certificate in the client keystore
+  keytool -import -keystore ClientKeyStore.jks -file ca-certificate.pem  -alias theCARoot
+
+ keytool -import -keystore ServerKeyStore.jks -file ca-certificate.pem  -alias theCARoot
+keytool -import -keystore ServerKeyStore.jks -file KryptoseCert.cer  -alias KryptoseCert
