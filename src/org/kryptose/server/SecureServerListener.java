@@ -2,7 +2,6 @@ package org.kryptose.server;
 
 import java.io.*;
 
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import javax.net.ServerSocketFactory;
@@ -11,23 +10,28 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
+import org.kryptose.requests.TestRequest;
+
 
 
 class SecureServerListener{
 	
-    public class ClientHandler implements Runnable {
+    private static class ClientHandler implements Runnable {
         ObjectInputStream in;
         ObjectOutputStream out;
         Socket sock;
         
-        public ClientHandler(Socket clientSocket) {
+        ClientHandler(Socket clientSocket) {
             try {
                 sock = clientSocket;
                 in = new ObjectInputStream(sock.getInputStream());
-                //TO-DO: this is a blocking call (if the stream is empty). Provide a timeout for threads, or someone can just spawn new threads
-                //and exhaust resources
+                // TODO: this is a blocking call (if the stream is empty). Provide a timeout for threads, or someone can just spawn new threads
+                // and exhaust resources
                 out = new ObjectOutputStream(sock.getOutputStream());                
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (Exception ex) {
+            	// TODO
+            	ex.printStackTrace();
+            }
         }
         
         public void run() {
@@ -37,20 +41,24 @@ class SecureServerListener{
                 o1 = in.readObject();
                 
                 System.out.println("Received one request: " + o1.toString());
-                out.writeObject(new Request("Server got and accepted the request " + o1.toString()));
-                //TO-DO: What do we do with the object received? I would think of generating an event "RequestReceived"
-                //so that other classes could listen to/wait for it connect to it.
+                out.writeObject(new TestRequest("Server got and accepted the request " + o1.toString()));
+                // TODO: What do we do with the object received? I would think of generating an event "RequestReceived"
+                // so that other classes could listen to/wait for it connect to it.
 
                 in.close();
                 out.close();
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (Exception ex) {
+            	// TODO
+            	ex.printStackTrace();
+            }
         }
     }
 
 	
-	SecureServerListener(int port){
+	SecureServerListener(int port) {
 //		System.setProperty("javax.net.ssl.trustStore", "src/org/kryptose/certificates/ClientKeyStore.jks");
 //		System.setProperty("javax.net.ssl.trustStorePassword", "aaaaaa");
+		// TODO: make this configurable.
 	    System.setProperty("javax.net.ssl.keyStore", "src/org/kryptose/certificates/ServerKeyStore.jks");
 	    System.setProperty("javax.net.ssl.keyStorePassword", "aaaaaa");
 	    

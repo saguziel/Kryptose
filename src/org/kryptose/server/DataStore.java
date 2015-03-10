@@ -1,6 +1,8 @@
 package org.kryptose.server;
 
-public class BlobStore {
+import org.kryptose.requests.Blob;
+
+public class DataStore {
 	
 	public void writeBlob(User user, Blob blob) {
 		// TODO

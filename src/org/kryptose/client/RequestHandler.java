@@ -1,6 +1,7 @@
 package org.kryptose.client;
 
-import org.kryptose.server.Request;
+import org.kryptose.requests.TestRequest;
+
 import java.io.*;
 
 import javax.net.ssl.SSLSocket;
@@ -42,7 +43,7 @@ public class RequestHandler {
 		sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 	}
 
-	Request send(Request req){
+	TestRequest send(TestRequest req){
         try {
         	
 //            sock = new Socket(serverHostname, serverPort);
@@ -56,11 +57,11 @@ public class RequestHandler {
             
             System.out.println("Request sent: " + req.toString());
             
-            Request resp;
+            TestRequest resp;
 			try {
 	            in = new ObjectInputStream(sock.getInputStream());
 
-				resp = (Request) in.readObject();
+				resp = (TestRequest) in.readObject();
 	            System.out.println("Response received: " + resp.toString());
 	            
 	            sock.close();
@@ -77,15 +78,15 @@ public class RequestHandler {
             ex.printStackTrace();
         }
 
-		return new Request("SENDING FAILED");
+		return new TestRequest("SENDING FAILED");
 		
 	}
 	
 	public static void main(String[] args) {
 		RequestHandler handler = new RequestHandler();
 		System.out.println("Client is running");
-		handler.send(new Request("-My first request-")).toString();
-		handler.send(new Request("-My second request-")).toString();
+		handler.send(new TestRequest("-My first request-")).toString();
+		handler.send(new TestRequest("-My second request-")).toString();
 
 	}
 
