@@ -1,8 +1,7 @@
 package org.kryptose.server;
 
-import java.io.*;
 
-import java.net.Socket;
+import java.io.IOException;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
@@ -10,52 +9,21 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
-import org.kryptose.requests.TestRequest;
-
 
 
 class SecureServerListener{
 	
-    private static class ClientHandler implements Runnable {
-        ObjectInputStream in;
-        ObjectOutputStream out;
-        Socket sock;
-        
-        ClientHandler(Socket clientSocket) {
-            try {
-                sock = clientSocket;
-                in = new ObjectInputStream(sock.getInputStream());
-                // TODO: this is a blocking call (if the stream is empty). Provide a timeout for threads, or someone can just spawn new threads
-                // and exhaust resources
-                out = new ObjectOutputStream(sock.getOutputStream());                
-            } catch (Exception ex) {
-            	// TODO
-            	ex.printStackTrace();
-            }
-        }
-        
-        public void run() {
-            Object o1;
-            System.out.println("Connection thread running");
-            try {
-                o1 = in.readObject();
-                
-                System.out.println("Received one request: " + o1.toString());
-                out.writeObject(new TestRequest("Server got and accepted the request " + o1.toString()));
-                // TODO: What do we do with the object received? I would think of generating an event "RequestReceived"
-                // so that other classes could listen to/wait for it connect to it.
-
-                in.close();
-                out.close();
-            } catch (Exception ex) {
-            	// TODO
-            	ex.printStackTrace();
-            }
-        }
-    }
-
+	private final int port;
+	private final Server server;
+	private SSLServerSocket serverListener;
 	
-	SecureServerListener(int port) {
+	
+    public SecureServerListener(Server server, int port) {
+    	this.port = port;
+    	this.server = server;
+	}
+    
+    public void start() {
 //		System.setProperty("javax.net.ssl.trustStore", "src/org/kryptose/certificates/ClientKeyStore.jks");
 //		System.setProperty("javax.net.ssl.trustStorePassword", "aaaaaa");
 		// TODO: make this configurable.
@@ -64,31 +32,42 @@ class SecureServerListener{
 	    
 	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
 	    try {
-		    SSLServerSocket serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
+		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
 		    printServerSocketInfo(serverListener);
 		    
 //	    	ServerSocket serverListener = new ServerSocket(port);
-            while(true) {
+            while (true) {
         	    SSLSocket clientSocket = (SSLSocket) serverListener.accept();
         	    printSocketInfo(clientSocket);
-                Runnable job = new ClientHandler(clientSocket);
+                Runnable job = new ClientHandler(server, clientSocket);
         	    Thread t = new Thread(job);
-//                System.out.println("Thread created");
                 t.start();
-                System.out.println("got a connection");
+                //System.out.println("got a connection");
             }
-//            serverListener.close();
         } catch (Exception ex) { ex.printStackTrace(); }
-	}
+    	
+    }
 	
-	public static void main(String[] args) {
-//		System.setProperty("javax.net.debug", "all");
-		System.out.println("Server is running");
-		SecureServerListener listener = new SecureServerListener(5002);
-	}
-
+    @Override
+    protected void finalize() {
+    	if (this.serverListener != null && !this.serverListener.isClosed()) {
+    		try {
+				this.serverListener.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    }
+    
+	
 //For debug purposes only (code was copied from a website)	
+	/**
+	 * For test purposes
+	 * TODO: remove.
+	 * @param args
+	 */
 	 private static void printSocketInfo(SSLSocket s) {
 	      System.out.println("Socket class: "+s.getClass());
 	      System.out.println("   Remote address = "
@@ -105,6 +84,11 @@ class SecureServerListener{
 	      System.out.println("   Cipher suite = "+ss.getCipherSuite());
 	      System.out.println("   Protocol = "+ss.getProtocol());
 	   }
+		/**
+		 * For test purposes
+		 * TODO: remove.
+		 * @param args
+		 */
 	   private static void printServerSocketInfo(SSLServerSocket s) {
 	      System.out.println("Server socket class: "+s.getClass());
 	      System.out.println("   Socket address = "

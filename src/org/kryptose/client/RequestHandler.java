@@ -7,6 +7,7 @@ import java.io.*;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
+// TODO: rename this class.
 public class RequestHandler {
 
 	static String serverHostname;

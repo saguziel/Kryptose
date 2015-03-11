@@ -23,11 +23,5 @@ public class TestRequest extends Request {
 	public String toString(){
 		return theRequest;
 	}
-
-	@Override
-	public void run() {
-		// Do nothing.
-	}
-	
 	
 }
