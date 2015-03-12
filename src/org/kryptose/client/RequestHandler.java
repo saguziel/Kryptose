@@ -12,13 +12,14 @@ public class RequestHandler {
 
 	static String serverHostname;
 	static int serverPort;
+	static String clientTrustStore; 
+	static String clientTrustStorePassword;
 	
     SSLSocketFactory sslsocketfactory; 
     SSLSocket sock; 
 
 	ObjectInputStream in;
 	ObjectOutputStream out;
-//	Socket sock;
 	
 	static String getServerHostname() {
 		return serverHostname;
@@ -36,14 +37,33 @@ public class RequestHandler {
 	RequestHandler(){
 		serverHostname = "127.0.0.1";
 		serverPort = 5002;
-//		System.setProperty("javax.net.debug", "all");
-		System.setProperty("javax.net.ssl.trustStore", "src/org/kryptose/certificates/ClientTrustStore.jks");
-		System.setProperty("javax.net.ssl.trustStorePassword", "aaaaaa");
 
+		this.serverHostname = serverHostname;
+		this.serverPort = serverPort;
+		
+		this.clientTrustStore = "src/org/kryptose/certificates/ClientTrustStore.jks";
+		this.clientTrustStorePassword= "aaaaaa"; 
+		//System.setProperty("javax.net.debug", "all");
+		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
+		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
 		
 		sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 	}
 
+	RequestHandler(String serverHostname, int serverPort, String clientTrustStore, String clientTrustStorePassword){
+		this.serverHostname = serverHostname;
+		this.serverPort = serverPort;
+		
+		this.clientTrustStore = clientTrustStore;
+		this.clientTrustStorePassword= clientTrustStorePassword; 
+		//System.setProperty("javax.net.debug", "all");
+		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
+		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
+		
+		sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+	}
+
+	
 	TestRequest send(TestRequest req){
         try {
         	

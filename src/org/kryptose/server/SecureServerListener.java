@@ -15,32 +15,45 @@ class SecureServerListener{
 	
 	private final int port;
 	private final Server server;
+	private final String serverKeyStore;
+	private final String serverKeyStorePassword;
+
 	private SSLServerSocket serverListener;
 	
+    public SecureServerListener(Server server, int port, String serverKeyStore, String serverKeyStorePassword) {
+    	this.port = port;
+    	this.server = server;
+    	this.serverKeyStore = serverKeyStore;
+    	this.serverKeyStorePassword = serverKeyStorePassword;
+	}
 	
+    //TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
     public SecureServerListener(Server server, int port) {
     	this.port = port;
     	this.server = server;
+    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
+    	this.serverKeyStorePassword = "aaaaaa";
 	}
     
     public void start() {
-//		System.setProperty("javax.net.ssl.trustStore", "src/org/kryptose/certificates/ClientKeyStore.jks");
-//		System.setProperty("javax.net.ssl.trustStorePassword", "aaaaaa");
-		// TODO: make this configurable.
-	    System.setProperty("javax.net.ssl.keyStore", "src/org/kryptose/certificates/ServerKeyStore.jks");
-	    System.setProperty("javax.net.ssl.keyStorePassword", "aaaaaa");
+	    System.setProperty("javax.net.ssl.keyStore", serverKeyStore);
+	    System.setProperty("javax.net.ssl.keyStorePassword", serverKeyStorePassword);
 	    
 	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
 	    try {
 		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
+		    
+		    //TODO: remove afterwards
 		    printServerSocketInfo(serverListener);
 		    
-//	    	ServerSocket serverListener = new ServerSocket(port);
             while (true) {
         	    SSLSocket clientSocket = (SSLSocket) serverListener.accept();
+
+        	    //TODO: remove afterwards
         	    printSocketInfo(clientSocket);
-                Runnable job = new ClientHandler(server, clientSocket);
+                
+        	    Runnable job = new ClientHandler(server, clientSocket);
         	    Thread t = new Thread(job);
                 t.start();
                 //System.out.println("got a connection");
@@ -62,7 +75,6 @@ class SecureServerListener{
     }
     
 	
-//For debug purposes only (code was copied from a website)	
 	/**
 	 * For test purposes
 	 * TODO: remove.
@@ -102,6 +114,22 @@ class SecureServerListener{
 	      System.out.println("   Use client mode = "
 	         +s.getUseClientMode());
 	   } 
+	   
+	   //TODO: remove afterwards. For testing only
+	   public static void main(String[] args) {
+		   //		System.setProperty("javax.net.debug", "all");
+		   		System.out.println("Server is running");
+		   		SecureServerListener listener = new SecureServerListener(5002);
+		   	}
+	   
+	    //TODO: remove afterwards. For testing only
+	    public SecureServerListener(int port) {
+	    	this.port = port;
+	    	this.server = null;
+	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
+	    	this.serverKeyStorePassword = "aaaaaa";
+		}
+
 	
 }
 
