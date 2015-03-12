@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Server Configuration File</comment>
+<entry key="NUMBER_OF_THREADS">8</entry>
+<entry key="PORT_NUMBER">5003</entry>
+</properties>

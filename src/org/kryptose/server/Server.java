@@ -6,18 +6,28 @@ import org.kryptose.requests.TestRequest;
 import org.kryptose.server.requesthandlers.RequestHandler;
 import org.kryptose.server.requesthandlers.TestRequestHandler;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.InvalidPropertiesFormatException;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Server {
+	
+	Properties properties;
 
-	// TODO: make these constants configurable.
-	private static final int NUMBER_OF_THREADS = 8;
-	private static final int PORT_NUMBER = 5002;
+	private static final String PROPERTIES_FILE = "src/org/kryptose/server/serverProperties.xml";
+	
 	
 	private static final Object singletonLock = new Object();
 	private static Server server;
@@ -29,7 +39,7 @@ public class Server {
 	private List<RequestHandler<?>> requestHandlers;
 	private DataStore dataStore;
 	private Logger logger;
-	private SecureServerListener listener = new SecureServerListener(this, PORT_NUMBER);
+	private SecureServerListener listener;
 	
 	
 	// STATIC METHODS
@@ -60,6 +70,28 @@ public class Server {
 		
 		this.requestHandlers.add(new TestRequestHandler());
 		
+		this.properties = new Properties();
+		FileInputStream in;
+		try {
+			in = new FileInputStream(PROPERTIES_FILE);
+			this.properties.loadFromXML(in);
+			in.close();
+		} catch (IOException e) {
+			properties.setProperty("NUMBER_OF_THREADS", "8");
+			properties.setProperty("PORT_NUMBER", "5002");
+			
+			try {
+				FileOutputStream out = new FileOutputStream(PROPERTIES_FILE);
+				properties.storeToXML(out,"Server Configuration File");
+				out.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				//Give up.
+				e1.printStackTrace();
+			}			
+		}
+		
+		listener = new SecureServerListener(this, Integer.parseInt(properties.getProperty("PORT_NUMBER") ) );
 	}
 	
 	/**
@@ -97,7 +129,7 @@ public class Server {
 	}
 	
 	public void start() {
-		this.workQueue = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+		this.workQueue = Executors.newFixedThreadPool(Integer.parseInt(properties.getProperty("NUMBER_OF_THREADS")));
 		this.listener.start();
 	}
 
