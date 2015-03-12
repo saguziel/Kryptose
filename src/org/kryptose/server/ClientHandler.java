@@ -30,10 +30,10 @@ class ClientHandler implements Runnable {
     public void run() {
     	// TODO: user authentication.
     	try {
-    		while (true) {
+//    		while (true) {
     			// Receive a request.
     			Request request = listen();
-    			if (request == null) break;
+//    			if (request == null) break;
 
     			// Process request.
 				Future<Response> future = this.server.addToWorkQueue(this.user, request);
@@ -43,7 +43,8 @@ class ClientHandler implements Runnable {
     				resp = future.get(1, TimeUnit.HOURS);
     			} catch (InterruptedException e) {
     				// Something presumably wants this thread to stop.
-    				break;
+ //   				break;
+    				resp=null;
     			} catch (ExecutionException e) {
     				// TODO Auto-generated catch block
     				e.printStackTrace();
@@ -55,7 +56,7 @@ class ClientHandler implements Runnable {
     			
     			// Send back the response.
     			if (resp != null) speak(resp);
-    		}
+//    		}
     	}
     	finally {
     		try {
@@ -74,8 +75,9 @@ class ClientHandler implements Runnable {
      * @return The request heard, or {@literal null} if the connection is no longer valid.
      */
     private Request listen() {
-        try {
-        	ObjectInputStream in = new ObjectInputStream(sock.getInputStream());
+    	ObjectInputStream in=null;
+    	try {
+        	in = new ObjectInputStream(sock.getInputStream());
             return (Request)in.readObject();
         } catch (IOException ex) {
         	// TODO catch block
@@ -85,7 +87,16 @@ class ClientHandler implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
-		}
+		} 
+/*    	finally{
+			if(in!=null)
+				try {
+//					in.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}*/
     }
     
     /**
@@ -96,6 +107,7 @@ class ClientHandler implements Runnable {
         try {
         	ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
         	out.writeObject(response);
+//        	out.close();
         } catch (IOException ex) {
         	// TODO catch block
         	ex.printStackTrace();

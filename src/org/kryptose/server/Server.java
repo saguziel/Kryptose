@@ -2,7 +2,9 @@ package org.kryptose.server;
 
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
+import org.kryptose.requests.TestRequest;
 import org.kryptose.server.requesthandlers.RequestHandler;
+import org.kryptose.server.requesthandlers.TestRequestHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class Server {
 	private final Object workQueueLock = new Object();
 	private ExecutorService workQueue;
 	
-	private List<RequestHandler<? extends Request>> requestHandlers;
+	private List<RequestHandler<?>> requestHandlers;
 	private DataStore dataStore;
 	private Logger logger;
 	private SecureServerListener listener = new SecureServerListener(this, PORT_NUMBER);
@@ -54,8 +56,9 @@ public class Server {
 	// INSTANCE METHODS
 	
 	private Server() {
-		this.requestHandlers = new ArrayList<RequestHandler<? extends Request>>();
-		// TODO: populate list of RequestHandlers
+		this.requestHandlers = new ArrayList<RequestHandler<?>>();
+		
+		this.requestHandlers.add(new TestRequestHandler());
 		
 	}
 	

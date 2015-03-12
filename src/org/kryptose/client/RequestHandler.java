@@ -1,11 +1,14 @@
 package org.kryptose.client;
 
+import org.kryptose.requests.Response;
 import org.kryptose.requests.TestRequest;
+import org.kryptose.requests.TestResponse;
 
 import java.io.*;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+
 
 // TODO: rename this class.
 public class RequestHandler {
@@ -64,7 +67,7 @@ public class RequestHandler {
 	}
 
 	
-	TestRequest send(TestRequest req){
+	Response send(TestRequest req){
         try {
         	
 //            sock = new Socket(serverHostname, serverPort);
@@ -78,11 +81,11 @@ public class RequestHandler {
             
             System.out.println("Request sent: " + req.toString());
             
-            TestRequest resp;
+            Response resp;
 			try {
 	            in = new ObjectInputStream(sock.getInputStream());
 
-				resp = (TestRequest) in.readObject();
+				resp = (Response) in.readObject();
 	            System.out.println("Response received: " + resp.toString());
 	            
 	            sock.close();
@@ -99,7 +102,7 @@ public class RequestHandler {
             ex.printStackTrace();
         }
 
-		return new TestRequest("SENDING FAILED");
+		return new TestResponse("SENDING FAILED");
 		
 	}
 	

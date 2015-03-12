@@ -17,7 +17,7 @@ import org.kryptose.server.User;
  *
  * @param <T>
  */
-public abstract class RequestHandler<T extends Request> implements Runnable {
+public abstract class RequestHandler<T extends Request> {
 	
 	private final Class<T> requestType;
 
