@@ -1,13 +1,17 @@
 package org.kryptose.client;
 
-public class ClientController {
+public class ClientController extends Controller {
 
+	Client client;
 	
-	public ClientController() {
-		
+	public ClientController(Client c) {
+		this.client = c;
 	}
 	
-	public void handleRequest(String request){
+	public void handleRequest(String request) {
+		
+	}
+	public void handlePassword(String pass) {
 		
 	}
 	
