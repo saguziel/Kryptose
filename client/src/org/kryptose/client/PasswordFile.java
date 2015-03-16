@@ -162,7 +162,7 @@ public class PasswordFile {
     }
     
     
-    //TODO: for testing only. Remove LATER BY ANTONIO
+    //TODO: for testing only. Remove LATER BY ANTONIO. If it generates errors, just comment it.
     public static void main(String[] args){
     	byte[] myRawKey = new byte[16];
 //    	Arrays.fill(myRawKey, (byte) 0);

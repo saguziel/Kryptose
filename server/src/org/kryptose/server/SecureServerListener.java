@@ -47,7 +47,8 @@ class SecureServerListener{
 		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
     	    this.serverListener.setEnabledProtocols(new String[] {"TLSv1.2"});
-
+    	    this.serverListener.setEnabledCipherSuites(new String[] {"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
+    	    
 		    
 		    //TODO: remove afterwards
 		    printServerSocketInfo(serverListener);
@@ -119,7 +120,7 @@ class SecureServerListener{
 	      System.out.println("   Use client mode = "
 	         +s.getUseClientMode());
 	   } 
-	   
+/*	   
 	   //TODO: remove afterwards. For testing only
 	   public static void main(String[] args) {
 		   		System.setProperty("javax.net.debug", "all");
@@ -137,7 +138,7 @@ class SecureServerListener{
 	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
 	    	this.serverKeyStorePassword = "aaaaaa";
 		}
-
+*/
 	
 }
 

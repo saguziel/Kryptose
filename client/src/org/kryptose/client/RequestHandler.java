@@ -40,14 +40,14 @@ public class RequestHandler {
 	
 	RequestHandler(){
 		serverHostname = "127.0.0.1";
-		serverPort = 5002;
+		serverPort = 5003;
 
 		this.serverHostname = serverHostname;
 		this.serverPort = serverPort;
 		
 		clientTrustStore = "src/org/kryptose/certificates/ClientTrustStore.jks";
 		clientTrustStorePassword= "aaaaaa"; 
-		System.setProperty("javax.net.debug", "all");
+		//System.setProperty("javax.net.debug", "all");
 		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
 		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
 		
@@ -60,7 +60,7 @@ public class RequestHandler {
 		
 		this.clientTrustStore = clientTrustStore;
 		this.clientTrustStorePassword= clientTrustStorePassword; 
-		System.setProperty("javax.net.debug", "all");
+		//System.setProperty("javax.net.debug", "all");
 		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
 		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
 		
@@ -74,14 +74,23 @@ public class RequestHandler {
     	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
     	    
     	    sock.setEnabledProtocols(new String[] {"TLSv1.2"});
-//    	    sock.setEnabledCipherSuites();
+
+    	    //TODO: maybe delete this afterwards
+    	    //Enable this line to test what happens if client and server have no TLS Version in common
+    	    //sock.setEnabledProtocols(new String[] {"TLSv1.1"});
     	    
+    	    sock.setEnabledCipherSuites(new String[] {"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
+    	    
+    	    //TODO: maybe delete this afterwards
+    	    //Enable this line to test what happens if client and server have no CipherSuites in common
+    	    //sock.setEnabledCipherSuites(new String[] {"SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA"});
+   	    
             out = new ObjectOutputStream(sock.getOutputStream());                
 
             out.writeObject(req);
             
             System.out.println("Request sent: " + req.toString());
-            
+           
             Response resp;
 			try {
 	            in = new ObjectInputStream(sock.getInputStream());
@@ -101,7 +110,7 @@ public class RequestHandler {
         catch(IOException ex)
         {
             ex.printStackTrace();
-        }
+       }
 
 		return new TestResponse("SENDING FAILED");
 		
