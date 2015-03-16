@@ -24,7 +24,7 @@ public class HandledRequestGet implements Callable<Response> {
             if (b == null) {
                 return new ResponseInternalServerError();
             } else {
-                return new ResponseGet(b, u);
+                return new ResponseGet(b, null); // TODO logging
             }
         } else {
             return new ResponseInvalidCredentials(u);
