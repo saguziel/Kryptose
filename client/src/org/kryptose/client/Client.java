@@ -34,7 +34,8 @@ public class Client {
         this.passfile.setVal(dom, newVal);
     }
     public void delVal(String dom){
-        this.passfile.
+    	//TODO: fix me
+//        this.passfile.
     }
 
     public void badMasterPass() {

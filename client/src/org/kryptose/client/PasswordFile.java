@@ -49,6 +49,9 @@ public class PasswordFile {
                 
             }
         }
+        
+        //TODO: fixme
+        return false;
     }
     public ArrayList<Credential> toList(){
         return credentials;
@@ -59,6 +62,16 @@ public class PasswordFile {
             super(message);
         }
     }
-
+    
+    private Blob rawBlobCreate(byte[] raw_data, byte[] raw_key){
+    	Blob b = new Blob();
+    	b.setBlob(raw_data);
+    	return b;
+    }
+    
+    private byte[] rawBlobDecrypt(Blob b, byte[] raw_key){
+    	return b.blob;
+    }
+    
 
 }

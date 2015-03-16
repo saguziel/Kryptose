@@ -9,7 +9,7 @@ public class ResponsePut extends Response {
     private final User user;
     private final byte[] digest;
 
-    public ResponsePut(User u, Blob b) throws NoSuchAlgorithmException {
+    public ResponsePut(User u, Blob b) {
         user = u;
         digest = b.getDigest();
     }
