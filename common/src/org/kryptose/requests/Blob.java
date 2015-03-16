@@ -25,7 +25,8 @@ public class Blob implements Serializable {
 
     // TODO: generate serial version UID, after fields are decided.
 
-    private byte[] blob;
+    private byte[] encBytes;
+    private byte[] iv;
 
 /*    
     //Constructor to create a Blob out of an (encrypted) file. Used only by the server (I think)
@@ -75,18 +76,27 @@ public class Blob implements Serializable {
     }
 */    
     
-    public byte[] getBlob(){
-    	return blob.clone();
+    public byte[] getEncBytes(){
+    	return encBytes.clone();
     }
     
-    public void setBlob(byte[] data){
-    	blob = data.clone();
+    public byte[] getIv(){
+    	return iv.clone();
+    }
+    
+    
+    public void setBlob(byte[] data, byte[] iv){
+    	this.encBytes = data.clone();
+    	this.iv = iv.clone();
     }
 
     public byte[] getDigest(){
     	//Only to prevent a write originated from an outdated file, so more secure algorithms are not necessary.
         try {
-			return MessageDigest.getInstance("SHA").digest(blob);
+        	MessageDigest md = MessageDigest.getInstance("SHA");
+        	md.update(iv);
+        	md.update(encBytes);
+			return md.digest();
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			// If you do not HAVE SHA installed, suggest user to change JVM
