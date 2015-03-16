@@ -17,10 +17,15 @@ public class ViewCLI extends View {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    void promptUserName() {
+        System.out.println("Enter user name");
+    }
 	
 	@Override
 	void promptPassword() {
-		// TODO Auto-generated method stub
+		System.out.println("Enter ");
 		
 	}
 
