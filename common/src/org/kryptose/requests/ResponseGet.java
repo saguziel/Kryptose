@@ -12,4 +12,12 @@ public class ResponseGet extends Response {
         this.blob = b;
         this.user = u;
     }
+
+    public Blob getBlob() {
+        return blob;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }
