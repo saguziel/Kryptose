@@ -11,6 +11,9 @@ public class ClientController extends Controller {
 	public void handleRequest(String request) {
 		
 	}
+    public void handleUserName(String userName) {
+
+    }
 	public void handlePassword(String pass) {
 		
 	}

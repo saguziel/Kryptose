@@ -18,14 +18,16 @@ public class Client {
 	}
 	
 	public void start() {
-		view.promptPassword();
+        view.promptUserName();
 	}
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+
+        System.out.println("f");
+
 		Client client = Client.getInstance();
 		Controller ctrl = new ClientController(client);
 		View view = new ViewCLI(ctrl);
