@@ -37,8 +37,8 @@ class ClientHandler implements Runnable {
 //    			if (request == null) break;
 
     			// Process request.
-				Future<Response> future = this.server.addToWorkQueue(this.user, request);
-				Response resp;
+            Future<Response> future = this.server.addToWorkQueue(request);
+            Response resp;
     			try {
     				// TODO: set a more reasonable timeout.
     				resp = future.get(1, TimeUnit.HOURS);
