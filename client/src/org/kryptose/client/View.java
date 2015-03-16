@@ -4,10 +4,8 @@ public abstract class View {
 
     abstract void promptUserName();
 	abstract void promptPassword();
-	abstract void promptCmd();
-//    abstract void displayPassError();
-//    abstract void displayKeyError();
-    abstract void displayString(String p);
+    abstract void promptCmd();
+	abstract void promptCmd(String s);
 	abstract void logout();
 	
 

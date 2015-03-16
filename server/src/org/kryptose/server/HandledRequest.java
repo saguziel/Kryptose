@@ -20,6 +20,8 @@ public class HandledRequest implements Callable<Response> {
             caller = new HandledRequestGet((RequestGet) request);
         } else if (request instanceof RequestPut) {
             caller = new HandledRequestPut((RequestPut) request);
+        } else if (request instanceof TestRequest) {
+        	caller = new HandledRequestTest((TestRequest) request);
         } else {
             return new ResponseInternalServerError();
         }

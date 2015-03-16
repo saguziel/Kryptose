@@ -6,8 +6,7 @@ public class Client {
 	private static final Object singletonLock = new Object();
 	private static Client client;
 
-//    private String username;
-//	private String masterpass;
+	private String masterpass;
     User user;
 	View view;
     RequestHandler reqHandler;
@@ -31,21 +30,31 @@ public class Client {
     }
 
     public void setVal(String dom, String newVal){
-        this.passfile.setVal(dom, newVal);
+        Boolean succ = this.passfile.setVal(dom, newVal);
+        if(succ){
+            view.promptCmd("password for key: "+ dom + " successfully set");
+        } else {
+            view.promptCmd("key: "+ dom + " is not valid");
+        }
     }
     public void delVal(String dom){
-        this.passfile.delVal(dom);
+        Boolean succ = this.passfile.delVal(dom);
+        if(succ){
+            view.promptCmd("password for key: "+ dom + " successfully set");
+        } else {
+            view.promptCmd("there is no password associated with key: "+ dom);
+        }
     }
 
     public void badMasterPass() {
-        view.displayString("Invalid login credentials");
+        view.promptCmd("Invalid login credentials");
     }
 
     public void getCredential(String key) {
         String password = passfile.getVal(key);
         if (password == null)
-            view.displayString("No password associated with domain");
-        view.displayString("Password: "+password);
+            view.promptCmd("No password associated with domain");
+        view.promptCmd("Password for domain " + key + " is: " + password);
 
     }
 
@@ -58,11 +67,18 @@ public class Client {
     }
 
     public void setUsername(String name){
-//        username = name;
         this.user = new User(name);
         System.out.println("got username "+name);
         view.promptCmd();
     }
+
+    public void setMasterpass(String pass){
+        this.masterpass = pass;
+    }
+    String getMasterpass(){
+        return masterpass;
+    }
+
 
 	public void start() {
         view.promptUserName();
@@ -72,9 +88,6 @@ public class Client {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-        System.out.println("f");
-
 		Client client = Client.getInstance();
 		ClientController ctrl = new ClientController(client);
 		View view = new ViewCLI(ctrl);

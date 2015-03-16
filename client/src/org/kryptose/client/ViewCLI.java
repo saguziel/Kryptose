@@ -32,9 +32,14 @@ public class ViewCLI extends View {
 		
 	}
 
+    @Override
+    void promptCmd() {
+        awaitInput(CMD);
+    }
+
 	@Override
-	void promptCmd() {
-        System.out.println("Enter command");
+	void promptCmd(String s) {
+        System.out.println(s);
         awaitInput(CMD);
 	}
 
@@ -43,11 +48,6 @@ public class ViewCLI extends View {
         System.out.println("Logging out!");
 	}
 
-    void displayString(String s){
-        System.out.println(s);
-        awaitInput(CMD);
-    }
-	
 	public class InputThread extends Thread {
 
         int cmd;
