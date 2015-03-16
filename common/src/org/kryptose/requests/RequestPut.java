@@ -6,10 +6,12 @@ public class RequestPut extends Request {
 	
 	private final Blob blob;
     private final User user;
+    private final byte[] oldDigest;
 
-    public RequestPut(User user, Blob blob) {
+    public RequestPut(User user, Blob blob, byte[] oldDigest) {
         this.blob = blob;
         this.user = user;
+        this.oldDigest = oldDigest;
     }
 
     public Blob getBlob() {
@@ -18,6 +20,10 @@ public class RequestPut extends Request {
 
     public User getUser() {
         return user;
+    }
+
+    public byte[] getOldDigest() {
+        return oldDigest;
     }
 
 }

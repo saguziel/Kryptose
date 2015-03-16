@@ -16,11 +16,18 @@ public class HandledRequestGet implements Callable<Response> {
 
     public Response call() {
         User u = request.getUser();
-        Blob b = DataStore.readBlob(u);
-        if (b == null) {
-            return new ResponseInvalidCredentials(u);
+        DataStore ds = DataStore.getInstance();
+
+        boolean hasBlob = ds.userHasBlob(u);
+        if (hasBlob) {
+            Blob b = ds.readBlob(u);
+            if (b == null) {
+                return new ResponseInternalServerError();
+            } else {
+                return new ResponseGet(b, u);
+            }
         } else {
-            return new ResponseGet(b, u);
+            return new ResponseInvalidCredentials(u);
         }
     }
 }
