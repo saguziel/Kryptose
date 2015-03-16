@@ -15,11 +15,7 @@ public class ViewCLI extends View {
 	private void awaitInput(int cmd) {
         (new InputThread(cmd)).start();
 	}
-	
-	void promptUsername() { 
-		// TODO Auto-generated method stub
-		
-	}
+
 
     @Override
     void promptUserName() {
@@ -45,6 +41,18 @@ public class ViewCLI extends View {
 		// TODO Auto-generated method stub
 		
 	}
+    void displayPassError(){
+
+    }
+
+    void displayKeyError(){
+
+    }
+
+    void displayPassword(String p){
+        System.out.println("Password: "+p);
+        awaitInput(CMD);
+    }
 	
 	public class InputThread extends Thread {
 

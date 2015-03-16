@@ -6,15 +6,15 @@ public class Client {
 	private static final Object singletonLock = new Object();
 	private static Client client;
 
-    private String username;
-	private String masterpass;
+//    private String username;
+//	private String masterpass;
     User user;
 	View view;
-    RequestHandler rh;
+    RequestHandler reqHandler;
+    PasswordFile passfile;
 
     public Client() {
-        this.rh = new RequestHandler();
-        this.masterpass = "mpass";
+        this.reqHandler = new RequestHandler();
     }
 
 	private static Client getInstance() {
@@ -26,8 +26,25 @@ public class Client {
         }
     }
 
+    public void setPassfile(PasswordFile pf){
+        this.passfile = pf;
+    }
+
+    public void getCredential(String key) {
+        String password = passfile.getVal(key);
+        if (password == null)
+            view.displayKeyError();
+        view.displayPassword(password);
+
+    }
+
+    public Boolean hasPassFile(){
+        return passfile != null;
+    }
+
+
     public void setUsername(String name){
-        username = name;
+//        username = name;
         this.user = new User(name);
         view.promptCmd();
     }

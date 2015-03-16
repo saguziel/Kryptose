@@ -18,7 +18,11 @@ public class ClientController {
 	public void handleRequest(String request) {
 		String[] args = request.trim().toLowerCase().split("\\s+");
         if (args[0] == GET) {
-            ResponseGet r = (ResponseGet)model.rh.send(new RequestGet(model.user));
+            if(!model.hasPassFile()){
+                ResponseGet r = (ResponseGet)model.reqHandler.send(new RequestGet(model.user));
+                model.setPassfile(new PasswordFile(r.getBlob(), model.user.getPassword()));
+            }
+            model.getCredential(args[1]);
         } else if (args[0] == PUT) {
 //            ResponsePut r = (ResponseGet)model.rh.send(new RequestPut(model.user));
         }
