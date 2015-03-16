@@ -9,9 +9,11 @@ import java.util.ArrayList;
 public class PasswordFile {
 
     ArrayList<Credential> credentials;
+    String username;
 
-    public PasswordFile(Blob b, String masterpass) throws BadBlobException {
+    public PasswordFile(String user, Blob b, String masterpass) throws BadBlobException {
         credentials = decryptBlob(masterpass, b);
+        this.username = user;
     }
 
     public ArrayList<Credential> decryptBlob(String passwd, Blob b) throws BadBlobException {
@@ -28,6 +30,25 @@ public class PasswordFile {
             }
         }
         return null;
+    }
+    // returns true if value overwritten, false if new val inserted
+    public Boolean setVal(String dom, String newVal){
+        for(Credential c : credentials) {
+            if (c.getDomain() == dom) {
+                c.setPassword(newVal);
+                return true;
+            }
+        }
+        credentials.add(new Credential(username, newVal, dom));
+        return false;
+    }
+    public Boolean delVal(String dom){
+        int toRem = -1;
+        for(int i = 0; i<credentials.size(); i++){
+            if(credentials.get(i).getDomain().equals(dom)){
+                
+            }
+        }
     }
     public ArrayList<Credential> toList(){
         return credentials;

@@ -9,7 +9,9 @@ import org.kryptose.requests.Blob;
 public class ClientController {
 
     final String GET = "get";
-    final String PUT = "put";
+    final String PUT = "save";
+    final String SET = "set";
+    final String DEL = "del";
     final String LOGOUT = "logout";
 
 	Client model;
@@ -24,7 +26,7 @@ public class ClientController {
             if(!model.hasPassFile()){
                 ResponseGet r = (ResponseGet)model.reqHandler.send(new RequestGet(model.user));
                 try {
-                    model.setPassfile(new PasswordFile(r.getBlob(), model.user.getPassword()));
+                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.user.getPassword()));
                 } catch (PasswordFile.BadBlobException e) {
                     model.badMasterPass();
                 }
@@ -34,6 +36,10 @@ public class ClientController {
             Blob newBlob = model.passfile.encryptBlob(model.user.getPassword());
             //TODO: use correct digest
             ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, model.user.getPassword().getBytes()));
+        } else if (args[0].equals(SET)) {
+            model.setVal(args[1], args[2]);
+        } else if (args[0].equals(DEL)) {
+            model.delVal(args[1]);
         } else if (args[0].equals(LOGOUT)) {
             model.logout();
         }

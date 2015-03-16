@@ -30,6 +30,13 @@ public class Client {
         this.passfile = pf;
     }
 
+    public void setVal(String dom, String newVal){
+        this.passfile.setVal(dom, newVal);
+    }
+    public void delVal(String dom){
+        this.passfile.
+    }
+
     public void badMasterPass() {
         view.displayString("Invalid login credentials");
     }

@@ -27,6 +27,9 @@ public class Credential {
 	public String getDomain() {
 		return domain;
 	}
+    void setPassword(String p) {
+        this.password = p;
+    }
 	
 	
 
