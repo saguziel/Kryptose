@@ -7,10 +7,10 @@ import java.util.concurrent.Callable;
 /**
  * Created by alexguziel on 3/15/15.
  */
-public class HandledGetRequest implements Callable<Response> {
-    private final GetRequest request;
+public class HandledRequestGet implements Callable<Response> {
+    private final RequestGet request;
 
-    public HandledGetRequest(GetRequest r) {
+    public HandledRequestGet(RequestGet r) {
         request = r;
     }
 

@@ -3,10 +3,10 @@ package org.kryptose.requests;
 /**
  * Created by alexguziel on 3/15/15.
  */
-public class GetRequest extends Request {
+public class RequestGet extends Request {
     private final User user;
 
-    public GetRequest(User u) {
+    public RequestGet(User u) {
         user = u;
     }
 
