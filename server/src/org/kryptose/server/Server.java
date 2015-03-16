@@ -2,8 +2,6 @@ package org.kryptose.server;
 
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
-import org.kryptose.server.requesthandlers.RequestHandler;
-import org.kryptose.server.requesthandlers.TestRequestHandler;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,7 +23,6 @@ public class Server {
     Properties properties;
     private ExecutorService workQueue;
 
-    private List<RequestHandler<?>> requestHandlers;
     private DataStore dataStore;
     private Logger logger;
     private SecureServerListener listener;
@@ -34,9 +31,6 @@ public class Server {
     // STATIC METHODS
 
     private Server() {
-        this.requestHandlers = new ArrayList<RequestHandler<?>>();
-
-        this.requestHandlers.add(new TestRequestHandler());
 
         this.properties = new Properties();
         FileInputStream in;
