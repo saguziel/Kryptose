@@ -1,7 +1,8 @@
 package org.kryptose.client;
 
-import org.kryptose.requests.GetRequest;
+import org.kryptose.requests.RequestGet;
 import org.kryptose.requests.ResponseGet;
+import org.kryptose.requests.ResponsePut;
 
 public class ClientController {
 
@@ -17,9 +18,9 @@ public class ClientController {
 	public void handleRequest(String request) {
 		String[] args = request.trim().toLowerCase().split("\\s+");
         if (args[0] == GET) {
-            ResponseGet r = (ResponseGet)model.rh.send(new GetRequest(model.user));
+            ResponseGet r = (ResponseGet)model.rh.send(new RequestGet(model.user));
         } else if (args[0] == PUT) {
-
+//            ResponsePut r = (ResponseGet)model.rh.send(new RequestPut(model.user));
         }
 	}
     public void handleUserName(String userName) {

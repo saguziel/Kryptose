@@ -14,6 +14,7 @@ public class Client {
 
     public Client() {
         this.rh = new RequestHandler();
+        this.masterpass = "mpass";
     }
 
 	private static Client getInstance() {
