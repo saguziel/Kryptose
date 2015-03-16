@@ -113,22 +113,7 @@ class SecureServerListener{
 	         +s.getWantClientAuth());
 	      System.out.println("   Use client mode = "
 	         +s.getUseClientMode());
-	   } 
-	   
-	   //TODO: remove afterwards. For testing only
-	   public static void main(String[] args) {
-		   //		System.setProperty("javax.net.debug", "all");
-		   		System.out.println("Server is running");
-		   		SecureServerListener listener = new SecureServerListener(5002);
-		   	}
-	   
-	    //TODO: remove afterwards. For testing only
-	    public SecureServerListener(int port) {
-	    	this.port = port;
-	    	this.server = null;
-	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
-	    	this.serverKeyStorePassword = "aaaaaa";
-		}
+	   }
 
 	
 }
