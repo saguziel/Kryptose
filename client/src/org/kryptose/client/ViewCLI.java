@@ -2,15 +2,18 @@ package org.kryptose.client;
 import java.util.Scanner;
 
 public class ViewCLI extends View {
-	
-	Controller ctrl;
 
-	public ViewCLI(Controller c) {
+    final static int CMD = 0;
+    final static int USERNAME = 1;
+	
+	ClientController ctrl;
+
+	public ViewCLI(ClientController c) {
 		this.ctrl = c;
 	}
 	
-	private void awaitInput() {
-		
+	private void awaitInput(int cmd) {
+        (new InputThread(cmd)).start();
 	}
 	
 	void promptUsername() { 
@@ -21,18 +24,20 @@ public class ViewCLI extends View {
     @Override
     void promptUserName() {
         System.out.println("Enter user name");
+        awaitInput(USERNAME);
+
     }
 	
 	@Override
 	void promptPassword() {
-		System.out.println("Enter ");
+		System.out.println("Enter master password");
 		
 	}
 
 	@Override
 	void promptCmd() {
-		// TODO Auto-generated method stub
-		
+        System.out.println("Enter command");
+        awaitInput(CMD);
 	}
 
 	@Override
@@ -41,14 +46,23 @@ public class ViewCLI extends View {
 		
 	}
 	
-	public class awaitInput implements Runnable {
+	public class InputThread extends Thread {
+
+        int cmd;
+        public InputThread(int cmd){
+            this.cmd = cmd;
+        }
 
 	    public void run() {
 	        System.out.println("I'm awaiting input");
 	        Scanner in = new Scanner( System.in );
-	        String cmd = in.nextLine();
+	        String input = in.nextLine();
 	        in.close();
-	        ctrl.handleRequest(cmd);
+
+            if (cmd == CMD)
+                ctrl.handleRequest(input);
+            if(cmd == USERNAME)
+	            ctrl.handleUserName(input);
 	    }
 
 	}

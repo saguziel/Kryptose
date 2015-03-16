@@ -1,5 +1,6 @@
 package org.kryptose.client;
 
+import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
 import org.kryptose.requests.TestRequest;
 import org.kryptose.requests.TestResponse;
@@ -67,7 +68,7 @@ public class RequestHandler {
 	}
 
 	
-	Response send(TestRequest req){
+	Response send(Request req){
         try {
         	
 //            sock = new Socket(serverHostname, serverPort);
