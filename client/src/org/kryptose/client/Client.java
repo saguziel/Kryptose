@@ -30,11 +30,15 @@ public class Client {
         this.passfile = pf;
     }
 
+    public void badMasterPass() {
+        view.displayString("Invalid login credentials");
+    }
+
     public void getCredential(String key) {
         String password = passfile.getVal(key);
         if (password == null)
-            view.displayKeyError();
-        view.displayPassword(password);
+            view.displayString("No password associated with domain");
+        view.displayString("Password: "+password);
 
     }
 
@@ -42,10 +46,14 @@ public class Client {
         return passfile != null;
     }
 
+    public void logout() {
+        view.logout();
+    }
 
     public void setUsername(String name){
 //        username = name;
         this.user = new User(name);
+        System.out.println("got username "+name);
         view.promptCmd();
     }
 

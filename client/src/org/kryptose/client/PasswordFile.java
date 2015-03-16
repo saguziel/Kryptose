@@ -10,14 +10,14 @@ public class PasswordFile {
 
     ArrayList<Credential> credentials;
 
-    public PasswordFile(Blob b, String masterpass) {
+    public PasswordFile(Blob b, String masterpass) throws BadBlobException {
         credentials = decryptBlob(masterpass, b);
     }
 
-    public ArrayList<Credential> decryptBlob(String key, Blob b){
+    public ArrayList<Credential> decryptBlob(String passwd, Blob b) throws BadBlobException {
         return null;
     }
-    public Blob encryptBlob(String key, ArrayList<Credential> l){
+    public Blob encryptBlob(String passwd){
         return null;
     }
 
@@ -28,6 +28,9 @@ public class PasswordFile {
             }
         }
         return null;
+    }
+    public ArrayList<Credential> toList(){
+        return credentials;
     }
 
     public class BadBlobException extends Exception {

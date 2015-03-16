@@ -7,9 +7,11 @@ public class ViewCLI extends View {
     final static int USERNAME = 1;
 	
 	ClientController ctrl;
+    Scanner in;
 
 	public ViewCLI(ClientController c) {
 		this.ctrl = c;
+        in = new Scanner( System.in );
 	}
 	
 	private void awaitInput(int cmd) {
@@ -38,19 +40,11 @@ public class ViewCLI extends View {
 
 	@Override
 	void logout() {
-		// TODO Auto-generated method stub
-		
+        System.out.println("Logging out!");
 	}
-    void displayPassError(){
 
-    }
-
-    void displayKeyError(){
-
-    }
-
-    void displayPassword(String p){
-        System.out.println("Password: "+p);
+    void displayString(String s){
+        System.out.println(s);
         awaitInput(CMD);
     }
 	
@@ -62,14 +56,12 @@ public class ViewCLI extends View {
         }
 
 	    public void run() {
-	        System.out.println("I'm awaiting input");
-	        Scanner in = new Scanner( System.in );
+	        System.out.print("I'm awaiting input\n> ");
 	        String input = in.nextLine();
-	        in.close();
 
             if (cmd == CMD)
                 ctrl.handleRequest(input);
-            if(cmd == USERNAME)
+            if (cmd == USERNAME)
 	            ctrl.handleUserName(input);
 	    }
 
