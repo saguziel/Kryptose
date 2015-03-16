@@ -157,6 +157,8 @@ public class PasswordFile {
 		return null;
     }
     
+    
+    //TODO: for testing only. Remove LATER BY ANTONIO
     public static void main(String[] args){
     	byte[] myRawKey = new byte[16];
 //    	Arrays.fill(myRawKey, (byte) 0);

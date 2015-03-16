@@ -38,11 +38,16 @@ class SecureServerListener{
     public void start() {
 	    System.setProperty("javax.net.ssl.keyStore", serverKeyStore);
 	    System.setProperty("javax.net.ssl.keyStorePassword", serverKeyStorePassword);
+		System.setProperty("javax.net.ssl.trustStore", serverKeyStore);
+		System.setProperty("javax.net.ssl.trustStorePassword", serverKeyStorePassword);
+
 	    
 	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
 	    try {
 		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
+    	    this.serverListener.setEnabledProtocols(new String[] {"TLSv1.2"});
+
 		    
 		    //TODO: remove afterwards
 		    printServerSocketInfo(serverListener);
@@ -113,7 +118,25 @@ class SecureServerListener{
 	         +s.getWantClientAuth());
 	      System.out.println("   Use client mode = "
 	         +s.getUseClientMode());
-	   }
+	   } 
+	   
+	   //TODO: remove afterwards. For testing only
+	   public static void main(String[] args) {
+		   		System.setProperty("javax.net.debug", "all");
+		   		System.out.println("Server is runningAA");
+		   		SecureServerListener listener = new SecureServerListener(5002);
+		   		listener.start();
+		   		System.out.println("Server is runningAA");
+		   		
+		   	}
+	   
+	    //TODO: remove afterwards. For testing only
+	    public SecureServerListener(int port) {
+	    	this.port = port;
+	    	this.server = null;
+	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
+	    	this.serverKeyStorePassword = "aaaaaa";
+		}
 
 	
 }

@@ -45,9 +45,9 @@ public class RequestHandler {
 		this.serverHostname = serverHostname;
 		this.serverPort = serverPort;
 		
-		this.clientTrustStore = "src/org/kryptose/certificates/ClientTrustStore.jks";
-		this.clientTrustStorePassword= "aaaaaa"; 
-		//System.setProperty("javax.net.debug", "all");
+		clientTrustStore = "src/org/kryptose/certificates/ClientTrustStore.jks";
+		clientTrustStorePassword= "aaaaaa"; 
+		System.setProperty("javax.net.debug", "all");
 		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
 		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
 		
@@ -60,7 +60,7 @@ public class RequestHandler {
 		
 		this.clientTrustStore = clientTrustStore;
 		this.clientTrustStorePassword= clientTrustStorePassword; 
-		//System.setProperty("javax.net.debug", "all");
+		System.setProperty("javax.net.debug", "all");
 		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
 		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
 		
@@ -71,10 +71,10 @@ public class RequestHandler {
 	Response send(Request req){
         try {
         	
-//            sock = new Socket(serverHostname, serverPort);
     	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
     	    
-//    	    sock.startHandshake();
+    	    sock.setEnabledProtocols(new String[] {"TLSv1.2"});
+//    	    sock.setEnabledCipherSuites();
     	    
             out = new ObjectOutputStream(sock.getOutputStream());                
 
