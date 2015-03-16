@@ -6,6 +6,7 @@ import org.kryptose.requests.User;
 public class DataStore {
 
     //TODO: consider behavior before user has a file with anything in it, probably write empty file
+	// > Why not just specify that the default blob is an empty one of length 0? 
 
     private static DataStore instance = null;
 
@@ -41,6 +42,14 @@ public class DataStore {
         // reads the user's blob, return null if nonexistent or error
         return null;
 	}
+    
+    public WriteResult writeUserLog(User user, Log log) {
+    	return WriteResult.INTERNAL_ERROR;
+    }
+    
+    public WriteResult writeGlobalLog(Log log) {
+    	return WriteResult.INTERNAL_ERROR;
+    }
 
     public enum WriteResult {
         SUCCESS,

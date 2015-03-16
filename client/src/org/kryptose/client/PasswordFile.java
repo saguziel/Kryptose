@@ -161,9 +161,18 @@ public class PasswordFile {
     	byte[] myRawKey = new byte[16];
 //    	Arrays.fill(myRawKey, (byte) 0);
     	
-    	Blob b = rawBlobCreate("EncryptionTest".getBytes(), myRawKey);
+    	Blob b = rawBlobCreate("EncryptionTestAA".getBytes(), myRawKey);
     	System.out.println("Decrypted: " + new String(rawBlobDecrypt(b, myRawKey)));
-
+    	
+    	byte[] raw_ciphertext = b.getEncBytes();
+    	byte[] iv = b.getIv();
+    	
+    	raw_ciphertext[2] = (byte) 0;
+    	
+    	Blob b_tampered = new Blob();
+    	b_tampered.setBlob(raw_ciphertext, iv);
+    	System.out.println("Decrypted: " + new String(rawBlobDecrypt(b_tampered, myRawKey)));
+    		
     }
 
 }
