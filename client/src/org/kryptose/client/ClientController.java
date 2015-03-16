@@ -26,7 +26,7 @@ public class ClientController {
             if(!model.hasPassFile()){
                 ResponseGet r = (ResponseGet)model.reqHandler.send(new RequestGet(model.user));
                 try {
-                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.user.getPassword()));
+                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getMasterpass()));
                 } catch (PasswordFile.BadBlobException e) {
                     model.badMasterPass();
                 }
@@ -35,7 +35,7 @@ public class ClientController {
         } else if (args[0].equals(PUT)) {
             Blob newBlob = model.passfile.encryptBlob(model.user.getPassword());
             //TODO: use correct digest
-            ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, model.user.getPassword().getBytes()));
+            ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, "".getBytes()));
         } else if (args[0].equals(SET)) {
             model.setVal(args[1], args[2]);
         } else if (args[0].equals(DEL)) {

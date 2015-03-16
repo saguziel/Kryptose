@@ -54,15 +54,19 @@ public class PasswordFile {
         credentials.add(new Credential(username, newVal, dom));
         return false;
     }
+    // returns true iff value associated w/ dom successfully deleted
     public Boolean delVal(String dom){
         int toRem = -1;
         for(int i = 0; i<credentials.size(); i++){
             if(credentials.get(i).getDomain().equals(dom)){
-
+                toRem = i;
+                break;
             }
         }
-        
-        //TODO: fixme
+        if(toRem >= 0){
+            credentials.remove(toRem);
+            return true;
+        }
         return false;
     }
     public ArrayList<Credential> toList(){
