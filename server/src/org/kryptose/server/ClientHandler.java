@@ -1,5 +1,9 @@
 package org.kryptose.server;
 
+import org.kryptose.requests.Request;
+import org.kryptose.requests.Response;
+import org.kryptose.requests.User;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,9 +12,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import org.kryptose.requests.Request;
-import org.kryptose.requests.Response;
 
 /**
  * Runs a thread that listens for requests from a client, and sends back responses when available.

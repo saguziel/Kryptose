@@ -1,4 +1,4 @@
-package org.kryptose.server;
+package org.kryptose.requests;
 
 /**
  * Represents a user.
