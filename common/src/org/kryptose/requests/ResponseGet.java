@@ -6,18 +6,14 @@ package org.kryptose.requests;
 public class ResponseGet extends Response {
 
     private final Blob blob;
-    private final User user;
+    private final UserAuditLog log;
 
     public ResponseGet(Blob b, User u) {
         this.blob = b;
-        this.user = u;
     }
 
     public Blob getBlob() {
         return blob;
     }
 
-    public User getUser() {
-        return user;
-    }
 }

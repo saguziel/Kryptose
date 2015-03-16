@@ -46,7 +46,7 @@ public class PasswordFile {
         int toRem = -1;
         for(int i = 0; i<credentials.size(); i++){
             if(credentials.get(i).getDomain().equals(dom)){
-                
+
             }
         }
     }
