@@ -70,7 +70,7 @@ public class PasswordFile {
     }
     
     private byte[] rawBlobDecrypt(Blob b, byte[] raw_key){
-    	return b.blob;
+    	return b.getBlob();
     }
     
 
