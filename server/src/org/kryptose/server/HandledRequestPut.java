@@ -16,7 +16,7 @@ public class HandledRequestPut implements Callable<Response> {
 
     public Response call() {
         User u = request.getUser();
-        DataStore ds = DataStore.getInstance();
+        DataStore ds = FileSystemDataStore.getInstance(); // TODO: make this better
         byte[] oldDigest = request.getOldDigest();
         Blob toBeWritten = request.getBlob();
 

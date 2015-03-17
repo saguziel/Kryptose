@@ -16,7 +16,7 @@ public class HandledRequestGet implements Callable<Response> {
 
     public Response call() {
         User u = request.getUser();
-        DataStore ds = DataStore.getInstance();
+        DataStore ds = FileSystemDataStore.getInstance();
 
         boolean hasBlob = ds.userHasBlob(u);
         if (hasBlob) {
