@@ -15,7 +15,7 @@ public final class RequestTest extends Request {
 	
 	private static final long serialVersionUID = -4863470894643745364L;
 
-	private static final User testUser = new User("testuser");
+	private static final User testUser = new User("testuser", new byte[48]);
 	
 	private final String theRequest;
 	

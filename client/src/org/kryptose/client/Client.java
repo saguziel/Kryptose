@@ -109,7 +109,7 @@ public class Client {
     }
 
     public void setUsername(String name){
-        this.user = new User(name);
+        this.user = new User(name, new byte[48]); // TODO: set passkey
         System.out.println("got username "+name);
         view.promptCmd();
     }

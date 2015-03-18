@@ -13,7 +13,7 @@ public final class RequestPut extends Request {
     public RequestPut(User user, Blob blob, byte[] oldDigest) {
     	super(user);
         this.blob = blob;
-        this.oldDigest = oldDigest.clone();
+        this.oldDigest = oldDigest;
         this.validateInstance();
     }
 
@@ -35,8 +35,9 @@ public final class RequestPut extends Request {
 	public void validateInstance() {
 		super.validateInstance();
     	if (this.blob == null) throw new IllegalArgumentException("blob is null");
-    	if (this.oldDigest == null) throw new IllegalArgumentException("oldDigest is null");
-    	this.oldDigest = oldDigest.clone(); // Defensive copying.
+    	if (this.oldDigest != null) {
+    		this.oldDigest = oldDigest.clone(); // Defensive copying.
+    	}
     	this.blob.validateInstance();
 	}
 

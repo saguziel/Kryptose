@@ -3,6 +3,7 @@ package org.kryptose.requests;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 /**
  * Represents a user.
@@ -13,12 +14,21 @@ import java.io.Serializable;
  */
 public final class User implements Comparable<User>, Serializable {
 
+	public static final String VALID_USERNAME_DOC =
+			"Usernames must be 3-15 characters, consisting only of lowercase Latin letters a-z, Arabic digits 0-9, hyphen, and underscore.";
+	public static final Pattern VALID_USERNAME_PATTERN = Pattern.compile("^[a-z0-9_-]{3,15}$");  
+	
     private final String username;
     private byte[] passkey;
+    
+    public static boolean isValidUsername(String username) {
+    	return VALID_USERNAME_PATTERN.matcher(username).matches();
+    }
 
-    public User(String name) {
+    public User(String name, byte[] passkey) {
         this.username = name;
-        this.passkey = new byte[48].clone(); // TODO set passkey
+        if (passkey != null) this.passkey = passkey.clone();
+        
         this.validateInstance();
     }
 
@@ -36,12 +46,16 @@ public final class User implements Comparable<User>, Serializable {
     
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
+        
         // Check that our invariants are satisfied
         this.validateInstance();
     }
     
     void validateInstance() {
     	if (this.username == null) throw new IllegalArgumentException("username is null");
+    	if (!isValidUsername(this.username)) {
+    		throw new IllegalArgumentException(VALID_USERNAME_DOC);
+    	}
     	if (this.passkey != null) this.passkey = passkey.clone();
     	//if (this.passkey == null) throw new IllegalArgumentException("passkey is null");
     }
@@ -65,12 +79,7 @@ public final class User implements Comparable<User>, Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
-			return false;
-		return true;
+		return this.username.equals(other.username);
 	}
 
 }
