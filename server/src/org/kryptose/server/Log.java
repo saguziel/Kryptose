@@ -20,7 +20,7 @@ public class Log implements Serializable {
         request = req;
         response = res;
         user = u;
-        message = String.format("%s\n%s\n%s\n%s\n\n", time, user.getUsername(), request.logEntry(), response.logEntry());
+        message = String.format("%s\nUsername: %s\n%s%s\n", time, user.getUsername(), request.logEntry(), response.logEntry());
     }
 
     public String toString() {
