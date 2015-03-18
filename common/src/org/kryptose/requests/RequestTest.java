@@ -11,7 +11,7 @@ import java.io.ObjectInputStream;
  * @author Antonio
  *
  */
-public final class TestRequest extends Request {
+public final class RequestTest extends Request {
 	
 	private static final long serialVersionUID = -4863470894643745364L;
 
@@ -19,7 +19,7 @@ public final class TestRequest extends Request {
 	
 	private final String theRequest;
 	
-	public TestRequest(String s) {
+	public RequestTest(String s) {
 		super(testUser);
 		theRequest = s;
 		this.validateInstance();

@@ -7,10 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Runs a thread that listens for requests from a client, and sends back responses when available.
@@ -27,27 +23,12 @@ class ClientHandler implements Runnable {
 	}
 
 	public void run() {
-		// TODO: user authentication.
 		try {
+			// Listen for request.
 			Request request = listen();
 
 			// Process request.
-			Future<Response> future = this.server.addToWorkQueue(request);
-			Response resp;
-			try {
-				// TODO: set a more reasonable timeout.
-				resp = future.get(1, TimeUnit.HOURS);
-			} catch (InterruptedException e) {
-				// Something presumably wants this thread to stop.
-				resp=null;
-			} catch (ExecutionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				resp = null;
-			} catch (TimeoutException e) {
-				future.cancel(false); // TODO: timeout... cancel if running?
-				resp = null; // TODO: response in case of timeout
-			}
+			Response resp = this.server.handleRequest(request);
 
 			// Send back the response.
 			if (resp != null) speak(resp);

@@ -2,8 +2,8 @@ package org.kryptose.client;
 
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
-import org.kryptose.requests.TestRequest;
-import org.kryptose.requests.TestResponse;
+import org.kryptose.requests.RequestTest;
+import org.kryptose.requests.ResponseTest;
 
 import java.io.*;
 
@@ -115,7 +115,7 @@ public class RequestHandler {
 		}
         
         //TODO: Remove after meaningful Error Handling has been done.
-		return new TestResponse("SENDING FAILED");
+		return new ResponseTest("SENDING FAILED");
 		
 	}
 	
@@ -123,8 +123,8 @@ public class RequestHandler {
 	public static void main(String[] args) {
 		RequestHandler handler = new RequestHandler();
 		System.out.println("Client is running");
-		handler.send(new TestRequest("-My first request-")).toString();
-		handler.send(new TestRequest("-My second request-")).toString();
+		handler.send(new RequestTest("-My first request-")).toString();
+		handler.send(new RequestTest("-My second request-")).toString();
 
 	}
 
