@@ -1,5 +1,7 @@
 package org.kryptose.requests;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,8 +15,8 @@ public final class Blob implements Serializable {
 
     // TODO: generate serial version UID, after fields are decided.
 
-    private final byte[] encBytes;
-    private final byte[] iv;
+    private byte[] encBytes;
+    private byte[] iv;
 
 /*    
  * 	TODO: remove after server code is finalized.
@@ -91,10 +93,18 @@ public final class Blob implements Serializable {
 		}
         
     }
+    
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        // Check that our invariants are satisfied
+        this.validateInstance();
+    }
 
 	void validateInstance() {
     	if (this.iv == null) throw new IllegalArgumentException("iv is null");
     	if (this.encBytes == null) throw new IllegalArgumentException("encBytes is null");
+    	this.iv = iv.clone();
+    	this.encBytes = iv.clone();
 	}
 
     

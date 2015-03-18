@@ -1,5 +1,7 @@
 package org.kryptose.requests;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 
 /**
@@ -12,7 +14,7 @@ import java.io.Serializable;
 public final class User implements Comparable<User>, Serializable {
 
     private final String username;
-    private final byte[] passkey;
+    private byte[] passkey;
 
     public User(String name) {
         this.username = name;
@@ -32,8 +34,15 @@ public final class User implements Comparable<User>, Serializable {
         return passkey.clone();
     }
     
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        // Check that our invariants are satisfied
+        this.validateInstance();
+    }
+    
     void validateInstance() {
     	if (this.username == null) throw new IllegalArgumentException("username is null");
+    	if (this.passkey != null) this.passkey = passkey.clone();
     	//if (this.passkey == null) throw new IllegalArgumentException("passkey is null");
     }
 

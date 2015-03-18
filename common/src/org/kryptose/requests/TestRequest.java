@@ -1,5 +1,8 @@
 package org.kryptose.requests;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 
 
 /**
@@ -26,9 +29,15 @@ public final class TestRequest extends Request {
 	public String toString(){
 		return theRequest;
 	}
+    
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        // Check that our invariants are satisfied
+        this.validateInstance();
+    }
 
 	@Override
-	void validateInstance() {
+	public void validateInstance() {
 		super.validateInstance();
     	if (this.theRequest == null) throw new IllegalArgumentException("user is null");
     	if (!this.getUser().equals(testUser)) throw new IllegalStateException("user is not testUser");
