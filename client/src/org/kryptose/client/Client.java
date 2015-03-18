@@ -7,6 +7,7 @@ public class Client {
 	private static Client client;
 
 	private String masterpass;
+    private String derivedFilePass;
     User user;
 	View view;
     RequestHandler reqHandler;
@@ -72,11 +73,14 @@ public class Client {
         view.promptCmd();
     }
 
-    public void setMasterpass(String pass){
+    void setMasterpass(String pass){
         this.masterpass = pass;
     }
-    String getMasterpass(){
+    String getMasterpass() {
         return masterpass;
+    }
+    String getFilepass() {
+        return derivedFilePass;
     }
 
 

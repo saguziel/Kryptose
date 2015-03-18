@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,22 +16,39 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /**
  * Created by jeff on 3/15/15.
  */
 public class PasswordFile {
 
     ArrayList<Credential> credentials;
+    Date timestamp;
     String username;
 
-    public PasswordFile(String user, Blob b, String masterpass) throws BadBlobException {
-        credentials = decryptBlob(masterpass, b);
+    public PasswordFile(String user, Blob b, String pass) throws BadBlobException {
+        decryptBlob(b, pass);
         this.username = user;
     }
 
-    public ArrayList<Credential> decryptBlob(String passwd, Blob b) throws BadBlobException {
-        return null;
+    public void decryptBlob(Blob b, String pass) throws BadBlobException {
+        byte[] raw_key = pass.getBytes();
+        byte[] decrypted = rawBlobDecrypt(b, raw_key);
+        try {
+            ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
+            ObjectInputStream objStream = new ObjectInputStream(byteStream);
+            credentials = (ArrayList<Credential>) objStream.readObject();
+            Date timestamp = (Date) objStream.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            throw new BadBlobException("Bad blob");
+        }
     }
+
     public Blob encryptBlob(String passwd){
         return null;
     }
