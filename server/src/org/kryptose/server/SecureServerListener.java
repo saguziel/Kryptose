@@ -27,13 +27,6 @@ class SecureServerListener{
     	this.serverKeyStorePassword = serverKeyStorePassword;
 	}
 	
-    //TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
-    public SecureServerListener(Server server, int port) {
-    	this.port = port;
-    	this.server = server;
-    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
-    	this.serverKeyStorePassword = "aaaaaa";
-	}
     
     public void start() {
 	    System.setProperty("javax.net.ssl.keyStore", serverKeyStore);
@@ -64,7 +57,10 @@ class SecureServerListener{
                 t.start();
                 //System.out.println("got a connection");
             }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (IOException ex) {
+        	//TODO: This is probably an SSL Error. How do we handle it?
+        	ex.printStackTrace(); 
+        }
     	
     }
 	
@@ -138,6 +134,15 @@ class SecureServerListener{
 	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
 	    	this.serverKeyStorePassword = "aaaaaa";
 		}
+		
+		    //TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
+    public SecureServerListener(Server server, int port) {
+    	this.port = port;
+    	this.server = server;
+    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
+    	this.serverKeyStorePassword = "aaaaaa";
+	}
+
 */
 	
 }

@@ -1,5 +1,7 @@
 package org.kryptose.client;
 import org.kryptose.requests.Blob;
+import org.kryptose.requests.CryptoErrorException;
+import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -7,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,24 +18,59 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 /**
  * Created by jeff on 3/15/15.
  */
 public class PasswordFile {
 
     ArrayList<Credential> credentials;
+    Date timestamp;
     String username;
 
-    public PasswordFile(String user, Blob b, String masterpass) throws BadBlobException {
-        credentials = decryptBlob(masterpass, b);
+    public PasswordFile(String user, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        decryptBlob(b, pass);
         this.username = user;
     }
 
-    public ArrayList<Credential> decryptBlob(String passwd, Blob b) throws BadBlobException {
-        return null;
+    public void decryptBlob(Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass);
+        
+        byte[] decrypted = rawBlobDecrypt(b, raw_key);
+        try {
+            ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
+            ObjectInputStream objStream = new ObjectInputStream(byteStream);
+            credentials = (ArrayList<Credential>) objStream.readObject();
+            Date timestamp = (Date) objStream.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            throw new BadBlobException("Bad blob");
+        }
     }
-    public Blob encryptBlob(String passwd){
-        return null;
+
+    //TODO: use correct timestamp and iv
+    public Blob encryptBlob(String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException {
+        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass);
+
+        try {
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
+            objStream.writeObject(credentials);
+            objStream.writeObject(timestamp);
+            objStream.flush();
+            byte[] bytes = byteStream.toByteArray();
+            objStream.close();
+            byteStream.close();
+            Blob b = new Blob();
+            b.setBlob(bytes, bytes);
+            return b;
+        } catch (IOException e) {
+            throw new BadBlobException("Bad blob");
+        }
     }
 
     public String getVal(String key){
@@ -79,7 +117,7 @@ public class PasswordFile {
         }
     }
     
-    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key){
+    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
     	Blob b = new Blob();
     	
 		try {
@@ -101,30 +139,16 @@ public class PasswordFile {
 	    	
 	    	b.setBlob(c.doFinal(raw_data),ivData);		
 		
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+			throw new CryptoPrimitiveNotSupportedException(e);
+		} catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+			throw new CryptoErrorException(e);
 		}
     	
     	return b;
     }
     
-    private static byte[] rawBlobDecrypt(Blob b, byte[] raw_key){
+    private static byte[] rawBlobDecrypt(Blob b, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
 
 		try {
 	    	Cipher c;
@@ -142,23 +166,11 @@ public class PasswordFile {
 	    	return c.doFinal(b.getEncBytes());		
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidAlgorithmParameterException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new CryptoPrimitiveNotSupportedException(e);
+		} catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+			//Note: this can be due to a tampered blob or malicious attack
+			throw new CryptoErrorException(e);
 		}
-    	
-		return null;
     }
     
     
@@ -166,6 +178,8 @@ public class PasswordFile {
     public static void main(String[] args){
     	byte[] myRawKey = new byte[16];
 //    	Arrays.fill(myRawKey, (byte) 0);
+    	
+    	try{
     	
     	Blob b = rawBlobCreate("EncryptionTestAA".getBytes(), myRawKey);
     	System.out.println("Decrypted: " + new String(rawBlobDecrypt(b, myRawKey)));
@@ -178,7 +192,9 @@ public class PasswordFile {
     	Blob b_tampered = new Blob();
     	b_tampered.setBlob(raw_ciphertext, iv);
     	System.out.println("Decrypted: " + new String(rawBlobDecrypt(b_tampered, myRawKey)));
-    		
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
     }
 
 }

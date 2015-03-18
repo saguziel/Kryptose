@@ -17,6 +17,7 @@ public final class Blob implements Serializable {
     private final byte[] iv;
 
 /*    
+ * 	TODO: remove after server code is finalized.
     //Constructor to create a Blob out of an (encrypted) file. Used only by the server (I think)
     public Blob(String filename) throws IOException{
     	blob = Files.readAllBytes(Paths.get(filename));
@@ -78,7 +79,7 @@ public final class Blob implements Serializable {
     	return iv.clone();
     }
 
-    public byte[] getDigest(){
+    public byte[] getDigest() throws CryptoPrimitiveNotSupportedException{
     	//Only to prevent a write originated from an outdated file, so more secure algorithms are not necessary.
         try {
         	MessageDigest md = MessageDigest.getInstance("SHA");
@@ -86,11 +87,9 @@ public final class Blob implements Serializable {
         	md.update(encBytes);
 			return md.digest();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			// If you do not HAVE SHA installed, suggest user to change JVM
-			e.printStackTrace();
+			throw new CryptoPrimitiveNotSupportedException();
 		}
-        return null;
+        
     }
 
 	void validateInstance() {
