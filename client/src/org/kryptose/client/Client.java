@@ -1,10 +1,19 @@
 package org.kryptose.client;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.kryptose.requests.User;
 
 public class Client {
 	
 	private static final Object singletonLock = new Object();
 	private static Client client;
+	
+    private static final String PROPERTIES_FILE = "clientProperties.xml";
+    Properties properties;
+
 
 	private String masterpass;
     private String derivedFilePass;
@@ -14,7 +23,39 @@ public class Client {
     PasswordFile passfile;
 
     public Client() {
-        this.reqHandler = new RequestHandler();
+    	
+        this.properties = new Properties();
+
+        //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Client settings file)
+        properties.setProperty("SERVER_PORT_NUMBER", "5002");
+        properties.setProperty("CLIENT_KEY_STORE_FILE", "src/org/kryptose/certificates/ClientTrustStore.jks");
+        properties.setProperty("CLIENT_KEY_STORE_PASSWORD", "aaaaaa");
+        properties.setProperty("SERVER_HOSTNAME", "127.0.0.1");
+        
+        //LOADIG CUSTOM CONFIGURATION FROM FILE.
+        FileInputStream in;
+        try {
+            in = new FileInputStream(PROPERTIES_FILE);
+            Properties XMLProperties = new Properties();
+            XMLProperties.loadFromXML(in);
+            this.properties.putAll(XMLProperties);
+            in.close();
+        } catch (IOException e) {
+        	//TODO: Unable to read the properties file. Maybe log the error?
+
+            try {
+                FileOutputStream out = new FileOutputStream(PROPERTIES_FILE);
+                properties.storeToXML(out, "Server Configuration File");
+                out.close();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                //Give up.
+                e1.printStackTrace();
+            }
+        }
+
+    	
+        this.reqHandler = new RequestHandler(properties.getProperty("SERVER_HOSTNAME"),Integer.parseInt(properties.getProperty("SERVER_PORT_NUMBER")), properties.getProperty("CLIENT_KEY_STORE_FILE"), properties.getProperty("CLIENT_KEY_STORE_PASSWORD") );
     }
 
 	private static Client getInstance() {
