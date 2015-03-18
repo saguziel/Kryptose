@@ -1,7 +1,5 @@
 package org.kryptose.requests;
 
-import java.security.NoSuchAlgorithmException;
-
 /**
  * Created by alexguziel on 3/15/15.
  */
@@ -9,9 +7,9 @@ public final class ResponsePut extends Response {
     private final User user;
     private final byte[] digest;
 
-    public ResponsePut(User u, Blob b) {
-        user = u;
-        digest = b.getDigest();
+    public ResponsePut(User u, byte[] digest) {
+        this.user = u;
+        this.digest = digest;
     }
 
     public byte[] getDigest() {

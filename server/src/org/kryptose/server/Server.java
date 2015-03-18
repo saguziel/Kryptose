@@ -40,7 +40,6 @@ public class Server {
     // INSTANCE METHODS
 
     private Server() {
-        this.listener = new SecureServerListener(this, Integer.parseInt(properties.getProperty("PORT_NUMBER")));
     }
     
     /**
@@ -70,6 +69,8 @@ public class Server {
         this.properties = new Properties();
 
         //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Server settings file
+        // TODO: do not silently set defaults. if something went wrong when reading the configuration file,
+        // the admins need to know about it.
         properties.setProperty("NUMBER_OF_THREADS", "8");
         properties.setProperty("PORT_NUMBER", "5002");
         properties.setProperty("SERVER_KEY_STORE_FILE", "src/org/kryptose/certificates/ServerKeyStore.jks");
@@ -96,8 +97,14 @@ public class Server {
                 e1.printStackTrace();
             }
         }
+
+        // TODO catch parsing errors and give informative feedback if properties file is invalid.
+        int portNumber = Integer.parseInt(properties.getProperty("PORT_NUMBER"));
+        String keyStoreFile = properties.getProperty("SERVER_KEY_STORE_FILE");
+        String keyStorePass = properties.getProperty("SERVER_KEY_STORE_PASSWORD");
         
         this.workQueue = Executors.newFixedThreadPool(Integer.parseInt(properties.getProperty("NUMBER_OF_THREADS")));
+        this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();
     }
 

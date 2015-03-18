@@ -23,7 +23,7 @@ public class HandledRequestPut implements Callable<Response> {
         DataStore.WriteResult writeResult = ds.writeBlob(u, toBeWritten, oldDigest);
         switch (writeResult) {
             case SUCCESS:
-                return new ResponsePut(u, toBeWritten);
+                return new ResponsePut(u, toBeWritten.getDigest());
             case USER_DOES_NOT_EXIST:
                 return new ResponseInvalidCredentials(u);
             case STALE_WRITE:
