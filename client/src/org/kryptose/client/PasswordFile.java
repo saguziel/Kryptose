@@ -65,8 +65,7 @@ public class PasswordFile {
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
             byteStream.close();
-            Blob b = new Blob();
-            b.setBlob(bytes, bytes);
+            Blob b = new Blob(new byte[48], bytes); // TODO
             return b;
         } catch (IOException e) {
             throw new BadBlobException("Bad blob");
@@ -118,7 +117,7 @@ public class PasswordFile {
     }
     
     private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
-    	Blob b = new Blob();
+    	Blob b;
     	
 		try {
 	    	Cipher c;
@@ -137,7 +136,7 @@ public class PasswordFile {
 	    	//byte[] head = "Head".getBytes();
 	    	//c.updateAAD(head);
 	    	
-	    	b.setBlob(c.doFinal(raw_data),ivData);		
+	    	b = new Blob(c.doFinal(raw_data),ivData);		
 		
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
 			throw new CryptoPrimitiveNotSupportedException(e);
@@ -189,8 +188,7 @@ public class PasswordFile {
     	
     	raw_ciphertext[2] = (byte) 0;
     	
-    	Blob b_tampered = new Blob();
-    	b_tampered.setBlob(raw_ciphertext, iv);
+    	Blob b_tampered = new Blob(raw_ciphertext, iv);
     	System.out.println("Decrypted: " + new String(rawBlobDecrypt(b_tampered, myRawKey)));
     	}catch(Exception e){
     		e.printStackTrace();
