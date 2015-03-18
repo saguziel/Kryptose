@@ -30,13 +30,14 @@ public class ClientController {
                 ResponseGet r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
                 if(r.getBlob() == null){
                     model.newPassFile();
+                } else {
+                    try {
+                        model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
+                    } catch (PasswordFile.BadBlobException e) {
+                        model.badMasterPass();
+                    }
+                    model.getCredential(args[1]);
                 }
-                try {
-                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
-                } catch (PasswordFile.BadBlobException e) {
-                    model.badMasterPass();
-                }
-                model.getCredential(args[1]);
             }
         } else if (args[0].equals(PUT)) {
             try {
