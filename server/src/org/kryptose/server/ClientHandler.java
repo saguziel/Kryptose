@@ -81,7 +81,7 @@ class ClientHandler implements Runnable {
         	in = new ObjectInputStream(sock.getInputStream());
             return (Request)in.readObject();
         } catch (IOException ex) {
-        	// TODO catch block
+        	//TODO: This is probably an SSL Error. How do we handle it?
         	ex.printStackTrace();
         	return null;
         } catch (ClassNotFoundException | ClassCastException e) {
@@ -110,7 +110,7 @@ class ClientHandler implements Runnable {
         	out.writeObject(response);
 //        	out.close();
         } catch (IOException ex) {
-        	// TODO catch block
+        	//TODO: This is probably an SSL Error. How do we handle it?
         	ex.printStackTrace();
         }
     }
