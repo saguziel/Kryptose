@@ -67,12 +67,17 @@ public final class Blob implements Serializable {
     }
 */    
     
+    public Blob(){
+    	
+    }
     
+    
+    //TODO: this constructor should not be called directly, as the data needs to be Encrypted first.
     public Blob(byte[] data, byte[] iv){
     	this.encBytes = data.clone();
     	this.iv = iv.clone();
     }
-    
+        
     public byte[] getEncBytes(){
     	return encBytes.clone();
     }
