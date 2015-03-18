@@ -71,11 +71,11 @@ public class PasswordFile {
             objStream.flush();
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
-            byteStream.close();
 
             return rawBlobCreate(bytes, raw_key);
 
         } catch (IOException e) {
+            e.printStackTrace();
             throw new BadBlobException("Bad blob");
         }
     }
