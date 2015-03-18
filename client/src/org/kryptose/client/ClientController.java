@@ -33,7 +33,11 @@ public class ClientController {
             }
             model.getCredential(args[1]);
         } else if (args[0].equals(PUT)) {
-            Blob newBlob = model.passfile.encryptBlob(model.getFilepass());
+            try {
+                Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
+            } catch (PasswordFile.BadBlobException e) {
+                model.badMasterPass();
+            }
             //TODO: use correct digest
             ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, "".getBytes()));
         } else if (args[0].equals(SET)) {

@@ -48,22 +48,20 @@ public class PasswordFile {
             throw new BadBlobException("Bad blob");
         }
     }
-    //TODO: use correct timestamp and iv
-    public Blob encryptBlob(String pass) throws BadBlobException {
+    public Blob encryptBlob(String pass, Date lastmod) throws BadBlobException {
         byte[] raw_key = pass.getBytes();
 
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
             objStream.writeObject(credentials);
-            objStream.writeObject(timestamp);
+            objStream.writeObject(lastmod);
             objStream.flush();
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
             byteStream.close();
-            Blob b = new Blob();
-            b.setBlob(bytes, bytes);
-            return b;
+
+            return rawBlobCreate(bytes, raw_key);
         } catch (IOException e) {
             throw new BadBlobException("Bad blob");
         }

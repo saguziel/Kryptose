@@ -1,5 +1,7 @@
 package org.kryptose.client;
 import org.kryptose.requests.User;
+import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Client {
 	
@@ -12,6 +14,7 @@ public class Client {
 	View view;
     RequestHandler reqHandler;
     PasswordFile passfile;
+    Date lastmod;
 
     public Client() {
         this.reqHandler = new RequestHandler();
@@ -33,6 +36,7 @@ public class Client {
     public void setVal(String dom, String newVal){
         Boolean succ = this.passfile.setVal(dom, newVal);
         if(succ){
+            lastmod = LocalDateTime.now();
             view.promptCmd("password for key: "+ dom + " successfully set");
         } else {
             view.promptCmd("key: "+ dom + " is not valid");
@@ -58,7 +62,9 @@ public class Client {
         view.promptCmd("Password for domain " + key + " is: " + password);
 
     }
-
+    public Date getLastMod() {
+        return (Date)lastmod.clone();
+    }
     public Boolean hasPassFile(){
         return passfile != null;
     }
