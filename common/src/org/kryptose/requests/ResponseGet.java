@@ -17,4 +17,8 @@ public final class ResponseGet extends Response {
         return blob;
     }
 
+    public String logEntry() {
+        return "RESPONSE: Get Request Successful\n";
+    }
+
 }

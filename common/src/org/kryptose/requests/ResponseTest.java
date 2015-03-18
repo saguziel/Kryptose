@@ -13,4 +13,7 @@ public final class ResponseTest extends Response {
 		return theResponse;
 	}
 
+    public String logEntry() {
+        return "RESPONSE: test\n";
+    }
 }

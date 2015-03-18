@@ -26,4 +26,8 @@ public final class ResponseStaleWrite extends Response {
     public byte[] getNewDigest() {
         return newDigest;
     }
+
+    public String logEntry() {
+        return "RESPONSE: Write rejected. File out of date\n";
+    }
 }

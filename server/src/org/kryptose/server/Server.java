@@ -1,19 +1,6 @@
 package org.kryptose.server;
 
-import org.kryptose.requests.Blob;
-import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
-import org.kryptose.requests.Request;
-import org.kryptose.requests.RequestGet;
-import org.kryptose.requests.RequestPut;
-import org.kryptose.requests.Response;
-import org.kryptose.requests.ResponseGet;
-import org.kryptose.requests.ResponseInternalServerError;
-import org.kryptose.requests.ResponseInvalidCredentials;
-import org.kryptose.requests.ResponsePut;
-import org.kryptose.requests.ResponseStaleWrite;
-import org.kryptose.requests.RequestTest;
-import org.kryptose.requests.ResponseTest;
-import org.kryptose.requests.User;
+import org.kryptose.requests.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,6 +25,12 @@ public class Server {
 
     // STATIC METHODS
 
+    private Server() {
+    }
+
+
+    // INSTANCE METHODS
+
     /**
      * Main Kryptose server program.
      *
@@ -46,12 +39,6 @@ public class Server {
     public static void main(String[] args) {
         Server server = new Server();
         server.start();
-    }
-
-
-    // INSTANCE METHODS
-
-    private Server() {
     }
         
     /**
@@ -98,52 +85,59 @@ public class Server {
     }
 
     private Response handleRequestGet(RequestGet request) {
+        Response response;
         User u = request.getUser();
 
         boolean hasBlob = this.dataStore.userHasBlob(u);
         if (hasBlob) {
             Blob b = this.dataStore.readBlob(u);
             if (b == null) {
-                return new ResponseInternalServerError();
+                response = new ResponseInternalServerError();
             } else {
-                return new ResponseGet(b, null); // TODO logging
+                response = new ResponseGet(b, null); // TODO logging
             }
         } else {
         	// User has not yet stored a blob.
-        	// TODO logging
-            return new ResponseGet(null, null);
+            response = new ResponseInvalidCredentials(u);
         }
+        this.dataStore.writeUserLog(u, new Log(u, request, response));
+        return response;
     }
 
     private Response handleRequestPut(RequestPut request) {
+        Response response;
         User u = request.getUser();
-        DataStore ds = this.getDataStore();
         byte[] oldDigest = request.getOldDigest();
         Blob toBeWritten = request.getBlob();
 
-        DataStore.WriteResult writeResult = ds.writeBlob(u, toBeWritten, oldDigest);
+        DataStore.WriteResult writeResult = this.dataStore.writeBlob(u, toBeWritten, oldDigest);
         switch (writeResult) {
             case SUCCESS:
             	try {
-            		return new ResponsePut(u, toBeWritten.getDigest());
-            	} catch (CryptoPrimitiveNotSupportedException e) {
-            		// TODO Auto-generated catch block
+                    response = new ResponsePut(u, toBeWritten.getDigest());
+                } catch (CryptoPrimitiveNotSupportedException e) {
+                    // TODO Auto-generated catch block
             		e.printStackTrace();
-            		return new ResponseInternalServerError();
-            	}
+                    response = new ResponseInternalServerError();
+                }
+                break;
             case STALE_WRITE:
             	try {
-            		return new ResponseStaleWrite(u, oldDigest, toBeWritten.getDigest());
-            	} catch (CryptoPrimitiveNotSupportedException e) {
-            		// TODO Auto-generated catch block
+                    response = new ResponseStaleWrite(u, oldDigest, toBeWritten.getDigest());
+                } catch (CryptoPrimitiveNotSupportedException e) {
+                    // TODO Auto-generated catch block
             		e.printStackTrace();
-            		return new ResponseInternalServerError();
-            	}
+                    response = new ResponseInternalServerError();
+                }
+                break;
             case USER_DOES_NOT_EXIST: // we should have authenticated by now.
             case INTERNAL_ERROR:
             default:
-                return new ResponseInternalServerError();
+                response = new ResponseInternalServerError();
+                break;
         }
+        this.dataStore.writeUserLog(u, new Log(u, request, response));
+        return response;
     }
     
     private Response handleRequestTest(RequestTest request) {

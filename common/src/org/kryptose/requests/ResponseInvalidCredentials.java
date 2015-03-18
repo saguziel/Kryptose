@@ -13,4 +13,8 @@ public final class ResponseInvalidCredentials extends Response {
     public User getUser() {
         return user;
     }
+
+    public String logEntry() {
+        return String.format("RESPONSE: Invalid credentials for user %s\n", user.getUsername());
+    }
 }

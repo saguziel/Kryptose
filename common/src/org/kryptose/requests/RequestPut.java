@@ -5,13 +5,13 @@ import java.io.ObjectInputStream;
 
 public final class RequestPut extends Request {
 
-	// TODO generate serialversionuid after fields are decided upon
-	
-	private final Blob blob;
+    // TODO generate serialversionuid after fields are decided upon
+
+    private final Blob blob;
     private byte[] oldDigest;
 
     public RequestPut(User user, Blob blob, byte[] oldDigest) {
-    	super(user);
+        super(user);
         this.blob = blob;
         this.oldDigest = oldDigest;
         this.validateInstance();
@@ -24,7 +24,7 @@ public final class RequestPut extends Request {
     public byte[] getOldDigest() {
         return oldDigest;
     }
-    
+
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
         // Check that our invariants are satisfied
@@ -41,4 +41,8 @@ public final class RequestPut extends Request {
     	this.blob.validateInstance();
 	}
 
+    @Override
+    public String logEntry() {
+        return String.format("REQUEST: Put from %s\n", super.getUser().getUsername());
+    }
 }

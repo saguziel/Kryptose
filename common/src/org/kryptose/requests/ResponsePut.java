@@ -19,4 +19,8 @@ public final class ResponsePut extends Response {
     public User getUser() {
         return user;
     }
+
+    public String logEntry() {
+        return "RESPONSE: Put request successful\n";
+    }
 }
