@@ -1,9 +1,9 @@
 package org.kryptose.requests;
 
-public final class TestResponse extends Response {
+public final class ResponseTest extends Response {
 	private final String theResponse;
 	
-	public TestResponse(String s) {
+	public ResponseTest(String s) {
 		super();
 		theResponse = s;
 	}

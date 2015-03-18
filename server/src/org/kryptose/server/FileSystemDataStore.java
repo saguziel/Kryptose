@@ -1,8 +1,5 @@
 package org.kryptose.server;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.kryptose.requests.Blob;
 import org.kryptose.requests.User;
 
@@ -12,11 +9,8 @@ public class FileSystemDataStore implements DataStore {
 	// > Why not just specify that the default blob is an empty one of length 0? 
 
     private static DataStore instance = null;
-    
-    private ConcurrentMap<String,Object> locks;
 
     private FileSystemDataStore() {
-    	this.locks = new ConcurrentHashMap<String, Object>();
     }
 
     public static synchronized DataStore getInstance() {
