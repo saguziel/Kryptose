@@ -3,7 +3,7 @@ package org.kryptose.requests;
 /**
  * Created by alexguziel on 3/15/15.
  */
-public class ResponseStaleWrite extends Response {
+public final class ResponseStaleWrite extends Response {
 
     private final User user;
     private final byte[] oldDigest;
@@ -25,5 +25,9 @@ public class ResponseStaleWrite extends Response {
 
     public byte[] getNewDigest() {
         return newDigest;
+    }
+
+    public String logEntry() {
+        return "RESPONSE: Write rejected. File out of date\n";
     }
 }

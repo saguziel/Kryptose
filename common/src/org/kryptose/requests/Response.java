@@ -2,6 +2,7 @@ package org.kryptose.requests;
 
 import java.io.Serializable;
 
-public class Response implements Serializable {
+public abstract class Response implements Serializable {
+    public abstract String logEntry();
 
 }

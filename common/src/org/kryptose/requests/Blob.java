@@ -1,27 +1,17 @@
 package org.kryptose.requests;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Contains all the encrypted information stored here by a single client.
  *
  * @author jshi
  */
-public class Blob implements Serializable {
+public final class Blob implements Serializable {
 
     // TODO: generate serial version UID, after fields are decided.
 
@@ -29,6 +19,7 @@ public class Blob implements Serializable {
     private byte[] iv;
 
 /*    
+ * 	TODO: remove after server code is finalized.
     //Constructor to create a Blob out of an (encrypted) file. Used only by the server (I think)
     public Blob(String filename) throws IOException{
     	blob = Files.readAllBytes(Paths.get(filename));
@@ -76,6 +67,17 @@ public class Blob implements Serializable {
     }
 */    
     
+    public Blob(){
+    	
+    }
+    
+    
+    //TODO: this constructor should not be called directly, as the data needs to be Encrypted first.
+    public Blob(byte[] data, byte[] iv){
+    	this.encBytes = data.clone();
+    	this.iv = iv.clone();
+    }
+        
     public byte[] getEncBytes(){
     	return encBytes.clone();
     }
@@ -83,14 +85,8 @@ public class Blob implements Serializable {
     public byte[] getIv(){
     	return iv.clone();
     }
-    
-    
-    public void setBlob(byte[] data, byte[] iv){
-    	this.encBytes = data.clone();
-    	this.iv = iv.clone();
-    }
 
-    public byte[] getDigest(){
+    public byte[] getDigest() throws CryptoPrimitiveNotSupportedException{
     	//Only to prevent a write originated from an outdated file, so more secure algorithms are not necessary.
         try {
         	MessageDigest md = MessageDigest.getInstance("SHA");
@@ -98,12 +94,23 @@ public class Blob implements Serializable {
         	md.update(encBytes);
 			return md.digest();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			// If you do not HAVE SHA installed, suggest user to change JVM
-			e.printStackTrace();
+			throw new CryptoPrimitiveNotSupportedException();
 		}
-        return null;
+        
     }
+    
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        // Check that our invariants are satisfied
+        this.validateInstance();
+    }
+
+	void validateInstance() {
+    	if (this.iv == null) throw new IllegalArgumentException("iv is null");
+    	if (this.encBytes == null) throw new IllegalArgumentException("encBytes is null");
+    	this.iv = iv.clone();
+    	this.encBytes = iv.clone();
+	}
 
     
 }

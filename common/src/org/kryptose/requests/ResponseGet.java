@@ -3,7 +3,7 @@ package org.kryptose.requests;
 /**
  * Created by alexguziel on 3/15/15.
  */
-public class ResponseGet extends Response {
+public final class ResponseGet extends Response {
 
     private final Blob blob;
     private final UserAuditLog log;
@@ -15,6 +15,10 @@ public class ResponseGet extends Response {
 
     public Blob getBlob() {
         return blob;
+    }
+
+    public String logEntry() {
+        return "RESPONSE: Get Request Successful\n";
     }
 
 }

@@ -35,11 +35,11 @@ public class ClientController {
         } else if (args[0].equals(PUT)) {
             try {
                 Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
+                //TODO: use correct digest
+                ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, "".getBytes()));
             } catch (PasswordFile.BadBlobException e) {
                 model.badMasterPass();
             }
-            //TODO: use correct digest
-            ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, "".getBytes()));
         } else if (args[0].equals(SET)) {
             model.setVal(args[1], args[2]);
         } else if (args[0].equals(DEL)) {

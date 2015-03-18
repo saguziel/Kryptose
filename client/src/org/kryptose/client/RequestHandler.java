@@ -2,8 +2,8 @@ package org.kryptose.client;
 
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
-import org.kryptose.requests.TestRequest;
-import org.kryptose.requests.TestResponse;
+import org.kryptose.requests.RequestTest;
+import org.kryptose.requests.ResponseTest;
 
 import java.io.*;
 
@@ -24,7 +24,7 @@ public class RequestHandler {
 
 	ObjectInputStream in;
 	ObjectOutputStream out;
-	
+/*	
 	static String getServerHostname() {
 		return serverHostname;
 	}
@@ -37,23 +37,7 @@ public class RequestHandler {
 	static void setServerPort(int serverPort) {
 		RequestHandler.serverPort = serverPort;
 	}
-	
-	RequestHandler(){
-		serverHostname = "127.0.0.1";
-		serverPort = 5003;
-
-		this.serverHostname = serverHostname;
-		this.serverPort = serverPort;
-		
-		clientTrustStore = "src/org/kryptose/certificates/ClientTrustStore.jks";
-		clientTrustStorePassword= "aaaaaa"; 
-		//System.setProperty("javax.net.debug", "all");
-		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
-		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
-		
-		sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-	}
-
+*/
 	RequestHandler(String serverHostname, int serverPort, String clientTrustStore, String clientTrustStorePassword){
 		this.serverHostname = serverHostname;
 		this.serverPort = serverPort;
@@ -91,38 +75,59 @@ public class RequestHandler {
             
             System.out.println("Request sent: " + req.toString());
            
-            Response resp;
-			try {
-	            in = new ObjectInputStream(sock.getInputStream());
+            in = new ObjectInputStream(sock.getInputStream());
 
-				resp = (Response) in.readObject();
-	            System.out.println("Response received: " + resp.toString());
-	            
-	            sock.close();
-	      
-	            return resp;
-			
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+            Response resp;
+			resp = (Response) in.readObject();
+
+			//TODO: remove later (testing only).
+			System.out.println("Response received: " + resp.toString());
+            
+            sock.close();
+      
+            return resp;
             
         }
         catch(IOException ex)
         {
+        	//TODO: This is probably an SSL ERROR. How do we handle it?
             ex.printStackTrace();
-       }
-
-		return new TestResponse("SENDING FAILED");
+       } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        //TODO: Remove after meaningful Error Handling has been done.
+		return new ResponseTest("SENDING FAILED");
 		
 	}
 	
+/*
+	//TODO: Constructor for testing only (has common parameters built in). Remove later.
+	RequestHandler(){
+		serverHostname = "127.0.0.1";
+		serverPort = 5003;
+
+		this.serverHostname = serverHostname;
+		this.serverPort = serverPort;
+		
+		clientTrustStore = "src/org/kryptose/certificates/ClientTrustStore.jks";
+		clientTrustStorePassword= "aaaaaa"; 
+		//System.setProperty("javax.net.debug", "all");
+		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
+		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
+		
+		sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+	}
+		
 	public static void main(String[] args) {
 		RequestHandler handler = new RequestHandler();
 		System.out.println("Client is running");
-		handler.send(new TestRequest("-My first request-")).toString();
-		handler.send(new TestRequest("-My second request-")).toString();
+		handler.send(new RequestTest("-My first request-")).toString();
+		handler.send(new RequestTest("-My second request-")).toString();
 
 	}
-
+	
+*/
 
 }
