@@ -33,8 +33,10 @@ public class ClientController {
                 } catch (PasswordFile.BadBlobException e) {
                     model.badMasterPass();
                 }
+                model.getCredential(args[1]);
+            } else {
+                model.newPassFile();
             }
-            model.getCredential(args[1]);
         } else if (args[0].equals(PUT)) {
             try {
                 Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());

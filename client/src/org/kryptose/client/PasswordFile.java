@@ -31,12 +31,18 @@ import java.io.ObjectOutputStream;
 public class PasswordFile {
 
     ArrayList<Credential> credentials;
-    Date timestamp;
+    LocalDateTime timestamp;
     String username;
 
     public PasswordFile(String user, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         decryptBlob(b, pass);
         this.username = user;
+    }
+
+    public PasswordFile(String user) {
+        this.username = user;
+        this.timestamp = LocalDateTime.now();
+        this.credentials = new ArrayList<Credential>();
     }
 
     public void decryptBlob(Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {

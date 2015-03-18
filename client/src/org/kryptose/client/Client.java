@@ -120,6 +120,10 @@ public class Client {
         view.promptCmd();
     }
 
+    public void newPassFile(){
+        this.passfile = new PasswordFile(this.user.getUsername());
+    }
+
     void setMasterpass(String pass){
         this.masterpass = pass;
     }
