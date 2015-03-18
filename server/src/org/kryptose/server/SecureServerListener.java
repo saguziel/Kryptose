@@ -10,7 +10,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 
-
 class SecureServerListener{
 	
 	private final int port;
@@ -27,41 +26,79 @@ class SecureServerListener{
     	this.serverKeyStorePassword = serverKeyStorePassword;
 	}
 	
-    
-    public void start() {
+    private void init() {
 	    System.setProperty("javax.net.ssl.keyStore", serverKeyStore);
 	    System.setProperty("javax.net.ssl.keyStorePassword", serverKeyStorePassword);
 		System.setProperty("javax.net.ssl.trustStore", serverKeyStore);
 		System.setProperty("javax.net.ssl.trustStorePassword", serverKeyStorePassword);
-
-	    
+		
 	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
 	    try {
 		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
     	    this.serverListener.setEnabledProtocols(new String[] {"TLSv1.2"});
     	    this.serverListener.setEnabledCipherSuites(new String[] {"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
-    	    
 		    
 		    //TODO: remove afterwards
 		    printServerSocketInfo(serverListener);
 		    
-            while (true) {
-        	    SSLSocket clientSocket = (SSLSocket) serverListener.accept();
-
-        	    //TODO: remove afterwards
-        	    printSocketInfo(clientSocket);
-                
-        	    Runnable job = new ClientHandler(server, clientSocket);
-        	    Thread t = new Thread(job);
-                t.start();
-                //System.out.println("got a connection");
-            }
         } catch (IOException ex) {
         	//TODO: This is probably an SSL Error. How do we handle it?
         	ex.printStackTrace(); 
         }
     	
+    }
+    
+    private void listenForClient() {
+    	try {
+    		SSLSocket clientSocket = (SSLSocket) serverListener.accept();
+
+    		//TODO: remove afterwards
+    		printSocketInfo(clientSocket);
+
+    		Runnable job = new ClientHandler(server, clientSocket);
+    		Thread t = new Thread(job);
+    		t.start();
+    		//System.out.println("got a connection");
+    	} catch (IOException ex) {
+			//TODO: This is probably an SSL Error. How do we handle it?
+			ex.printStackTrace(); 
+		}
+    }
+    
+    private void run() {
+    	while (true) {
+    		this.listenForClient();
+    		
+    		// Something presumably wants this thread to stop.
+    		if (Thread.interrupted()) break;
+    		
+    		// Can't do anything once the serversocket is closed.
+    		if (serverListener.isClosed()) break;
+    	}
+    }
+    
+    /**
+     * This method does not return until the server is shut down.
+     */
+    public void start() {
+    	try {
+    		// Set initial properties
+    		this.init();
+
+    		// Listen for incoming connections.
+    		this.run();
+    	}
+    	finally {
+        	if (this.serverListener != null && !this.serverListener.isClosed()) {
+        		try {
+    				this.serverListener.close();
+    			} catch (IOException e) {
+    				// TODO Auto-generated catch block
+    				e.printStackTrace();
+    			}
+        	}
+    	}
     }
 	
     @Override

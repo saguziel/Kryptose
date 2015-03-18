@@ -41,7 +41,7 @@ public class Server {
 
     private Server() {
     }
-    
+        
     /**
      * Queue client request for processing.
      *
