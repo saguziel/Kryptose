@@ -53,7 +53,7 @@ public class PasswordFile {
     }
 
     //TODO: use correct timestamp and iv
-    public Blob encryptBlob(String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException {
+    public Blob encryptBlob(String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass);
 
         try {
@@ -65,7 +65,7 @@ public class PasswordFile {
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
             byteStream.close();
-            Blob b = new Blob(new byte[48], bytes); // TODO
+            Blob b = rawBlobCreate(bytes, raw_key);
             return b;
         } catch (IOException e) {
             throw new BadBlobException("Bad blob");
