@@ -14,8 +14,6 @@ import java.util.concurrent.Future;
 public class Server {
 
     private static final String PROPERTIES_FILE = "serverProperties.xml";
-    private static final Object singletonLock = new Object();
-    private static Server server;
     // INSTANCE FIELDS
     private final Object workQueueLock = new Object();
     Properties properties;
@@ -28,8 +26,47 @@ public class Server {
 
     // STATIC METHODS
 
-    private Server() {
+    /**
+     * Main Kryptose server program.
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        Server server = new Server();
+        server.start();
+    }
 
+
+    // INSTANCE METHODS
+
+    private Server() {
+        this.listener = new SecureServerListener(this, Integer.parseInt(properties.getProperty("PORT_NUMBER")));
+    }
+    
+    /**
+     * Queue client request for processing.
+     *
+     * @param user
+     * @param request
+     * @return
+     */
+    public Future<Response> addToWorkQueue(Request request) {
+        synchronized (this.workQueueLock) {
+            return this.workQueue.submit(new HandledRequest(request));
+        }
+    }
+
+    public DataStore getDataStore() {
+        // TODO Server DataStore
+        return null;
+    }
+
+    public Logger getLogger() {
+        // TODO Server Logger
+        return null;
+    }
+
+    public void start() {
         this.properties = new Properties();
 
         //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Server settings file
@@ -59,56 +96,7 @@ public class Server {
                 e1.printStackTrace();
             }
         }
-
-        listener = new SecureServerListener(this, Integer.parseInt(properties.getProperty("PORT_NUMBER")), properties.getProperty("SERVER_KEY_STORE_FILE"), properties.getProperty("SERVER_KEY_STORE_PASSWORD") );
-    }
-
-    /**
-     * Main Kryptose server program.
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        Server server = Server.getInstance();
-        server.start();
-    }
-
-
-    // INSTANCE METHODS
-
-    private static Server getInstance() {
-        if (server != null) return server;
-        synchronized (singletonLock) {
-            if (server != null) return server;
-            server = new Server();
-            return server;
-        }
-    }
-
-    /**
-     * Queue client request for processing.
-     *
-     * @param user
-     * @param request
-     * @return
-     */
-    public Future<Response> addToWorkQueue(Request request) {
-        synchronized (this.workQueueLock) {
-            return this.workQueue.submit(new HandledRequest(request));
-        }
-    }
-
-    public DataStore getDataStore() {
-        // TODO Server DataStore
-        return null;
-    }
-
-    public Logger getLogger() {
-        // TODO Server Logger
-        return null;
-    }
-
-    public void start() {
+        
         this.workQueue = Executors.newFixedThreadPool(Integer.parseInt(properties.getProperty("NUMBER_OF_THREADS")));
         this.listener.start();
     }
