@@ -1,29 +1,33 @@
 package org.kryptose.requests;
 
-public class RequestPut extends Request {
+public final class RequestPut extends Request {
 
 	// TODO generate serialversionuid after fields are decided upon
 	
 	private final Blob blob;
-    private final User user;
     private final byte[] oldDigest;
 
     public RequestPut(User user, Blob blob, byte[] oldDigest) {
+    	super(user);
         this.blob = blob;
-        this.user = user;
         this.oldDigest = oldDigest;
+        this.validateInstance();
     }
 
     public Blob getBlob() {
         return blob;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     public byte[] getOldDigest() {
         return oldDigest;
     }
+
+	@Override
+	void validateInstance() {
+		super.validateInstance();
+    	if (this.blob == null) throw new IllegalArgumentException("blob is null");
+    	if (this.oldDigest == null) throw new IllegalArgumentException("oldDigest is null");
+    	this.blob.validateInstance();
+	}
 
 }

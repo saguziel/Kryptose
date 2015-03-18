@@ -8,20 +8,30 @@ package org.kryptose.requests;
  * @author Antonio
  *
  */
-public class TestRequest extends Request {
+public final class TestRequest extends Request {
+	
+	private static final long serialVersionUID = -4863470894643745364L;
 
-	private static final long serialVersionUID = 7705643898653821811L;
+	private static final User testUser = new User("testuser");
 	
 	private final String theRequest;
 	
 	public TestRequest(String s) {
-		super();
+		super(testUser);
 		theRequest = s;
+		this.validateInstance();
 	}
 	
 	@Override
 	public String toString(){
 		return theRequest;
+	}
+
+	@Override
+	void validateInstance() {
+		super.validateInstance();
+    	if (this.theRequest == null) throw new IllegalArgumentException("user is null");
+    	if (!this.getUser().equals(testUser)) throw new IllegalStateException("user is not testUser");
 	}
 	
 }

@@ -3,14 +3,16 @@ package org.kryptose.requests;
 /**
  * Created by alexguziel on 3/15/15.
  */
-public class RequestGet extends Request {
-    private final User user;
-
+public final class RequestGet extends Request {
+	
     public RequestGet(User u) {
-        user = u;
+        super(u);
+        this.validateInstance();
     }
 
-    public User getUser() {
-        return user;
-    }
+	@Override
+	void validateInstance() {
+		super.validateInstance();
+	}
+    
 }

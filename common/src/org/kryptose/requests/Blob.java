@@ -1,32 +1,20 @@
 package org.kryptose.requests;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Contains all the encrypted information stored here by a single client.
  *
  * @author jshi
  */
-public class Blob implements Serializable {
+public final class Blob implements Serializable {
 
     // TODO: generate serial version UID, after fields are decided.
 
-    private byte[] encBytes;
-    private byte[] iv;
+    private final byte[] encBytes;
+    private final byte[] iv;
 
 /*    
     //Constructor to create a Blob out of an (encrypted) file. Used only by the server (I think)
@@ -76,18 +64,18 @@ public class Blob implements Serializable {
     }
 */    
     
+    
+    public Blob(byte[] data, byte[] iv){
+    	this.encBytes = data.clone();
+    	this.iv = iv.clone();
+    }
+    
     public byte[] getEncBytes(){
     	return encBytes.clone();
     }
     
     public byte[] getIv(){
     	return iv.clone();
-    }
-    
-    
-    public void setBlob(byte[] data, byte[] iv){
-    	this.encBytes = data.clone();
-    	this.iv = iv.clone();
     }
 
     public byte[] getDigest(){
@@ -104,6 +92,11 @@ public class Blob implements Serializable {
 		}
         return null;
     }
+
+	void validateInstance() {
+    	if (this.iv == null) throw new IllegalArgumentException("iv is null");
+    	if (this.encBytes == null) throw new IllegalArgumentException("encBytes is null");
+	}
 
     
 }

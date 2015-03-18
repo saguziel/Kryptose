@@ -1,6 +1,6 @@
 package org.kryptose.requests;
 
-public class TestResponse extends Response {
+public final class TestResponse extends Response {
 	private final String theResponse;
 	
 	public TestResponse(String s) {
