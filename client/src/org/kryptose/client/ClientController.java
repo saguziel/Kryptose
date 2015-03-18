@@ -1,5 +1,8 @@
 package org.kryptose.client;
 
+import org.kryptose.client.PasswordFile.BadBlobException;
+import org.kryptose.requests.CryptoErrorException;
+import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.RequestGet;
 import org.kryptose.requests.ResponseGet;
 import org.kryptose.requests.ResponsePut;
@@ -20,7 +23,7 @@ public class ClientController {
 		this.model = c;
 	}
 	
-	public void handleRequest(String request) {
+	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 		String[] args = request.trim().toLowerCase().split("\\s+");
         if (args[0].equals(GET)) {
             if(!model.hasPassFile()){
