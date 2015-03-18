@@ -3,6 +3,7 @@ package org.kryptose.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,6 +11,10 @@ import java.io.ObjectOutputStream;
 import org.kryptose.requests.Blob;
 import org.kryptose.requests.User;
 
+/**
+ * This DataStore assumes for each User, only one thread is accessing their files at a time.
+ * @author jshi
+ */
 public class FileSystemDataStore implements DataStore {
 
 	// TODO: make datastore filenames configurable?
@@ -67,6 +72,7 @@ public class FileSystemDataStore implements DataStore {
     	
     	// Actually do the write.
     	File file = getUserBlobFile(user);
+		ensureExists(file);
     	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));) {
 			oos.writeObject(blob);
 		} catch (IOException e) {
@@ -82,6 +88,7 @@ public class FileSystemDataStore implements DataStore {
 	public Blob readBlob(User user) {
     	// Actually do the write.
     	File file = getUserBlobFile(user);
+		ensureExists(file);
     	try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));) {
 			return (Blob) ois.readObject();
 		} catch (IOException e) {
@@ -98,8 +105,11 @@ public class FileSystemDataStore implements DataStore {
     @Override
 	public WriteResult writeUserLog(User user, Log log) {
     	File file = getUserLogFile(user);
-    	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
-			oos.writeObject(log);
+		ensureExists(file);
+    	//try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
+		//	oos.writeObject(log);
+    	try (FileWriter fw = new FileWriter(file, true);) {
+			fw.write(log.toString());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -109,16 +119,31 @@ public class FileSystemDataStore implements DataStore {
     }
     
     @Override
-	public WriteResult writeSystemLog(Log log) {
+    public WriteResult writeSystemLog(Log log) {
     	File file = getSystemLogFile();
-    	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
-			oos.writeObject(log);
-		} catch (IOException e) {
+    	synchronized(SYSTEM_LOG_FILE) {
+    		ensureExists(file);
+    		//try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
+    		//	oos.writeObject(log);
+        	try (FileWriter fw = new FileWriter(file, true);) {
+    			fw.write(log.toString());
+    		} catch (IOException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    			return WriteResult.INTERNAL_ERROR;
+    		}
+    		return WriteResult.SUCCESS;
+    	}
+    }
+    
+    private void ensureExists(File file) {
+    	file.getParentFile().mkdirs();
+		try {
+			file.createNewFile();
+		} catch (IOException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return WriteResult.INTERNAL_ERROR;
+			e1.printStackTrace();
 		}
-        return WriteResult.SUCCESS;
     }
 
 }
