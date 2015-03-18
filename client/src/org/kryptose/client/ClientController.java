@@ -26,16 +26,17 @@ public class ClientController {
 	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 		String[] args = request.trim().toLowerCase().split("\\s+");
         if (args[0].equals(GET)) {
-            if(!model.hasPassFile()){
-                ResponseGet r = (ResponseGet)model.reqHandler.send(new RequestGet(model.user));
+            if(!model.hasPassFile()) {
+                ResponseGet r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
+                if(r.getBlob() == null){
+                    model.newPassFile();
+                }
                 try {
                     model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
                 } catch (PasswordFile.BadBlobException e) {
                     model.badMasterPass();
                 }
                 model.getCredential(args[1]);
-            } else {
-                model.newPassFile();
             }
         } else if (args[0].equals(PUT)) {
             try {
