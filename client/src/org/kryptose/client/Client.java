@@ -17,8 +17,8 @@ public class Client {
     Properties properties;
 
 
-	private String masterpass;
-    private String derivedFilePass;
+	private String masterpass = "0";
+    private String derivedFilePass = "0";
     User user;
 	View view;
     RequestHandler reqHandler;
@@ -76,11 +76,11 @@ public class Client {
 
     public void setVal(String dom, String newVal){
         Boolean succ = this.passfile.setVal(dom, newVal);
+        lastmod = LocalDateTime.now();
         if(succ){
-            lastmod = LocalDateTime.now();
             view.promptCmd("password for key: "+ dom + " successfully set");
         } else {
-            view.promptCmd("key: "+ dom + " is not valid");
+            view.promptCmd("password for key: "+ dom + " successfully created");
         }
     }
     public void delVal(String dom){
