@@ -122,6 +122,7 @@ public class Client {
 
     public void newPassFile(){
         this.passfile = new PasswordFile(this.user.getUsername());
+        view.promptCmd("New password file created");
     }
 
     void setMasterpass(String pass){
