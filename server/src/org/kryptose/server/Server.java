@@ -31,14 +31,23 @@ public class Server {
     private Server() {
 
         this.properties = new Properties();
+
+        //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Server settings file
+        properties.setProperty("NUMBER_OF_THREADS", "8");
+        properties.setProperty("PORT_NUMBER", "5002");
+        properties.setProperty("SERVER_KEY_STORE_FILE", "src/org/kryptose/certificates/ServerKeyStore.jks");
+        properties.setProperty("SERVER_KEY_STORE_PASSWORD", "aaaaaa");
+
+        
         FileInputStream in;
         try {
             in = new FileInputStream(PROPERTIES_FILE);
-            this.properties.loadFromXML(in);
+            Properties XMLProperties = new Properties();
+            XMLProperties.loadFromXML(in);
+            this.properties.putAll(XMLProperties);
             in.close();
         } catch (IOException e) {
-            properties.setProperty("NUMBER_OF_THREADS", "8");
-            properties.setProperty("PORT_NUMBER", "5002");
+        	//TODO: Unable to read the properties file. Maybe log the error?
 
             try {
                 FileOutputStream out = new FileOutputStream(PROPERTIES_FILE);
@@ -51,7 +60,7 @@ public class Server {
             }
         }
 
-        listener = new SecureServerListener(this, Integer.parseInt(properties.getProperty("PORT_NUMBER")));
+        listener = new SecureServerListener(this, Integer.parseInt(properties.getProperty("PORT_NUMBER")), properties.getProperty("SERVER_KEY_STORE_FILE"), properties.getProperty("SERVER_KEY_STORE_PASSWORD") );
     }
 
     /**

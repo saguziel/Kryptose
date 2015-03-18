@@ -2,6 +2,8 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment>Server Configuration File</comment>
+<entry key="SERVER_KEY_STORE_PASSWORD">aaaaaa</entry>
 <entry key="NUMBER_OF_THREADS">8</entry>
-<entry key="PORT_NUMBER">5003</entry>
+<entry key="SERVER_KEY_STORE_FILE">src/org/kryptose/certificates/ServerKeyStore.jks</entry>
+<entry key="PORT_NUMBER">5002</entry>
 </properties>
