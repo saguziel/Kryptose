@@ -4,7 +4,7 @@ package org.kryptose.requests;
 //Suggested response: quit the program, and ask user to update the jvm.
 // TODO: the fact that this is a checked exception is seriously terrible.
 // I don't want to try-catch for something that should never happen every time I want to compute a digest.
-public class CryptoPrimitiveNotSupportedException extends Exception {
+public class CryptoPrimitiveNotSupportedException extends RuntimeException {
 
 	public CryptoPrimitiveNotSupportedException() {
 		// TODO Auto-generated constructor stub

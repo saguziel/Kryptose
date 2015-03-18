@@ -1,6 +1,9 @@
 package org.kryptose.client;
 import java.util.Scanner;
 
+import org.kryptose.client.PasswordFile.BadBlobException;
+import org.kryptose.requests.CryptoErrorException;
+
 public class ViewCLI extends View {
 
     final static int CMD = 0;
@@ -60,7 +63,15 @@ public class ViewCLI extends View {
 	        String input = in.nextLine();
 
             if (cmd == CMD)
-                ctrl.handleRequest(input);
+				try {
+					ctrl.handleRequest(input);
+				} catch (CryptoErrorException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadBlobException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             if (cmd == USERNAME)
 	            ctrl.handleUserName(input);
 	    }
