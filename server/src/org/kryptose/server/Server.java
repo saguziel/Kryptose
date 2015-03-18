@@ -98,7 +98,7 @@ public class Server {
             }
         } else {
         	// User has not yet stored a blob.
-            response = new ResponseInvalidCredentials(u);
+            response = new ResponseGet(null, null);
         }
         this.dataStore.writeUserLog(u, new Log(u, request, response));
         return response;
