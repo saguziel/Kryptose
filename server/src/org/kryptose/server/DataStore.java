@@ -13,7 +13,7 @@ public interface DataStore {
 
 	public abstract WriteResult writeUserLog(User user, Log log);
 
-	public abstract WriteResult writeGlobalLog(Log log);
+	public abstract WriteResult writeSystemLog(Log log);
 
 
     public enum WriteResult {

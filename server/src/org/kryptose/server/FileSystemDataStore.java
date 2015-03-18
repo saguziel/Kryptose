@@ -1,73 +1,124 @@
 package org.kryptose.server;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.kryptose.requests.Blob;
 import org.kryptose.requests.User;
 
 public class FileSystemDataStore implements DataStore {
 
-    //TODO: consider behavior before user has a file with anything in it, probably write empty file
-	// > Why not just specify that the default blob is an empty one of length 0? 
+	// TODO: make datastore filenames configurable?
+	private static final String DATASTORE_PREFIX = "datastore/";
+	private static final String USER_BLOB_PREFIX = DATASTORE_PREFIX + "blobs/";
+	private static final String USER_LOG_PREFIX = DATASTORE_PREFIX + "userlogs/";
+	private static final File SYSTEM_LOG_FILE = new File(DATASTORE_PREFIX + "kryptose.log");
 
-    private static DataStore instance = null;
-
-    private FileSystemDataStore() {
+    FileSystemDataStore() {
     }
 
-    public static synchronized DataStore getInstance() {
-        if (instance != null) {
-            return instance;
-        } else {
-            instance = new FileSystemDataStore();
-            return instance;
-        }
+    private static File getUserBlobFile(User user) {
+    	assert (User.isValidUsername(user.getUsername()));
+    	return new File(USER_BLOB_PREFIX + user.getUsername() + ".blob");
     }
-
-    /* (non-Javadoc)
-	 * @see org.kryptose.server.IDataStore#userHasBlob(org.kryptose.requests.User)
-	 */
+    
+    private static File getUserLogFile(User user) {
+    	assert (User.isValidUsername(user.getUsername()));
+    	return new File(USER_LOG_PREFIX + user.getUsername() + ".log");
+    }
+    
+    private static File getSystemLogFile() {
+    	return SYSTEM_LOG_FILE;
+    }
+    
     @Override
 	public boolean userHasBlob(User user) {
-        return false;
+        return getUserBlobFile(user).exists();
     }
 
-    /* (non-Javadoc)
-	 * @see org.kryptose.server.IDataStore#writeBlob(org.kryptose.requests.User, org.kryptose.requests.Blob, byte[])
-	 */
-    @Override
-	public WriteResult writeBlob(User user, Blob blob, byte[] oldDigest) {
-        // TODO
+    /**
+     * 
         // attempts to write a blob
         // digest should be null if this is the first write for this user
         // return 0 if written successfully
         //
         // should fail if digest does not match digest of the previously stored blob
         // this is to check for merge conflicts
-        return WriteResult.INTERNAL_ERROR;
+     */
+    @Override
+	public WriteResult writeBlob(User user, Blob blob, byte[] oldDigest) {
+    	boolean hasBlob = this.userHasBlob(user);
+    	if (oldDigest == null && hasBlob) {
+    		return WriteResult.STALE_WRITE;
+    	}
+    	if (oldDigest != null && !hasBlob) {
+    		// TODO not quite the right error condition.
+    		return WriteResult.USER_DOES_NOT_EXIST;
+    	}
+    	if (oldDigest != null && hasBlob) {
+    		if (!oldDigest.equals(this.readBlob(user).getDigest())) {
+    			return WriteResult.STALE_WRITE;
+    		}
+    	}
+    	
+    	// Actually do the write.
+    	File file = getUserBlobFile(user);
+    	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));) {
+			oos.writeObject(blob);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return WriteResult.INTERNAL_ERROR;
+		}
+    	
+        return WriteResult.SUCCESS;
     }
 
-    /* (non-Javadoc)
-	 * @see org.kryptose.server.IDataStore#readBlob(org.kryptose.requests.User)
-	 */
     @Override
 	public Blob readBlob(User user) {
-        // reads the user's blob, return null if nonexistent or error
-        return null;
+    	// Actually do the write.
+    	File file = getUserBlobFile(user);
+    	try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));) {
+			return (Blob) ois.readObject();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException("If you see this error message, the developers are incapable.");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException("If you see this error message, the developers are incapable.");
+		}
 	}
     
-    /* (non-Javadoc)
-	 * @see org.kryptose.server.IDataStore#writeUserLog(org.kryptose.requests.User, org.kryptose.server.Log)
-	 */
     @Override
 	public WriteResult writeUserLog(User user, Log log) {
-    	return WriteResult.INTERNAL_ERROR;
+    	File file = getUserLogFile(user);
+    	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
+			oos.writeObject(log);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return WriteResult.INTERNAL_ERROR;
+		}
+        return WriteResult.SUCCESS;
     }
     
-    /* (non-Javadoc)
-	 * @see org.kryptose.server.IDataStore#writeGlobalLog(org.kryptose.server.Log)
-	 */
     @Override
-	public WriteResult writeGlobalLog(Log log) {
-    	return WriteResult.INTERNAL_ERROR;
+	public WriteResult writeSystemLog(Log log) {
+    	File file = getSystemLogFile();
+    	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
+			oos.writeObject(log);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return WriteResult.INTERNAL_ERROR;
+		}
+        return WriteResult.SUCCESS;
     }
 
 }

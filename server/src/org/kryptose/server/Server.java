@@ -29,7 +29,7 @@ public class Server {
     // INSTANCE FIELDS
     Properties properties;
 
-    private DataStore dataStore;
+    private DataStore dataStore = new FileSystemDataStore();
     private Logger logger;
     private SecureServerListener listener;
     
@@ -99,24 +99,25 @@ public class Server {
 
     private Response handleRequestGet(RequestGet request) {
         User u = request.getUser();
-        DataStore ds = FileSystemDataStore.getInstance();
 
-        boolean hasBlob = ds.userHasBlob(u);
+        boolean hasBlob = this.dataStore.userHasBlob(u);
         if (hasBlob) {
-            Blob b = ds.readBlob(u);
+            Blob b = this.dataStore.readBlob(u);
             if (b == null) {
                 return new ResponseInternalServerError();
             } else {
                 return new ResponseGet(b, null); // TODO logging
             }
         } else {
-            return new ResponseInvalidCredentials(u);
+        	// User has not yet stored a blob.
+        	// TODO logging
+            return new ResponseGet(null, null);
         }
     }
 
     private Response handleRequestPut(RequestPut request) {
         User u = request.getUser();
-        DataStore ds = FileSystemDataStore.getInstance(); // TODO: make this better
+        DataStore ds = this.getDataStore();
         byte[] oldDigest = request.getOldDigest();
         Blob toBeWritten = request.getBlob();
 
@@ -150,8 +151,7 @@ public class Server {
     }
     
     public DataStore getDataStore() {
-        // TODO Server DataStore
-        return null;
+        return this.dataStore;
     }
 
     public Logger getLogger() {
