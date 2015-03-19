@@ -28,19 +28,30 @@ public class ClientController {
 	public ClientController(Client c) {
 		this.model = c;
 	}
-	public void fetch() throws CryptoErrorException, BadBlobException {
+	public void fetch() {
         ResponseGet r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
         if(r.getBlob() == null){
             model.newPassFile();
         } else {
             try {
                 model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
-            } catch (PasswordFile.BadBlobException e) {
+            } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
                 model.badMasterPass();
             }
         }
     }
-
+    public void save() {
+        try {
+            Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
+            //TODO: use correct digest
+            RequestPut req = new RequestPut(model.user, newBlob, "".getBytes());
+            @SuppressWarnings("unused")
+            ResponsePut r = (ResponsePut)model.reqHandler.send(req);
+            model.continuePrompt("Successfully saved to server");
+        } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
+            model.badMasterPass();
+        }
+    }
 	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 		String[] args = request.trim().toLowerCase().split("\\s+");
         if (args[0].equals(GET)) {
@@ -52,18 +63,10 @@ public class ClientController {
                 model.getCredential(args[1]);
             }
         } else if (args[0].equals(SAVE)) {
-            try {
-                Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
-                //TODO: use correct digest
-                RequestPut req = new RequestPut(model.user, newBlob, "".getBytes());
-                @SuppressWarnings("unused")
-				ResponsePut r = (ResponsePut)model.reqHandler.send(req);
-                model.continuePrompt("Successfully saved to server");
-            } catch (PasswordFile.BadBlobException e) {
-                model.badMasterPass();
-            }
+            save();
         } else if (args[0].equals(SET)) {
             model.setVal(args[1], args[2]);
+            save();
         } else if (args[0].equals(DEL)) {
             model.delVal(args[1]);
         } else if (args[0].equals(LOGOUT)) {
@@ -76,6 +79,7 @@ public class ClientController {
 	}
     public void handleUserName(String userName) {
         model.setUsername(userName);
+        fetch();
     }
 	public void handlePassword(String pass) {
 		

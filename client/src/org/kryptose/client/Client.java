@@ -67,9 +67,9 @@ public class Client {
         Boolean succ = this.passfile.setVal(dom, newVal);
         lastmod = LocalDateTime.now();
         if(succ){
-            view.promptCmd("password for key: "+ dom + " successfully set");
+            view.displayMessage("password for key: " + dom + " successfully set");
         } else {
-            view.promptCmd("password for key: "+ dom + " successfully created");
+            view.displayMessage("password for key: "+ dom + " successfully created");
         }
     }
     public void delVal(String dom){
@@ -112,8 +112,7 @@ public class Client {
 
     public void setUsername(String name){
         this.user = new User(name, new byte[48]); // TODO: set passkey
-        System.out.println("got username "+name);
-        view.promptCmd();
+        view.displayMessage("got username " +name);
     }
 
     public void newPassFile(){
