@@ -54,6 +54,7 @@ public class ClientController {
             Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
             //TODO: use correct digest
             RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
+            model.passfile.setOldDigest(req.getBlob().getDigest());
 
             @SuppressWarnings("unused")
             Response r = model.reqHandler.send(req);
@@ -70,6 +71,7 @@ public class ClientController {
             } else {
                 model.continuePrompt("ERROR: Response may not have been saved. Server returned bad response.");
             }
+
         } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
             model.badMasterPass();
         } catch (UnknownHostException e1) {
