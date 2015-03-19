@@ -1,16 +1,10 @@
 package org.kryptose.server;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import org.kryptose.requests.Blob;
 import org.kryptose.requests.User;
+
+import java.io.*;
+import java.util.Arrays;
 
 /**
  * This DataStore assumes for each User, only one thread is accessing their files at a time.
@@ -71,8 +65,8 @@ public class FileSystemDataStore implements DataStore {
     	}
 
     	if (oldDigest != null && hasBlob) {
-    		if (!oldDigest.equals(this.readBlob(user).getDigest())) {
-    			return WriteResult.STALE_WRITE;
+            if (Arrays.equals(oldDigest, (this.readBlob(user).getDigest()))) {
+                return WriteResult.STALE_WRITE;
     		}
     	}
     	
