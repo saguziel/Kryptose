@@ -65,7 +65,7 @@ public class FileSystemDataStore implements DataStore {
     	}
 
     	if (oldDigest != null && hasBlob) {
-            if (Arrays.equals(oldDigest, (this.readBlob(user).getDigest()))) {
+            if (!Arrays.equals(oldDigest, (this.readBlob(user).getDigest()))) {
                 return WriteResult.STALE_WRITE;
     		}
     	}
