@@ -87,7 +87,7 @@ class SecureServerListener{
     		if (Thread.interrupted()) {
                 break;
     		}
-    		
+
     		// Can't do anything once the serversocket is closed.
     		if (serverListener.isClosed()) {
                 break;

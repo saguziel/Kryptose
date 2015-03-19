@@ -6,6 +6,7 @@ import org.kryptose.requests.RequestTest;
 import org.kryptose.requests.ResponseTest;
 
 import java.io.*;
+import java.net.UnknownHostException;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -52,11 +53,10 @@ public class RequestHandler {
 	}
 
 	
-	Response send(Request req){
+	Response send(Request req) throws UnknownHostException, IOException{
         try {
-        	
     	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
-    	    
+
     	    sock.setEnabledProtocols(new String[] {"TLSv1.2"});
 
     	    //TODO: maybe delete this afterwards
@@ -68,9 +68,8 @@ public class RequestHandler {
     	    //TODO: maybe delete this afterwards
     	    //Enable this line to test what happens if client and server have no CipherSuites in common
     	    //sock.setEnabledCipherSuites(new String[] {"SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA"});
-   	    
             out = new ObjectOutputStream(sock.getOutputStream());                
-
+            
             out.writeObject(req);
             
             System.out.println("Request sent: " + req.toString());
@@ -87,18 +86,13 @@ public class RequestHandler {
       
             return resp;
             
-        }
-        catch(IOException ex)
-        {
-        	//TODO: This is probably an SSL ERROR. How do we handle it?
-            ex.printStackTrace();
-       } catch (ClassNotFoundException e) {
+        }catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
         //TODO: Remove after meaningful Error Handling has been done.
-		return new ResponseTest("SENDING FAILED");
+		return null;
 		
 	}
 	

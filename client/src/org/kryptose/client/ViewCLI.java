@@ -1,9 +1,9 @@
 package org.kryptose.client;
-import java.util.Scanner;
-import java.io.*;
 
 import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.requests.CryptoErrorException;
+
+import java.util.Scanner;
 
 public class ViewCLI extends View {
 
@@ -47,6 +47,11 @@ public class ViewCLI extends View {
         awaitInput(CMD);
 	}
 
+    @Override
+    void displayMessage(String s) {
+        System.out.println(s);
+    }
+
 	@Override
 	void logout() {
         System.out.println("Logging out!");
@@ -63,18 +68,19 @@ public class ViewCLI extends View {
 	        System.out.print("I'm awaiting input\n> ");
 	        String input = in.nextLine();
 
-            if (cmd == CMD)
-				try {
-					ctrl.handleRequest(input);
-				} catch (CryptoErrorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (BadBlobException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            if (cmd == USERNAME)
-	            ctrl.handleUserName(input);
+            if (cmd == CMD) {
+                try {
+                    ctrl.handleRequest(input);
+                } catch (CryptoErrorException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (BadBlobException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            } else if (cmd == USERNAME) {
+                ctrl.handleUserName(input);
+            }
 	    }
 
 	}
