@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 
 public class Client {
 	
-	private static final Object singletonLock = new Object();
-	private static Client client;
-	
     private static final String PROPERTIES_FILE = "clientProperties.xml";
     Properties properties;
 
@@ -25,7 +22,7 @@ public class Client {
     PasswordFile passfile;
     LocalDateTime lastmod;
 
-    public Client() {
+    private Client() {
     	
         this.properties = new Properties();
 
@@ -60,16 +57,7 @@ public class Client {
     	
         this.reqHandler = new RequestHandler(properties.getProperty("SERVER_HOSTNAME"),Integer.parseInt(properties.getProperty("SERVER_PORT_NUMBER")), properties.getProperty("CLIENT_KEY_STORE_FILE"), properties.getProperty("CLIENT_KEY_STORE_PASSWORD") );
     }
-
-	private static Client getInstance() {
-        if (client != null) return client;
-        synchronized (singletonLock) {
-            if (client != null) return client;
-            client = new Client();
-            return client;
-        }
-    }
-
+    
     public void setPassfile(PasswordFile pf){
         this.passfile = pf;
         view.promptCmd("Password file successfully fetched");
@@ -152,7 +140,7 @@ public class Client {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Client client = Client.getInstance();
+		Client client = new Client();
 		ClientController ctrl = new ClientController(client);
 		View view = new ViewCLI(ctrl);
 		client.view = view;
