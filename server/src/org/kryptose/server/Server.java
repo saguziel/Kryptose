@@ -6,10 +6,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.WeakHashMap;
+
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -246,7 +248,7 @@ public class Server {
         // Start incoming connection listener.
         this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();
-        
+
     }
 
 }

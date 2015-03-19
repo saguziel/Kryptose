@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -57,19 +58,23 @@ public class FileSystemDataStore implements DataStore {
      */
     @Override
 	public WriteResult writeBlob(User user, Blob blob, byte[] oldDigest) {
-    	/*boolean hasBlob = this.userHasBlob(user);
+
+    	boolean hasBlob = this.userHasBlob(user);
+
     	if (oldDigest == null && hasBlob) {
     		return WriteResult.STALE_WRITE;
     	}
+
     	if (oldDigest != null && !hasBlob) {
     		// TODO not quite the right error condition.
     		return WriteResult.USER_DOES_NOT_EXIST;
     	}
+
     	if (oldDigest != null && hasBlob) {
     		if (!oldDigest.equals(this.readBlob(user).getDigest())) {
     			return WriteResult.STALE_WRITE;
     		}
-    	} */ //TODO
+    	}
     	
     	// Actually do the write.
     	File file = getUserBlobFile(user);

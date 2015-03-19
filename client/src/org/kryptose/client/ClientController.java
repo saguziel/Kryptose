@@ -36,6 +36,7 @@ public class ClientController {
         } else {
             try {
                 model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
+                model.passfile.setOldDigest(r.getBlob().getDigest());
             } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
                 model.badMasterPass();
             }
@@ -46,7 +47,8 @@ public class ClientController {
         try {
             Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
             //TODO: use correct digest
-            RequestPut req = new RequestPut(model.user, newBlob, "".getBytes());
+            RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
+
             @SuppressWarnings("unused")
             ResponsePut r = (ResponsePut)model.reqHandler.send(req);
             model.continuePrompt("Successfully saved to server");

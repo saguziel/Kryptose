@@ -30,6 +30,7 @@ public final class Blob implements Serializable {
     
     //Creates a Blob and puts in encrypted 
     public Blob(byte[] data, byte[] raw_key){
+
     	blob = (byte[]) data.clone();
     	
     	Cipher c = Cipher.getInstance ("AES256/GCM/NoPadding");
@@ -92,6 +93,7 @@ public final class Blob implements Serializable {
     }
 
     public byte[] getDigest() throws CryptoPrimitiveNotSupportedException{
+
     	//Only to prevent a write originated from an outdated file, so more secure algorithms are not necessary.
         try {
         	MessageDigest md = MessageDigest.getInstance("SHA");

@@ -32,7 +32,9 @@ public class PasswordFile {
 
     ArrayList<Credential> credentials;
     LocalDateTime timestamp;
+
     String username;
+    byte[] oldDigest;
 
     public PasswordFile(String user, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         decryptBlob(b, pass);
@@ -43,6 +45,14 @@ public class PasswordFile {
         this.username = user;
         this.timestamp = LocalDateTime.now();
         this.credentials = new ArrayList<Credential>();
+    }
+
+    public byte[] getOldDigest(){
+        return oldDigest;
+    }
+
+    public void setOldDigest(byte[] digest){
+        this.oldDigest = digest.clone();
     }
 
     public void decryptBlob(Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
