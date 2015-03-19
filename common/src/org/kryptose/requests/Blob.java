@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  * Contains all the encrypted information stored here by a single client.
@@ -109,8 +110,12 @@ public final class Blob implements Serializable {
     	if (this.iv == null) throw new IllegalArgumentException("iv is null");
     	if (this.encBytes == null) throw new IllegalArgumentException("encBytes is null");
     	this.iv = iv.clone();
-    	this.encBytes = iv.clone();
+    	this.encBytes = encBytes.clone();
 	}
 
+	public String toString() {
+		// TODO for debugging purposes
+		return Arrays.toString(encBytes) + "\n" + Arrays.toString(iv);
+	}
     
 }
