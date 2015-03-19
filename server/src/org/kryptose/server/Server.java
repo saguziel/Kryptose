@@ -198,13 +198,15 @@ public class Server {
 
     // consumes thread.
     public void start() {
+
     	// Read properties.
     	this.properties = this.readProperties();
     	
     	// Initialize logger.
     	try {
 			this.logger.addHandler(new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT));
-		} catch (SecurityException e) {
+			this.logger.setLevel(Level.ALL);
+    	} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -231,6 +233,7 @@ public class Server {
         // Start incoming connection listener.
         this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();
+
     }
 
 }

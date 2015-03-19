@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
+
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
@@ -34,10 +35,12 @@ class SecureServerListener{
 		System.setProperty("javax.net.ssl.trustStorePassword", serverKeyStorePassword);
 		
 	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
+
 	    try {
 		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
     	    this.serverListener.setEnabledProtocols(new String[] {"TLSv1.2"});
+
     	    this.serverListener.setEnabledCipherSuites(new String[] {
     	    		"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
     	    		"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
@@ -66,11 +69,12 @@ class SecureServerListener{
 			return; // abort current connection attempt.
 		}
 
+    	Connection connection = new Connection(clientSocket);
     	// Log connection.
-		this.server.getLogger().log(Level.CONFIG, printSocketInfo(clientSocket));
+		this.server.getLogger().log(Level.CONFIG, printSocketInfo(connection));
 
 		// Handle connection.
-		Runnable job = new ClientHandler(server, clientSocket);
+		Runnable job = new ClientHandler(server, clientSocket, connection);
 		Thread t = new Thread(job);
 		t.start();
     }
@@ -80,10 +84,14 @@ class SecureServerListener{
     		this.listenForClient();
     		
     		// Something presumably wants this thread to stop.
-    		if (Thread.interrupted()) break;
+    		if (Thread.interrupted()) {
+                break;
+    		}
     		
     		// Can't do anything once the serversocket is closed.
-    		if (serverListener.isClosed()) break;
+    		if (serverListener.isClosed()) {
+                break;
+    		}
     	}
     }
     
@@ -91,6 +99,7 @@ class SecureServerListener{
      * This method does not return until the server is shut down.
      */
     public void start() {
+
     	try {
     		// Set initial properties
     		this.init();
@@ -121,6 +130,7 @@ class SecureServerListener{
 			}
     	}
     }
+
     
 	
 	/**
@@ -128,30 +138,33 @@ class SecureServerListener{
 	 * TODO: remove.
 	 * @param args
 	 */
-	 private static String printSocketInfo(SSLSocket s) {
+	 private static String printSocketInfo(Connection connection) {
+		 SSLSocket s = connection.getSocket();
 		  StringBuilder builder = new StringBuilder();
 
-	      builder.append("Accepting an incoming connection: " + s.hashCode());
+	      builder.append("Accepting an incoming connection: " + connection.getId());
+	      builder.append("\tTime: " + connection.getTime());
+	      builder.append("\n");
 	      builder.append("\n");
 		  builder.append("Socket class: " + s.getClass());
 	      builder.append("\n");
-		  builder.append("   Remote address = " + s.getInetAddress());
+		  builder.append("\tRemote address = " + s.getInetAddress());
 	      builder.append("\n");
-		  builder.append("   Remote port = " + s.getPort());
+		  builder.append("\tRemote port = " + s.getPort());
 	      builder.append("\n");
-		  builder.append("   Local socket address = " + s.getLocalSocketAddress());
+		  builder.append("\tLocal socket address = " + s.getLocalSocketAddress());
 	      builder.append("\n");
-		  builder.append("   Local address = " + s.getLocalAddress());
+		  builder.append("\tLocal address = " + s.getLocalAddress());
 	      builder.append("\n");
-		  builder.append("   Local port = "+s.getLocalPort());
+		  builder.append("\tLocal port = "+s.getLocalPort());
 	      builder.append("\n");
-		  builder.append("   Need client authentication = " +s.getNeedClientAuth());
+		  builder.append("\tNeed client authentication = " +s.getNeedClientAuth());
 	      builder.append("\n");
 		  
 	      SSLSession ss = s.getSession();
-	      builder.append("   Cipher suite = "+ss.getCipherSuite());
+	      builder.append("\tCipher suite = "+ss.getCipherSuite());
 	      builder.append("\n");
-	      builder.append("   Protocol = "+ss.getProtocol());
+	      builder.append("\tProtocol = "+ss.getProtocol());
 	      builder.append("\n");
 	      builder.append("\n");
 	      
@@ -168,21 +181,22 @@ class SecureServerListener{
 	      builder.append("\n");
 	      builder.append("Server socket class: "+s.getClass());
 	      builder.append("\n");
-	      builder.append("   Socket address = "  +s.getInetAddress());
+	      builder.append("\tSocket address = "  +s.getInetAddress());
 	      builder.append("\n");
-	      builder.append("   Socket port = " +s.getLocalPort());
+	      builder.append("\tSocket port = " +s.getLocalPort());
 	      builder.append("\n");
-	      builder.append("   Need client authentication = " +s.getNeedClientAuth());
+	      builder.append("\tNeed client authentication = " +s.getNeedClientAuth());
 	      builder.append("\n");
-	      builder.append("   Want client authentication = " +s.getWantClientAuth());
+	      builder.append("\tWant client authentication = " +s.getWantClientAuth());
 	      builder.append("\n");
-	      builder.append("   Use client mode = " +s.getUseClientMode());
+	      builder.append("\tUse client mode = " +s.getUseClientMode());
 	      builder.append("\n");
 	      builder.append("\n");
 	      
 	      return builder.toString();
 	   } 
-/*	   
+/*
+
 	   //TODO: remove afterwards. For testing only
 	   public static void main(String[] args) {
 		   		System.setProperty("javax.net.debug", "all");
@@ -192,6 +206,7 @@ class SecureServerListener{
 		   		System.out.println("Server is runningAA");
 		   		
 		   	}
+
 	   
 	    //TODO: remove afterwards. For testing only
 	    public SecureServerListener(int port) {
@@ -200,8 +215,9 @@ class SecureServerListener{
 	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
 	    	this.serverKeyStorePassword = "aaaaaa";
 		}
-		
-		    //TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
+
+
+	//TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
     public SecureServerListener(Server server, int port) {
     	this.port = port;
     	this.server = server;

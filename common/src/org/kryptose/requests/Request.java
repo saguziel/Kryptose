@@ -2,11 +2,14 @@ package org.kryptose.requests;
 
 import java.io.Serializable;
 
+import org.kryptose.server.Connection;
+
 public abstract class Request implements Serializable {
 
     private final User user;
+    private transient Connection connection;
 
-    public Request(User user) {
+	public Request(User user) {
         super();
         this.user = user;
     }
@@ -26,5 +29,13 @@ public abstract class Request implements Serializable {
     }
 
     public abstract String logEntry();
+
+    public Connection getConnection() {
+		return connection;
+	}
+
+	public void setConnection(Connection connection) {
+		this.connection = connection;
+	}
 
 }
