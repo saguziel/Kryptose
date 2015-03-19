@@ -35,23 +35,21 @@ public class ClientController {
         ResponseGet r;
 		try {
 			r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-        if(r.getBlob() == null){
-            model.newPassFile();
-        } else {
-            try {
-                model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
-                model.passfile.setOldDigest(r.getBlob().getDigest());
-            } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
-                model.badMasterPass();
+            if(r.getBlob() == null){
+                model.newPassFile();
+            } else {
+                try {
+                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
+                    model.passfile.setOldDigest(r.getBlob().getDigest());
+                } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
+                    model.badMasterPass();
+                }
             }
-        }
+		} catch (UnknownHostException e1) {
+			model.continuePrompt("The host could not be found");
+		} catch (IOException e1) {
+			model.continuePrompt("There was an SSL error, contact your local library for help");
+		}
     }
 
     public void save() {
