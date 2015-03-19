@@ -12,7 +12,7 @@ public class Client {
 	
     private static final String PROPERTIES_FILE = "clientProperties.xml";
     Properties properties;
-    
+
 
 	private String masterpass = "0";
     private String derivedFilePass = "0";
