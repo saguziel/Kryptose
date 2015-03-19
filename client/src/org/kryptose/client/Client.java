@@ -119,9 +119,14 @@ public class Client {
         view.logout();
     }
 
-    public void setUsername(String name){
+    public boolean setUsername(String name){
+        if (!User.isValidUsername(name)) {
+            view.displayMessage(User.VALID_USERNAME_DOC);
+            return false;
+        }
         this.user = new User(name, new byte[48]); // TODO: set passkey
         view.displayMessage("got username " +name);
+        return true;
     }
 
     public void newPassFile(){

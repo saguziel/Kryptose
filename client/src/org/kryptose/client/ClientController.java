@@ -8,10 +8,7 @@ import java.util.Arrays;
 import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.requests.CryptoErrorException;
 import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
-import org.kryptose.requests.RequestGet;
-import org.kryptose.requests.ResponseGet;
-import org.kryptose.requests.ResponsePut;
-import org.kryptose.requests.RequestPut;
+import org.kryptose.requests.*;
 import org.kryptose.requests.Blob;
 
 public class ClientController {
@@ -63,9 +60,20 @@ public class ClientController {
             RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
 
             @SuppressWarnings("unused")
-            ResponsePut r = (ResponsePut)model.reqHandler.send(req);
-            model.continuePrompt("Successfully saved to server");
-
+            Response r = model.reqHandler.send(req);
+            if (r instanceof ResponsePut) {
+                model.continuePrompt("Successfully saved to server");
+            } else if (r instanceof ResponseInternalServerError) {
+                model.continuePrompt("ERROR: Response not saved due to internal server error");
+            } else if (r instanceof ResponseInvalidCredentials) {
+                model.continuePrompt("Credentials invalid: please logout and try again");
+            } else if (r instanceof ResponseGet) {
+                model.continuePrompt("ERROR: Response may have not been saved. Server returned bad response");
+            } else if (r instanceof ResponseStaleWrite) {
+                model.continuePrompt("ERROR: Response not saved. Please run GET again before using SET");
+            } else {
+                model.continuePrompt("ERROR: Response may not have been saved. Server returned bad response.");
+            }
         } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
             model.badMasterPass();
         } catch (UnknownHostException e1) {
@@ -105,9 +113,13 @@ public class ClientController {
         }
 	}
 
-    public void handleUserName(String userName) {
-        model.setUsername(userName);
-        fetch();
+    public boolean handleUserName(String userName) {
+        if (model.setUsername(userName)) {
+            fetch();
+            return true;
+        } else {
+            return false;
+        }
     }
 
 	public void handlePassword(String pass) {

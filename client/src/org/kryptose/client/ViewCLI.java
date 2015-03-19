@@ -68,18 +68,21 @@ public class ViewCLI extends View {
 	        System.out.print("I'm awaiting input\n> ");
 	        String input = in.nextLine();
 
-            if (cmd == CMD)
-				try {
-					ctrl.handleRequest(input);
-				} catch (CryptoErrorException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (BadBlobException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-            if (cmd == USERNAME)
-	            ctrl.handleUserName(input);
+            if (cmd == CMD) {
+                try {
+                    ctrl.handleRequest(input);
+                } catch (CryptoErrorException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (BadBlobException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            } else if (cmd == USERNAME) {
+                while (!ctrl.handleUserName(input)) {
+                    input = in.nextLine();
+                }
+            }
 	    }
 
 	}
