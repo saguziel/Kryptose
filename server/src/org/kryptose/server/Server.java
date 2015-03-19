@@ -37,6 +37,7 @@ public class Server {
     // INSTANCE METHODS
 
     private Server() {
+
     }
 
     /**
@@ -56,7 +57,9 @@ public class Server {
      * @return
      */
     public Response handleRequest(Request request) {
+
     	Object userLock;
+
     	synchronized (this.userLocks) {
     		userLock = this.userLocks.get(request.getUser());
     		if (userLock == null) {
@@ -64,6 +67,7 @@ public class Server {
     			this.userLocks.put(request.getUser(), userLock);
     		}
     	}
+
     	synchronized (userLock) {
     		// TODO: user authentication.
     		return this.handleRequestWithLocksAcquired(request);
@@ -83,18 +87,22 @@ public class Server {
         } else if (request instanceof RequestTest) { //TODO: remove later, testing only.
         	return this.handleRequestTest((RequestTest) request);
         } else {
-        	//TODO: Maybe include some specific description like "Unrecognized request type"
+        	//TODO: Maybe include some specific description like
+        	// "Unrecognized request type"
             return new ResponseInternalServerError();
         }
     }
 
     private Response handleRequestGet(RequestGet request) {
+
         Response response;
         User u = request.getUser();
 
         boolean hasBlob = this.dataStore.userHasBlob(u);
+
         if (hasBlob) {
             Blob b = this.dataStore.readBlob(u);
+
             if (b == null) {
                 response = new ResponseInternalServerError();
             } else {
@@ -104,6 +112,7 @@ public class Server {
         	// User has not yet stored a blob.
             response = new ResponseGet(null, null);
         }
+
         this.dataStore.writeUserLog(u, new Log(u, request, response));
         return response;
     }
@@ -115,6 +124,7 @@ public class Server {
         Blob toBeWritten = request.getBlob();
 
         DataStore.WriteResult writeResult = this.dataStore.writeBlob(u, toBeWritten, oldDigest);
+
         switch (writeResult) {
             case SUCCESS:
             	try {
@@ -163,15 +173,18 @@ public class Server {
         Properties properties = new Properties();
 
         //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Server settings file
-        // TODO: do not silently set defaults. if something went wrong when reading the configuration file,
+        // TODO: do not silently set defaults. if something went wrong when reading
+        // the configuration file,
         // the admins need to know about it.
         properties.setProperty("NUMBER_OF_THREADS", "8");
         properties.setProperty("PORT_NUMBER", "5002");
+
         properties.setProperty("SERVER_KEY_STORE_FILE", "src/org/kryptose/certificates/ServerKeyStore.jks");
         properties.setProperty("SERVER_KEY_STORE_PASSWORD", "aaaaaa");
 
-        
+
         FileInputStream in;
+
         try {
             in = new FileInputStream(PROPERTIES_FILE);
             Properties XMLProperties = new Properties();
@@ -198,6 +211,7 @@ public class Server {
 
     // consumes thread.
     public void start() {
+
     	// Read properties.
     	this.properties = this.readProperties();
     	
@@ -232,6 +246,7 @@ public class Server {
         // Start incoming connection listener.
         this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();
+        
     }
 
 }
