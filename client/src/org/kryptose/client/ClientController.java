@@ -1,6 +1,7 @@
 package org.kryptose.client;
 
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 
 import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.requests.CryptoErrorException;
@@ -13,13 +14,14 @@ import org.kryptose.requests.Blob;
 
 public class ClientController {
 
-    final String GET = "get";
-    final String SAVE = "save";
-    final String SET = "set";
-    final String DEL = "del";
-    final String QUERY = "query";
-    final String PRINT = "print";
-    final String LOGOUT = "logout";
+    static final String GET = "get";
+    static final String SAVE = "save";
+    static final String SET = "set";
+    static final String DEL = "del";
+    static final String QUERY = "query";
+    static final String PRINT = "print";
+    static final String LOGOUT = "logout";
+    static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, LOGOUT};
 
 	Client model;
 	
@@ -69,7 +71,7 @@ public class ClientController {
         } else if (args[0].equals(PRINT)) {
             model.printAll();
         } else {
-            model.continuePrompt("Successfully saved to server");
+            model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(ClientController.KEYWORDS));
         }
 	}
     public void handleUserName(String userName) {
