@@ -64,10 +64,8 @@ public class FileSystemDataStore implements DataStore {
     		return WriteResult.USER_DOES_NOT_EXIST;
     	}
 
-    	if (oldDigest != null && hasBlob) {
-            if (!Arrays.equals(oldDigest, (this.readBlob(user).getDigest()))) {
-                return WriteResult.STALE_WRITE;
-    		}
+    	if (oldDigest != null && hasBlob && !Arrays.equals(oldDigest, (this.readBlob(user).getDigest()))) {
+            return WriteResult.STALE_WRITE;
     	}
     	
     	// Actually do the write.
