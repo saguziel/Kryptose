@@ -65,7 +65,7 @@ public class ClientController {
             @SuppressWarnings("unused")
             ResponsePut r = (ResponsePut)model.reqHandler.send(req);
             model.continuePrompt("Successfully saved to server");
-            
+
         } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
             model.badMasterPass();
         } catch (UnknownHostException e1) {
