@@ -16,3 +16,16 @@ hs_err_pid*
 
 # Apple directory metadata
 *.DS_Store
+
+# Server data
+server/datastore/*
+
+# Extraneous .gitignores
+server/.gitignore
+client/.gitignore
+common/.gitignore
+
+# bins
+server/bin/*
+client/bin/*
+common/bin/*
