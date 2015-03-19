@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.WeakHashMap;
 
 public class Server {
 
@@ -20,7 +21,7 @@ public class Server {
     private Logger logger;
     private SecureServerListener listener;
     
-    private Map<User, Object> userLocks = Collections.synchronizedMap(new HashMap<User,Object>());
+    private Map<User, Object> userLocks = Collections.synchronizedMap(new WeakHashMap<User,Object>());
 
 
     // STATIC METHODS
@@ -48,22 +49,17 @@ public class Server {
      * @return
      */
     public Response handleRequest(Request request) {
-    	try {
-    		Object userLock;
-    		synchronized (this.userLocks) {
-    			userLock = this.userLocks.get(request.getUser());
-    			if (userLock == null) {
-    				userLock = new Object();
-    				this.userLocks.put(request.getUser(), userLock);
-    			}
-    		}
-    		synchronized (userLock) {
-    			// TODO: user authentication.
-    			return this.handleRequestWithLocksAcquired(request);
+    	Object userLock;
+    	synchronized (this.userLocks) {
+    		userLock = this.userLocks.get(request.getUser());
+    		if (userLock == null) {
+    			userLock = new Object();
+    			this.userLocks.put(request.getUser(), userLock);
     		}
     	}
-    	finally {
-    		this.userLocks.remove(request.getUser());
+    	synchronized (userLock) {
+    		// TODO: user authentication.
+    		return this.handleRequestWithLocksAcquired(request);
     	}
     }
     
