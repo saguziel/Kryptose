@@ -53,6 +53,7 @@ class ClientHandler implements Runnable {
 	 */
 	private Request listen() {
 		ObjectInputStream in=null;
+
 		try {
 			in = new ObjectInputStream(sock.getInputStream());
 			return (Request)in.readObject();

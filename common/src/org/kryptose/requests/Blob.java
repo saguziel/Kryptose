@@ -19,10 +19,12 @@ public final class Blob implements Serializable {
     private byte[] encBytes;
     private byte[] iv;
 
+
 /*    
  * 	TODO: remove after server code is finalized.
+ *
     //Constructor to create a Blob out of an (encrypted) file. Used only by the server (I think)
-    public Blob(String filename) throws IOException{
+    public Blob(String filename) throws IOException {
     	blob = Files.readAllBytes(Paths.get(filename));
     }
     
@@ -33,8 +35,10 @@ public final class Blob implements Serializable {
     	Cipher c = Cipher.getInstance ("AES256/GCM/NoPadding");
     	final int blockSize = c.getBlockSize();
     	byte[] ivData = new byte[blockSize];
+
     	final SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
     	rnd.nextBytes(ivData);
+
     	GCMParameterSpec params = new GCMParameterSpec(blockSize * Byte.SIZE, ivData);
     	SecureRandom sr = new SecureRandom();
     	

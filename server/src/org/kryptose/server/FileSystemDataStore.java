@@ -24,6 +24,7 @@ public class FileSystemDataStore implements DataStore {
 	private static final File SYSTEM_LOG_FILE = new File(DATASTORE_PREFIX + "kryptose.log");
 
     FileSystemDataStore() {
+
     }
 
     private static File getUserBlobFile(User user) {
@@ -72,8 +73,10 @@ public class FileSystemDataStore implements DataStore {
     	
     	// Actually do the write.
     	File file = getUserBlobFile(user);
+
     	//TODO: Is this necessary? I think FileOutputStream creates the file if it doesn't exists.
 		ensureExists(file);
+
     	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));) {
 			oos.writeObject(blob);
 		} catch (IOException e) {
@@ -87,8 +90,10 @@ public class FileSystemDataStore implements DataStore {
 
     @Override
 	public Blob readBlob(User user) {
+
     	// Actually do the read.
     	File file = getUserBlobFile(user);
+
     	try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));) {
 			return (Blob) ois.readObject();
 		} catch (IOException e) {
@@ -104,10 +109,12 @@ public class FileSystemDataStore implements DataStore {
     
     @Override
 	public WriteResult writeUserLog(User user, Log log) {
+
     	File file = getUserLogFile(user);
 		ensureExists(file);
     	//try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
 		//	oos.writeObject(log);
+
     	try (FileWriter fw = new FileWriter(file, true);) {
 			fw.write(log.toString());
 		} catch (IOException e) {
@@ -115,12 +122,15 @@ public class FileSystemDataStore implements DataStore {
 			e.printStackTrace();
 			return WriteResult.INTERNAL_ERROR;
 		}
+
         return WriteResult.SUCCESS;
     }
     
     @Override
     public WriteResult writeSystemLog(Log log) {
+
     	File file = getSystemLogFile();
+
     	synchronized(SYSTEM_LOG_FILE) {
     		ensureExists(file);
     		//try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
@@ -137,9 +147,11 @@ public class FileSystemDataStore implements DataStore {
     }
     
     private void ensureExists(File file) {
+
     	//TODO: We do not check for mkdirs' return value. If it is 0, the operation failed.
     	//The error will be caught later (createNewFile will return IOEXCEPTION, but this is unhandled.
     	file.getParentFile().mkdirs();
+        
 		try {
 			file.createNewFile();
 		} catch (IOException e1) {
