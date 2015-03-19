@@ -73,9 +73,10 @@ public class Server {
             return this.handleRequestGet((RequestGet) request);
         } else if (request instanceof RequestPut) {
             return this.handleRequestPut((RequestPut)request);
-        } else if (request instanceof RequestTest) {
+        } else if (request instanceof RequestTest) { //TODO: remove later, testing only.
         	return this.handleRequestTest((RequestTest) request);
         } else {
+        	//TODO: Maybe include some specific description like "Unrecognized request type"
             return new ResponseInternalServerError();
         }
     }
@@ -120,11 +121,11 @@ public class Server {
             case STALE_WRITE:
             	try {
                     response = new ResponseStaleWrite(u, oldDigest, toBeWritten.getDigest());
-                } catch (CryptoPrimitiveNotSupportedException e) {
+                }catch (CryptoPrimitiveNotSupportedException e) {
                     // TODO Auto-generated catch block
             		e.printStackTrace();
                     response = new ResponseInternalServerError();
-                }
+                }*/
                 break;
             case USER_DOES_NOT_EXIST: // we should have authenticated by now.
             case INTERNAL_ERROR:
@@ -136,6 +137,8 @@ public class Server {
         return response;
     }
     
+    
+    //TODO: remove later (testing only)
     private Response handleRequestTest(RequestTest request) {
     	return new ResponseTest(request.toString());
     }
