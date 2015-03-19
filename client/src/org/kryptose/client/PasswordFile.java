@@ -32,7 +32,9 @@ public class PasswordFile {
 
     ArrayList<Credential> credentials;
     LocalDateTime timestamp;
+
     String username;
+    byte[] oldDigest;
 
     public PasswordFile(String user, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         decryptBlob(b, pass);
@@ -43,6 +45,14 @@ public class PasswordFile {
         this.username = user;
         this.timestamp = LocalDateTime.now();
         this.credentials = new ArrayList<Credential>();
+    }
+
+    public byte[] getOldDigest(){
+        return oldDigest;
+    }
+
+    public void setOldDigest(byte[] digest){
+        this.oldDigest = digest.clone();
     }
 
     public void decryptBlob(Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
@@ -88,6 +98,7 @@ public class PasswordFile {
         }
         return null;
     }
+
     // returns true if value overwritten, false if new val inserted
     public Boolean setVal(String dom, String newVal){
         for(Credential c : credentials) {
@@ -99,6 +110,7 @@ public class PasswordFile {
         credentials.add(new Credential(username, newVal, dom));
         return false;
     }
+
     // returns true iff value associated w/ dom successfully deleted
     public Boolean delVal(String dom){
         int toRem = -1;
@@ -114,6 +126,7 @@ public class PasswordFile {
         }
         return false;
     }
+
     public ArrayList<Credential> toList(){
         return credentials;
     }
@@ -188,19 +201,22 @@ public class PasswordFile {
     	
     	try{
     	
-    	Blob b = rawBlobCreate("EncryptionTestAA".getBytes(), myRawKey);
-    	System.out.println("Decrypted: " + new String(rawBlobDecrypt(b, myRawKey)));
+    	    Blob b = rawBlobCreate("EncryptionTestAA".getBytes(), myRawKey);
+    	    System.out.println("Decrypted: " + new String(rawBlobDecrypt(b, myRawKey)));
     	
-    	byte[] raw_ciphertext = b.getEncBytes();
-    	byte[] iv = b.getIv();
+    	    byte[] raw_ciphertext = b.getEncBytes();
+    	    byte[] iv = b.getIv();
     	
-    	raw_ciphertext[2] = (byte) 0;
+    	    raw_ciphertext[2] = (byte) 0;
     	
-    	Blob b_tampered = new Blob(raw_ciphertext, iv);
-    	System.out.println("Decrypted: " + new String(rawBlobDecrypt(b_tampered, myRawKey)));
-    	}catch(Exception e){
+    	    Blob b_tampered = new Blob(raw_ciphertext, iv);
+    	    System.out.println("Decrypted: " + new String(rawBlobDecrypt(b_tampered, myRawKey)));
+
+    	} catch(Exception e){
     		e.printStackTrace();
     	}
+
     }
+
 
 }

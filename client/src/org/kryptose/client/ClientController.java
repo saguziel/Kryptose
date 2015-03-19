@@ -30,6 +30,7 @@ public class ClientController {
 	public ClientController(Client c) {
 		this.model = c;
 	}
+
 	public void fetch() {
         ResponseGet r;
 		try {
@@ -46,16 +47,19 @@ public class ClientController {
         } else {
             try {
                 model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
+                model.passfile.setOldDigest(r.getBlob().getDigest());
             } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
                 model.badMasterPass();
             }
         }
     }
+
     public void save() {
         try {
             Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
             //TODO: use correct digest
-            RequestPut req = new RequestPut(model.user, newBlob, "".getBytes());
+            RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
+
             @SuppressWarnings("unused")
             ResponsePut r = (ResponsePut)model.reqHandler.send(req);
             model.continuePrompt("Successfully saved to server");
@@ -63,6 +67,7 @@ public class ClientController {
             model.badMasterPass();
         }
     }
+
 	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 		String[] args = request.trim().toLowerCase().split("\\s+");
         if (args[0].equals(GET)) {
@@ -80,6 +85,7 @@ public class ClientController {
             save();
         } else if (args[0].equals(DEL)) {
             model.delVal(args[1]);
+            save();
         } else if (args[0].equals(LOGOUT)) {
             model.logout();
         } else if (args[0].equals(PRINT)) {
@@ -88,13 +94,17 @@ public class ClientController {
             model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(ClientController.KEYWORDS));
         }
 	}
+
     public void handleUserName(String userName) {
         model.setUsername(userName);
         fetch();
     }
+
 	public void handlePassword(String pass) {
 		
 	}
-	
+
+
+
 	
 }

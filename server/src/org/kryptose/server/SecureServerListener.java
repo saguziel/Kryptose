@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
+
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
@@ -34,10 +35,12 @@ class SecureServerListener{
 		System.setProperty("javax.net.ssl.trustStorePassword", serverKeyStorePassword);
 		
 	    ServerSocketFactory ssocketFactory = SSLServerSocketFactory.getDefault();
+
 	    try {
 		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
     	    this.serverListener.setEnabledProtocols(new String[] {"TLSv1.2"});
+
     	    this.serverListener.setEnabledCipherSuites(new String[] {
     	    		"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
     	    		"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
@@ -80,10 +83,12 @@ class SecureServerListener{
     		this.listenForClient();
     		
     		// Something presumably wants this thread to stop.
-    		if (Thread.interrupted()) break;
+    		if (Thread.interrupted())
+                break;
     		
     		// Can't do anything once the serversocket is closed.
-    		if (serverListener.isClosed()) break;
+    		if (serverListener.isClosed())
+                break;
     	}
     }
     
@@ -91,6 +96,7 @@ class SecureServerListener{
      * This method does not return until the server is shut down.
      */
     public void start() {
+
     	try {
     		// Set initial properties
     		this.init();
@@ -121,6 +127,7 @@ class SecureServerListener{
 			}
     	}
     }
+
     
 	
 	/**
@@ -182,7 +189,8 @@ class SecureServerListener{
 	      
 	      return builder.toString();
 	   } 
-/*	   
+/*
+
 	   //TODO: remove afterwards. For testing only
 	   public static void main(String[] args) {
 		   		System.setProperty("javax.net.debug", "all");
@@ -192,6 +200,7 @@ class SecureServerListener{
 		   		System.out.println("Server is runningAA");
 		   		
 		   	}
+
 	   
 	    //TODO: remove afterwards. For testing only
 	    public SecureServerListener(int port) {
@@ -200,8 +209,9 @@ class SecureServerListener{
 	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
 	    	this.serverKeyStorePassword = "aaaaaa";
 		}
-		
-		    //TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
+
+
+	//TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
     public SecureServerListener(Server server, int port) {
     	this.port = port;
     	this.server = server;

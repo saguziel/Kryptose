@@ -18,6 +18,8 @@ public class Client {
     private String derivedFilePass = "0";
     User user;
 	View view;
+
+
     RequestHandler reqHandler;
     PasswordFile passfile;
     LocalDateTime lastmod;
@@ -69,29 +71,34 @@ public class Client {
         if(succ){
             view.displayMessage("password for key: " + dom + " successfully set");
         } else {
-            view.displayMessage("password for key: "+ dom + " successfully created");
+            view.displayMessage("password for key: " + dom + " successfully created");
         }
     }
+
     public void delVal(String dom){
         Boolean succ = this.passfile.delVal(dom);
         if(succ){
-            view.promptCmd("password for key: "+ dom + " successfully set");
+            view.displayMessage("password for key: " + dom + " successfully set");
         } else {
-            view.promptCmd("there is no password associated with key: "+ dom);
+            view.displayMessage("there is no password associated with key: "+ dom);
         }
     }
+
     public void continuePrompt(String s) {
         view.promptCmd(s);
     }
+
     public void badMasterPass() {
         view.promptCmd("Invalid login credentials");
     }
+
     public void printAll() {
         for(Credential c : passfile.credentials) {
             System.out.println("Domain: "+c.getDomain()+" Password: "+c.getPassword());
         }
         view.promptCmd();
     }
+
     public void getCredential(String key) {
         String password = passfile.getVal(key);
         if (password == null)
@@ -99,9 +106,11 @@ public class Client {
         else
             view.promptCmd("Password for domain " + key + " is: " + password);
     }
+
     public LocalDateTime getLastMod() {
         return lastmod;
     }
+
     public Boolean hasPassFile(){
         return passfile != null;
     }
@@ -123,9 +132,11 @@ public class Client {
     void setMasterpass(String pass){
         this.masterpass = pass;
     }
+
     String getMasterpass() {
         return masterpass;
     }
+
     String getFilepass() {
         return derivedFilePass;
     }
@@ -134,7 +145,8 @@ public class Client {
 	public void start() {
         view.promptUserName();
 	}
-	
+
+
 	/**
 	 * @param args
 	 */
@@ -145,5 +157,7 @@ public class Client {
 		client.view = view;
 		client.start();
 	}
+
+
 
 }

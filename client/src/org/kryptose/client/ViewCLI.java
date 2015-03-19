@@ -46,10 +46,12 @@ public class ViewCLI extends View {
         System.out.println(s);
         awaitInput(CMD);
 	}
+
     @Override
     void displayMessage(String s) {
         System.out.println(s);
     }
+
 	@Override
 	void logout() {
         System.out.println("Logging out!");

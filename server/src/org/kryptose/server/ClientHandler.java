@@ -6,6 +6,7 @@ import org.kryptose.requests.Response;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
 import java.net.Socket;
 import java.util.logging.Level;
 
@@ -53,6 +54,7 @@ class ClientHandler implements Runnable {
 	 */
 	private Request listen() {
 		ObjectInputStream in=null;
+
 		try {
 			in = new ObjectInputStream(sock.getInputStream());
 			return (Request)in.readObject();
