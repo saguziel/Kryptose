@@ -51,15 +51,9 @@ public class ClientController {
             try {
                 Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
                 //TODO: use correct digest
-<<<<<<< HEAD
-                System.out.println(newBlob);
                 RequestPut req = new RequestPut(model.user, newBlob, "".getBytes());
                 @SuppressWarnings("unused")
 				ResponsePut r = (ResponsePut)model.reqHandler.send(req);
-=======
-                ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, "".getBytes()));
-
->>>>>>> branch 'master' of https://github.com/saguziel/Kryptose.git
             } catch (PasswordFile.BadBlobException e) {
                 model.badMasterPass();
             }
