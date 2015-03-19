@@ -72,6 +72,7 @@ public class Client {
 
     public void setPassfile(PasswordFile pf){
         this.passfile = pf;
+        view.promptCmd("Password file successfully fetched");
     }
 
     public void setVal(String dom, String newVal){
@@ -91,7 +92,9 @@ public class Client {
             view.promptCmd("there is no password associated with key: "+ dom);
         }
     }
-
+    public void continuePrompt(String s) {
+        view.promptCmd(s);
+    }
     public void badMasterPass() {
         view.promptCmd("Invalid login credentials");
     }
@@ -101,7 +104,6 @@ public class Client {
         if (password == null)
             view.promptCmd("No password associated with domain");
         view.promptCmd("Password for domain " + key + " is: " + password);
-
     }
     public LocalDateTime getLastMod() {
         return lastmod;
