@@ -1,15 +1,11 @@
 package org.kryptose.client;
 
+import org.kryptose.client.PasswordFile.BadBlobException;
+import org.kryptose.requests.*;
+
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-
-import org.kryptose.client.PasswordFile.BadBlobException;
-import org.kryptose.requests.CryptoErrorException;
-import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
-import org.kryptose.requests.*;
-import org.kryptose.requests.Blob;
 
 public class ClientController {
 
@@ -113,12 +109,11 @@ public class ClientController {
         }
 	}
 
-    public boolean handleUserName(String userName) {
+    public void handleUserName(String userName) {
         if (model.setUsername(userName)) {
             fetch();
-            return true;
         } else {
-            return false;
+            model.start();
         }
     }
 
