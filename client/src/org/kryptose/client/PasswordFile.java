@@ -53,7 +53,7 @@ public class PasswordFile {
             ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
             ObjectInputStream objStream = new ObjectInputStream(byteStream);
             credentials = (ArrayList<Credential>) objStream.readObject();
-            Date timestamp = (Date) objStream.readObject();
+            timestamp = (LocalDateTime) objStream.readObject();
         } catch (ClassNotFoundException | IOException e) {
             throw new BadBlobException("Bad blob");
         }

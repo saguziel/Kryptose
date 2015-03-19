@@ -14,7 +14,7 @@ import org.kryptose.requests.Blob;
 public class ClientController {
 
     final String GET = "get";
-    final String PUT = "save";
+    final String SAVE = "save";
     final String SET = "set";
     final String DEL = "del";
     final String QUERY = "query";
@@ -47,13 +47,14 @@ public class ClientController {
                 model.continuePrompt("Please run get first");
             }
             model.getCredential(args[1]);
-        } else if (args[0].equals(PUT)) {
+        } else if (args[0].equals(SAVE)) {
             try {
                 Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
                 //TODO: use correct digest
                 RequestPut req = new RequestPut(model.user, newBlob, "".getBytes());
                 @SuppressWarnings("unused")
 				ResponsePut r = (ResponsePut)model.reqHandler.send(req);
+                model.continuePrompt("Successfully saved to server");
             } catch (PasswordFile.BadBlobException e) {
                 model.badMasterPass();
             }
@@ -63,6 +64,8 @@ public class ClientController {
             model.delVal(args[1]);
         } else if (args[0].equals(LOGOUT)) {
             model.logout();
+        } else {
+            model.continuePrompt("Successfully saved to server");
         }
 	}
     public void handleUserName(String userName) {
