@@ -1,5 +1,7 @@
 package org.kryptose.client;
 
+import java.io.ObjectOutputStream;
+
 import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.requests.CryptoErrorException;
 import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
@@ -43,7 +45,10 @@ public class ClientController {
             try {
                 Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
                 //TODO: use correct digest
-                ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, "".getBytes()));
+                System.out.println(newBlob);
+                RequestPut req = new RequestPut(model.user, newBlob, "".getBytes());
+                @SuppressWarnings("unused")
+				ResponsePut r = (ResponsePut)model.reqHandler.send(req);
             } catch (PasswordFile.BadBlobException e) {
                 model.badMasterPass();
             }

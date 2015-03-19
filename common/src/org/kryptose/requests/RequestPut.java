@@ -25,11 +25,11 @@ public final class RequestPut extends Request {
         return oldDigest;
     }
 
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+    /*private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
         // Check that our invariants are satisfied
         this.validateInstance();
-    }
+    }*/
 
 	@Override
 	public void validateInstance() {

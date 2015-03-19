@@ -1,10 +1,12 @@
 package org.kryptose.client;
 
+import java.io.Serializable;
+
 /**
  * A set of credentials.
  *
  */
-public class Credential {
+public class Credential implements Serializable {
 	
 	private String username;
 	private String password;

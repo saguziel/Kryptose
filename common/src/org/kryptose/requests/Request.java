@@ -11,7 +11,6 @@ public abstract class Request implements Serializable {
     public Request(User user) {
         super();
         this.user = user;
-        this.validateInstance();
     }
 
     public final User getUser() {
@@ -19,11 +18,11 @@ public abstract class Request implements Serializable {
         return user;
     }
 
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+    /*private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
         // Check that our invariants are satisfied
         this.validateInstance();
-    }
+    }*/
 
     /**
      * Checks that the instance's fields satisfy specified invariants

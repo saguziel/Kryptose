@@ -56,7 +56,7 @@ public class FileSystemDataStore implements DataStore {
      */
     @Override
 	public WriteResult writeBlob(User user, Blob blob, byte[] oldDigest) {
-    	boolean hasBlob = this.userHasBlob(user);
+    	/*boolean hasBlob = this.userHasBlob(user);
     	if (oldDigest == null && hasBlob) {
     		return WriteResult.STALE_WRITE;
     	}
@@ -68,7 +68,7 @@ public class FileSystemDataStore implements DataStore {
     		if (!oldDigest.equals(this.readBlob(user).getDigest())) {
     			return WriteResult.STALE_WRITE;
     		}
-    	}
+    	} */ //TODO
     	
     	// Actually do the write.
     	File file = getUserBlobFile(user);
@@ -86,9 +86,8 @@ public class FileSystemDataStore implements DataStore {
 
     @Override
 	public Blob readBlob(User user) {
-    	// Actually do the write.
+    	// Actually do the read.
     	File file = getUserBlobFile(user);
-		ensureExists(file);
     	try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));) {
 			return (Blob) ois.readObject();
 		} catch (IOException e) {
