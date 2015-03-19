@@ -98,12 +98,18 @@ public class Client {
     public void badMasterPass() {
         view.promptCmd("Invalid login credentials");
     }
-
+    public void printAll() {
+        for(Credential c : passfile.credentials) {
+            System.out.println("Domain: "+c.getDomain()+" Password: "+c.getPassword());
+        }
+        view.promptCmd();
+    }
     public void getCredential(String key) {
         String password = passfile.getVal(key);
         if (password == null)
-            view.promptCmd("No password associated with domain");
-        view.promptCmd("Password for domain " + key + " is: " + password);
+            view.promptCmd("No password associated with key: "+key);
+        else
+            view.promptCmd("Password for domain " + key + " is: " + password);
     }
     public LocalDateTime getLastMod() {
         return lastmod;

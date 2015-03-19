@@ -82,7 +82,7 @@ public class PasswordFile {
 
     public String getVal(String key){
         for(Credential c : credentials){
-            if(c.getDomain() == key){
+            if(c.getDomain().equals(key)){
                 return c.getPassword();
             }
         }
@@ -91,7 +91,7 @@ public class PasswordFile {
     // returns true if value overwritten, false if new val inserted
     public Boolean setVal(String dom, String newVal){
         for(Credential c : credentials) {
-            if (c.getDomain() == dom) {
+            if (c.getDomain().equals(dom)) {
                 c.setPassword(newVal);
                 return true;
             }

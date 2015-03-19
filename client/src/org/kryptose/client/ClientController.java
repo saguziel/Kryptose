@@ -18,6 +18,7 @@ public class ClientController {
     final String SET = "set";
     final String DEL = "del";
     final String QUERY = "query";
+    final String PRINT = "print";
     final String LOGOUT = "logout";
 
 	Client model;
@@ -45,8 +46,9 @@ public class ClientController {
         } else if (args[0].equals(QUERY)) {
             if(!model.hasPassFile()) {
                 model.continuePrompt("Please run get first");
+            } else {
+                model.getCredential(args[1]);
             }
-            model.getCredential(args[1]);
         } else if (args[0].equals(SAVE)) {
             try {
                 Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
@@ -64,6 +66,8 @@ public class ClientController {
             model.delVal(args[1]);
         } else if (args[0].equals(LOGOUT)) {
             model.logout();
+        } else if (args[0].equals(PRINT)) {
+            model.printAll();
         } else {
             model.continuePrompt("Successfully saved to server");
         }
