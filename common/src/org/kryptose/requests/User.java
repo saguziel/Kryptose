@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
  */
 public final class User implements Comparable<User>, Serializable {
 
+	//TODO: perhaps too restrictive. I cannot use an email address or even an uppercase letter.
 	public static final String VALID_USERNAME_DOC =
 			"Usernames must be 3-15 characters, consisting only of lowercase Latin letters a-z, Arabic digits 0-9, hyphen, and underscore.";
 	public static final Pattern VALID_USERNAME_PATTERN = Pattern.compile("^[a-z0-9_-]{3,15}$");  
@@ -41,6 +42,8 @@ public final class User implements Comparable<User>, Serializable {
     	// Ideally the passkey would be erased from memory as soon as the user
     	// is authenticated, but that's infeasible to control precisely given
     	// Java's memory model anyway.
+    	//
+    	// TODO Perhaps we could have the passkey only be released in hashed form (even though it is shipped in clear)
         return passkey.clone();
     }
     

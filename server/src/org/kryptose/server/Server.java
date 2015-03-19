@@ -176,7 +176,7 @@ public class Server {
             in = new FileInputStream(PROPERTIES_FILE);
             Properties XMLProperties = new Properties();
             XMLProperties.loadFromXML(in);
-            this.properties.putAll(XMLProperties);
+            properties.putAll(XMLProperties);
             in.close();
         } catch (IOException e) {
         	//TODO: Unable to read the properties file. Maybe log the error?
@@ -204,6 +204,7 @@ public class Server {
     	// Initialize logger.
     	try {
 			this.logger.addHandler(new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT));
+			this.logger.setLevel(Level.ALL);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

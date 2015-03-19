@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Log implements Serializable {
+	//TODO: So far the only thing you can log are requests.
+	// We need a broader way to log events (like ssl connections, ip addresses)
 
     String message;
     User user;
