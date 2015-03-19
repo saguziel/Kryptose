@@ -32,7 +32,9 @@ public class ClientController {
 	}
 
 	public void fetch() {
+
         ResponseGet r;
+
 		try {
 			r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
             if(r.getBlob() == null){
@@ -50,9 +52,11 @@ public class ClientController {
 		} catch (IOException e1) {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
 		}
+
     }
 
     public void save() {
+
         try {
             Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
             //TODO: use correct digest
@@ -61,13 +65,21 @@ public class ClientController {
             @SuppressWarnings("unused")
             ResponsePut r = (ResponsePut)model.reqHandler.send(req);
             model.continuePrompt("Successfully saved to server");
+            
         } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
             model.badMasterPass();
+        } catch (UnknownHostException e1) {
+            model.continuePrompt("The host could not be found");
+        } catch (IOException e1) {
+            model.continuePrompt("There was an SSL error, contact your local library for help");
         }
+
     }
 
 	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
+
 		String[] args = request.trim().toLowerCase().split("\\s+");
+
         if (args[0].equals(GET)) {
             fetch();
         } else if (args[0].equals(QUERY)) {
