@@ -1,6 +1,8 @@
 package org.kryptose.client;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import org.kryptose.client.PasswordFile.BadBlobException;
@@ -29,7 +31,16 @@ public class ClientController {
 		this.model = c;
 	}
 	public void fetch() {
-        ResponseGet r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
+        ResponseGet r;
+		try {
+			r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
         if(r.getBlob() == null){
             model.newPassFile();
         } else {
