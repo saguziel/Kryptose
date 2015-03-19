@@ -136,6 +136,8 @@ public class FileSystemDataStore implements DataStore {
     }
     
     private void ensureExists(File file) {
+    	//TODO: We do not check for mkdirs' return value. If it is 0, the operation failed.
+    	//The error will be caught later (createNewFile will return IOEXCEPTION, but this is unhandled.
     	file.getParentFile().mkdirs();
 		try {
 			file.createNewFile();

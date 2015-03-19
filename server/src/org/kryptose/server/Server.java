@@ -121,11 +121,11 @@ public class Server {
             case STALE_WRITE:
             	try {
                     response = new ResponseStaleWrite(u, oldDigest, toBeWritten.getDigest());
-                }catch (CryptoPrimitiveNotSupportedException e) {
+                } catch (CryptoPrimitiveNotSupportedException e) {
                     // TODO Auto-generated catch block
             		e.printStackTrace();
                     response = new ResponseInternalServerError();
-                }*/
+                }
                 break;
             case USER_DOES_NOT_EXIST: // we should have authenticated by now.
             case INTERNAL_ERROR:

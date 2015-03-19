@@ -13,6 +13,7 @@ package org.kryptose.server;
  * 
  * @author jshi
  */
+// TODO: ??? What do we do with this??
 public class Logger {
 	
 }
