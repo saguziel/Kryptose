@@ -5,32 +5,39 @@ import org.kryptose.requests.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.WeakHashMap;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Server {
 
     private static final String PROPERTIES_FILE = "serverProperties.xml";
+    
+    private static final String LOGGER_NAME = "org.kryptose.server";
+    // TODO make configurable?
+    private static final int LOG_FILE_COUNT = 20;
+    private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
+    private static final String LOG_FILE_NAME = "datastore/kryptose.%g.%u.log";
+    
     // INSTANCE FIELDS
     Properties properties;
 
     private DataStore dataStore = new FileSystemDataStore();
-    private Logger logger;
+    private Logger logger = Logger.getLogger(LOGGER_NAME);
     private SecureServerListener listener;
     
     private Map<User, Object> userLocks = Collections.synchronizedMap(new WeakHashMap<User,Object>());
 
 
-    // STATIC METHODS
+    // INSTANCE METHODS
 
     private Server() {
     }
-
-
-    // INSTANCE METHODS
 
     /**
      * Main Kryptose server program.
@@ -148,12 +155,12 @@ public class Server {
     }
 
     public Logger getLogger() {
-        // TODO Server Logger
-        return null;
+        return this.logger;
     }
-
-    public void start() {
-        this.properties = new Properties();
+    
+    // TODO: I copied and pasted this without taking note of preconditions/postconditions.
+    private Properties readProperties() {
+        Properties properties = new Properties();
 
         //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Server settings file
         // TODO: do not silently set defaults. if something went wrong when reading the configuration file,
@@ -184,12 +191,44 @@ public class Server {
                 e1.printStackTrace();
             }
         }
+        
+        return properties;
+    	
+    }
 
+    // consumes thread.
+    public void start() {
+    	// Read properties.
+    	this.properties = this.readProperties();
+    	
+    	// Initialize logger.
+    	try {
+			this.logger.addHandler(new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT));
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	// Set uncaught exception handler
+    	Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				String errorMsg = "Unexpected error in main server thread/incoming connection handler.";
+				System.err.println(errorMsg);
+				e.printStackTrace();
+				Server.this.getLogger().log(Level.SEVERE, errorMsg, e);
+			}
+    	});
+    	
         // TODO catch parsing errors and give informative feedback if properties file is invalid.
         int portNumber = Integer.parseInt(properties.getProperty("PORT_NUMBER"));
         String keyStoreFile = properties.getProperty("SERVER_KEY_STORE_FILE");
         String keyStorePass = properties.getProperty("SERVER_KEY_STORE_PASSWORD");
         
+        // Start incoming connection listener.
         this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();
     }

@@ -5,6 +5,9 @@ package org.kryptose.requests;
  */
 public final class ResponseInternalServerError extends Response {
 
+	// TODO: make a constructor that takes an error message string.
+	// change all uses of the default constructor to include an error message.
+	
     public String logEntry() {
     	//TODO: Maybe extend internal server error to include a more specific message in addition to this generic one.
     	// Such a message could be sent to the client as well.

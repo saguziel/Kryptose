@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Level;
 
 /**
  * Runs a thread that listens for requests from a client, and sends back responses when available.
@@ -26,6 +27,7 @@ class ClientHandler implements Runnable {
 		try {
 			// Listen for request.
 			Request request = listen();
+			if (request == null) return;
 
 			// Process request.
 			Response resp = this.server.handleRequest(request);
@@ -37,9 +39,9 @@ class ClientHandler implements Runnable {
 			try {
 				if (!sock.isClosed()) sock.close();
 			} catch (IOException e) {
-				// Give up.
-				// TODO: log this error?
-				e.printStackTrace();
+				String errorMsg = "Error flushing/closing a connection with a client. "
+						+ "\nConnection: " + sock.hashCode();
+				this.server.getLogger().log(Level.INFO, errorMsg, e);
 			}
 		}
 
@@ -55,12 +57,14 @@ class ClientHandler implements Runnable {
 			in = new ObjectInputStream(sock.getInputStream());
 			return (Request)in.readObject();
 		} catch (IOException ex) {
-        	//TODO: This is probably an SSL Error. How do we handle it?
-			ex.printStackTrace();
+			String errorMsg = "Error reading a client's request. Aborting.";
+			this.server.getLogger().log(Level.INFO, errorMsg, ex);
 			return null;
 		} catch (ClassNotFoundException | ClassCastException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String errorMsg = "Client sent unexpected object in connection. " +
+					"Might be attempt to hack server. Aborting."
+					+ "\nConnection: " + sock.hashCode();;
+			this.server.getLogger().log(Level.WARNING, errorMsg, e);
 			return null;
 		} 
 	}
@@ -74,8 +78,9 @@ class ClientHandler implements Runnable {
 			ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
 			out.writeObject(response);
 		} catch (IOException ex) {
-        	//TODO: This is probably an SSL Error. How do we handle it?
-			ex.printStackTrace();
+			String errorMsg = "Error sending response to client request."
+					+ "\nConnection: " + sock.hashCode();
+			this.server.getLogger().log(Level.INFO, errorMsg, ex);
 		}
 	}
 

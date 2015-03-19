@@ -2,6 +2,7 @@ package org.kryptose.server;
 
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
@@ -37,33 +38,41 @@ class SecureServerListener{
 		    this.serverListener = (SSLServerSocket) ssocketFactory.createServerSocket(port);
 		    
     	    this.serverListener.setEnabledProtocols(new String[] {"TLSv1.2"});
-    	    this.serverListener.setEnabledCipherSuites(new String[] {"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
+    	    this.serverListener.setEnabledCipherSuites(new String[] {
+    	    		"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+    	    		"TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+    	    		});
 		    
-		    //TODO: remove afterwards
-		    printServerSocketInfo(serverListener);
+    	    this.server.getLogger().log(Level.CONFIG, printServerSocketInfo(this.serverListener));
 		    
         } catch (IOException ex) {
-        	//TODO: This is probably an SSL Error. How do we handle it?
-        	ex.printStackTrace(); 
+    		String errorMsg = "Error setting up socket to listen to incoming connections... exiting program.";
+			this.server.getLogger().log(Level.SEVERE, errorMsg, ex);
+			//throw new RuntimeException(); // TODO need a better way to do this.
+			System.exit(2); // TODO need a better way to do this?
         }
     	
     }
     
     private void listenForClient() {
+    	SSLSocket clientSocket;
+    	
+    	// Wait for and accept connection.
     	try {
-    		SSLSocket clientSocket = (SSLSocket) serverListener.accept();
-
-    		//TODO: remove afterwards
-    		printSocketInfo(clientSocket);
-
-    		Runnable job = new ClientHandler(server, clientSocket);
-    		Thread t = new Thread(job);
-    		t.start();
-    		//System.out.println("got a connection");
+    		clientSocket = (SSLSocket) serverListener.accept();
     	} catch (IOException ex) {
-			//TODO: This is probably an SSL Error. How do we handle it?
-			ex.printStackTrace(); 
+    		String errorMsg = "Error accepting an incoming connection; ignoring.";
+			this.server.getLogger().log(Level.INFO, errorMsg, ex);
+			return; // abort current connection attempt.
 		}
+
+    	// Log connection.
+		this.server.getLogger().log(Level.CONFIG, printSocketInfo(clientSocket));
+
+		// Handle connection.
+		Runnable job = new ClientHandler(server, clientSocket);
+		Thread t = new Thread(job);
+		t.start();
     }
     
     private void run() {
@@ -94,8 +103,8 @@ class SecureServerListener{
         		try {
     				this.serverListener.close();
     			} catch (IOException e) {
-    				// TODO Auto-generated catch block
-    				e.printStackTrace();
+    	    		String errorMsg = "Error closing server socket.";
+    				this.server.getLogger().log(Level.WARNING, errorMsg, e);
     			}
         	}
     	}
@@ -107,8 +116,8 @@ class SecureServerListener{
     		try {
 				this.serverListener.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	    		String errorMsg = "Error closing server socket.";
+				this.server.getLogger().log(Level.WARNING, errorMsg, e);
 			}
     	}
     }
@@ -119,39 +128,59 @@ class SecureServerListener{
 	 * TODO: remove.
 	 * @param args
 	 */
-	 private static void printSocketInfo(SSLSocket s) {
-	      System.out.println("Socket class: "+s.getClass());
-	      System.out.println("   Remote address = "
-	         +s.getInetAddress().toString());
-	      System.out.println("   Remote port = "+s.getPort());
-	      System.out.println("   Local socket address = "
-	         +s.getLocalSocketAddress().toString());
-	      System.out.println("   Local address = "
-	         +s.getLocalAddress().toString());
-	      System.out.println("   Local port = "+s.getLocalPort());
-	      System.out.println("   Need client authentication = "
-	         +s.getNeedClientAuth());
+	 private static String printSocketInfo(SSLSocket s) {
+		  StringBuilder builder = new StringBuilder();
+
+	      builder.append("Accepting an incoming connection: " + s.hashCode());
+	      builder.append("\n");
+		  builder.append("Socket class: " + s.getClass());
+	      builder.append("\n");
+		  builder.append("   Remote address = " + s.getInetAddress());
+	      builder.append("\n");
+		  builder.append("   Remote port = " + s.getPort());
+	      builder.append("\n");
+		  builder.append("   Local socket address = " + s.getLocalSocketAddress());
+	      builder.append("\n");
+		  builder.append("   Local address = " + s.getLocalAddress());
+	      builder.append("\n");
+		  builder.append("   Local port = "+s.getLocalPort());
+	      builder.append("\n");
+		  builder.append("   Need client authentication = " +s.getNeedClientAuth());
+	      builder.append("\n");
+		  
 	      SSLSession ss = s.getSession();
-	      System.out.println("   Cipher suite = "+ss.getCipherSuite());
-	      System.out.println("   Protocol = "+ss.getProtocol());
+	      builder.append("   Cipher suite = "+ss.getCipherSuite());
+	      builder.append("\n");
+	      builder.append("   Protocol = "+ss.getProtocol());
+	      builder.append("\n");
+	      builder.append("\n");
+	      
+	      return builder.toString();
 	   }
+	 
 		/**
-		 * For test purposes
-		 * TODO: remove.
-		 * @param args
+		 * @param s
 		 */
-	   private static void printServerSocketInfo(SSLServerSocket s) {
-	      System.out.println("Server socket class: "+s.getClass());
-	      System.out.println("   Socket address = "
-	         +s.getInetAddress().toString());
-	      System.out.println("   Socket port = "
-	         +s.getLocalPort());
-	      System.out.println("   Need client authentication = "
-	         +s.getNeedClientAuth());
-	      System.out.println("   Want client authentication = "
-	         +s.getWantClientAuth());
-	      System.out.println("   Use client mode = "
-	         +s.getUseClientMode());
+	   private static String printServerSocketInfo(SSLServerSocket s) {
+		  StringBuilder builder = new StringBuilder();
+
+	      builder.append("Listening for incoming connections...");
+	      builder.append("\n");
+	      builder.append("Server socket class: "+s.getClass());
+	      builder.append("\n");
+	      builder.append("   Socket address = "  +s.getInetAddress());
+	      builder.append("\n");
+	      builder.append("   Socket port = " +s.getLocalPort());
+	      builder.append("\n");
+	      builder.append("   Need client authentication = " +s.getNeedClientAuth());
+	      builder.append("\n");
+	      builder.append("   Want client authentication = " +s.getWantClientAuth());
+	      builder.append("\n");
+	      builder.append("   Use client mode = " +s.getUseClientMode());
+	      builder.append("\n");
+	      builder.append("\n");
+	      
+	      return builder.toString();
 	   } 
 /*	   
 	   //TODO: remove afterwards. For testing only
