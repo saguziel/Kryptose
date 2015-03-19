@@ -15,6 +15,7 @@ public class ClientController {
     final String PUT = "save";
     final String SET = "set";
     final String DEL = "del";
+    final String QUERY = "query";
     final String LOGOUT = "logout";
 
 	Client model;
@@ -22,28 +23,34 @@ public class ClientController {
 	public ClientController(Client c) {
 		this.model = c;
 	}
-	
+	public void fetch() throws CryptoErrorException, BadBlobException {
+        ResponseGet r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
+        if(r.getBlob() == null){
+            model.newPassFile();
+        } else {
+            try {
+                model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
+            } catch (PasswordFile.BadBlobException e) {
+                model.badMasterPass();
+            }
+        }
+    }
+
 	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 		String[] args = request.trim().toLowerCase().split("\\s+");
         if (args[0].equals(GET)) {
+            fetch();
+        } else if (args[0].equals(QUERY)) {
             if(!model.hasPassFile()) {
-                ResponseGet r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
-                if(r.getBlob() == null){
-                    model.newPassFile();
-                } else {
-                    try {
-                        model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
-                    } catch (PasswordFile.BadBlobException e) {
-                        model.badMasterPass();
-                    }
-                    model.getCredential(args[1]);
-                }
+                model.continuePrompt("Please run get first");
             }
+            model.getCredential(args[1]);
         } else if (args[0].equals(PUT)) {
             try {
                 Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
                 //TODO: use correct digest
                 ResponsePut r = (ResponsePut)model.reqHandler.send(new RequestPut(model.user, newBlob, "".getBytes()));
+
             } catch (PasswordFile.BadBlobException e) {
                 model.badMasterPass();
             }
