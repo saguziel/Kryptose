@@ -5,7 +5,8 @@ import org.kryptose.requests.Response;
 import org.kryptose.requests.User;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class Log implements Serializable {
 	//TODO: So far the only thing you can log are requests.
@@ -15,10 +16,10 @@ public class Log implements Serializable {
     User user;
     Request request;
     Response response;
-    LocalDateTime time;
+    ZonedDateTime time;
 
     public Log(User u, Request req, Response res) {
-        time = LocalDateTime.now();
+        time = ZonedDateTime.now(ZoneId.of("UTC"));
         request = req;
         response = res;
         user = u;
