@@ -54,11 +54,12 @@ public class ClientController {
             Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
             //TODO: use correct digest
             RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
-            model.passfile.setOldDigest(req.getBlob().getDigest());
+
 
             @SuppressWarnings("unused")
             Response r = model.reqHandler.send(req);
             if (r instanceof ResponsePut) {
+                model.passfile.setOldDigest(req.getBlob().getDigest());
                 model.continuePrompt("Successfully saved to server");
             } else if (r instanceof ResponseInternalServerError) {
                 model.continuePrompt("ERROR: Response not saved due to internal server error");
