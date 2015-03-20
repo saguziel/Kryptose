@@ -1,0 +1,12 @@
+Use the Makefile in this directory.
+
+make run-client
+
+make run-server
+
+
+If you want to compile without running:
+
+make compile
+
+make jar
