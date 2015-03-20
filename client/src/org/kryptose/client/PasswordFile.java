@@ -9,8 +9,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -48,11 +46,16 @@ public class PasswordFile {
     }
 
     public byte[] getOldDigest(){
-        return oldDigest;
+    	if (oldDigest == null) return null;
+        return oldDigest.clone();
     }
 
     public void setOldDigest(byte[] digest){
-        this.oldDigest = digest.clone();
+    	if (digest == null) {
+    		this.oldDigest = null;
+    	} else {
+    		this.oldDigest = digest.clone();
+    	}
     }
 
     public void decryptBlob(Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
