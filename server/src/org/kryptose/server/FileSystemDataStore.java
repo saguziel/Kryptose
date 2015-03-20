@@ -142,7 +142,7 @@ public class FileSystemDataStore implements DataStore {
     			fw.write(log.toString());
     		} catch (IOException e) {
     			// TODO: hmm. this is somewhat circular.
-    			String errorMsg = "Error reading writing system log.";
+    			String errorMsg = "Error writing system log: " + SYSTEM_LOG_FILE;
     			logger.log(Level.SEVERE, errorMsg, e);
     			return WriteResult.INTERNAL_ERROR;
     		}
