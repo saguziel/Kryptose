@@ -6,7 +6,6 @@ package org.kryptose.requests;
 public final class ResponseGet extends Response {
 
     private final Blob blob;
-    private final UserAuditLog log;
 
     public ResponseGet(Blob b, UserAuditLog log) {
         this.blob = b;
