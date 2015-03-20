@@ -24,7 +24,9 @@ public class Log implements Serializable {
         request = req;
         response = res;
         user = u;
-        connectionId = req.getConnection().getId();
+        if (req.getConnection() != null) {
+        	connectionId = req.getConnection().getId();
+        }
         message = String.format("%s\nUsername: %s\nConnection ID:%s\n%s%s\n",
         		time, user.getUsername(), connectionId, request.logEntry(), response.logEntry());
     }

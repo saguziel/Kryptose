@@ -23,6 +23,7 @@ class ClientHandler implements Runnable {
 	ClientHandler(Server server, Socket clientSocket, Connection connection) {
 		this.server = server;
 		this.sock = clientSocket;
+		this.connection = connection;
 	}
 
 	public void run() {

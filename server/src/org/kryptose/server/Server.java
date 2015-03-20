@@ -6,13 +6,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.WeakHashMap;
-
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -219,8 +219,17 @@ public class Server {
     	
     	// Initialize logger.
     	try {
-			this.logger.addHandler(new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT));
 			this.logger.setLevel(Level.ALL);
+			
+			Handler fileHandler = new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT);
+			fileHandler.setLevel(Level.CONFIG);
+			this.logger.addHandler(fileHandler);
+			
+			// TODO this logger for debug purposes. remove or configure.
+			Handler debug = new ConsoleHandler();
+			debug.setLevel(Level.ALL);
+			this.logger.addHandler(debug);
+			
     	} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

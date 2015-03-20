@@ -143,8 +143,8 @@ class SecureServerListener{
 		  StringBuilder builder = new StringBuilder();
 
 	      builder.append("Accepting an incoming connection: " + connection.getId());
-	      builder.append("\tTime: " + connection.getTime());
 	      builder.append("\n");
+	      builder.append("\tTime: " + connection.getTime());
 	      builder.append("\n");
 		  builder.append("Socket class: " + s.getClass());
 	      builder.append("\n");
