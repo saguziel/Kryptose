@@ -7,9 +7,8 @@ public final class ResponseGet extends Response {
 
     private final Blob blob;
 
-    public ResponseGet(Blob b, UserAuditLog log) {
+    public ResponseGet(Blob b) {
         this.blob = b;
-        this.log = log;
     }
 
     public Blob getBlob() {

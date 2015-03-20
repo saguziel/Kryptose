@@ -10,27 +10,21 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.WeakHashMap;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 public class Server {
 
     private static final String PROPERTIES_FILE = "serverProperties.xml";
     
     private static final String LOGGER_NAME = "org.kryptose.server";
+    private Logger logger = Logger.getLogger(LOGGER_NAME);
     // TODO make configurable?
     private static final int LOG_FILE_COUNT = 20;
     private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
     private static final String LOG_FILE_NAME = "datastore/kryptose.%g.%u.log";
-    
     // INSTANCE FIELDS
     Properties properties;
-
     private DataStore dataStore = new FileSystemDataStore();
-    private Logger logger = Logger.getLogger(LOGGER_NAME);
     private SecureServerListener listener;
     
     private Map<User, Object> userLocks = Collections.synchronizedMap(new WeakHashMap<User,Object>());
@@ -108,11 +102,11 @@ public class Server {
             if (b == null) {
                 response = new ResponseInternalServerError();
             } else {
-                response = new ResponseGet(b, null); // TODO logging
+                response = new ResponseGet(b); // TODO logging
             }
         } else {
         	// User has not yet stored a blob.
-            response = new ResponseGet(null, null);
+            response = new ResponseGet(null);
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
