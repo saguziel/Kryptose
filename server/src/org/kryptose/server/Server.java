@@ -29,11 +29,14 @@ public class Server {
     // INSTANCE FIELDS
     Properties properties;
 
-    private DataStore dataStore = new FileSystemDataStore();
     private Logger logger = Logger.getLogger(LOGGER_NAME);
+    private DataStore dataStore = new FileSystemDataStore(logger);
     private SecureServerListener listener;
-    
-    private Map<User, Object> userLocks = Collections.synchronizedMap(new WeakHashMap<User,Object>());
+ 
+    // An object for each user, to lock on, to make sure each user only has one
+    // request being processed at a time.
+    private Map<User, Object> userLocks =
+    		Collections.synchronizedMap(new WeakHashMap<User,Object>());
 
 
     // INSTANCE METHODS
@@ -53,15 +56,18 @@ public class Server {
     }
         
     /**
-     * Handle the request. Acquire locks and authenticate user, then dispatch.
+     * Handle the request.
+     * 
+     * Acquire locks and authenticate user, then dispatch to request-specific handlers.
      *
-     * @param request, not null
-     * @return
+     * @param request not null
+     * @return The Response to the request.
      */
     public Response handleRequest(Request request) {
-
     	Object userLock;
 
+    	// Obtain lock to ensure each User only has one request
+    	// being processed at a time.
     	synchronized (this.userLocks) {
     		userLock = this.userLocks.get(request.getUser());
     		if (userLock == null) {
@@ -77,7 +83,7 @@ public class Server {
     }
     
     /**
-     * Dispatch.
+     * Dispatch request to request-specific handlers.
      * @param request
      * @return
      */
@@ -96,7 +102,6 @@ public class Server {
     }
 
     private Response handleRequestGet(RequestGet request) {
-
         Response response;
         User u = request.getUser();
 
@@ -105,14 +110,14 @@ public class Server {
         if (hasBlob) {
             Blob b = this.dataStore.readBlob(u);
 
-            if (b == null) {
-                response = new ResponseInternalServerError();
+            if (b != null) {
+                response = new ResponseGet(b, null); // TODO userauditlog
             } else {
-                response = new ResponseGet(b, null); // TODO logging
+                response = new ResponseInternalServerError();
             }
         } else {
         	// User has not yet stored a blob.
-            response = new ResponseGet(null, null);
+            response = new ResponseGet(null, null); // TODO userauditlog
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
@@ -132,8 +137,8 @@ public class Server {
             	try {
                     response = new ResponsePut(u, toBeWritten.getDigest());
                 } catch (CryptoPrimitiveNotSupportedException e) {
-                    // TODO Auto-generated catch block
-            		e.printStackTrace();
+                	String errorMsg = "Java Runtime does not support required cryptography operations.";
+                	this.getLogger().log(Level.SEVERE, errorMsg, e);
                     response = new ResponseInternalServerError();
                 }
                 break;
@@ -141,8 +146,8 @@ public class Server {
             	try {
                     response = new ResponseStaleWrite(u, oldDigest, toBeWritten.getDigest());
                 } catch (CryptoPrimitiveNotSupportedException e) {
-                    // TODO Auto-generated catch block
-            		e.printStackTrace();
+                	String errorMsg = "Java Runtime does not support required cryptography operations.";
+                	this.getLogger().log(Level.SEVERE, errorMsg, e);
                     response = new ResponseInternalServerError();
                 }
                 break;
@@ -170,40 +175,33 @@ public class Server {
         return this.logger;
     }
     
-    // TODO: I copied and pasted this without taking note of preconditions/postconditions.
     private Properties readProperties() {
         Properties properties = new Properties();
 
         //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Server settings file
-        // TODO: do not silently set defaults. if something went wrong when reading
-        // the configuration file,
-        // the admins need to know about it.
         properties.setProperty("NUMBER_OF_THREADS", "8");
         properties.setProperty("PORT_NUMBER", "5002");
-
+        // TODO put the keystore in a more sensible place
         properties.setProperty("SERVER_KEY_STORE_FILE", "src/org/kryptose/certificates/ServerKeyStore.jks");
         properties.setProperty("SERVER_KEY_STORE_PASSWORD", "aaaaaa");
 
-
-        FileInputStream in;
-
-        try {
-            in = new FileInputStream(PROPERTIES_FILE);
+        try (FileInputStream in = new FileInputStream(PROPERTIES_FILE);) {
+        	// TODO validate and fail fast.
             Properties XMLProperties = new Properties();
             XMLProperties.loadFromXML(in);
             properties.putAll(XMLProperties);
-            in.close();
         } catch (IOException e) {
-        	//TODO: Unable to read the properties file. Maybe log the error?
+        	String msg = "Could not read server configuration file: " + PROPERTIES_FILE
+        			+ "\n Writing default configuration file.";
+        	this.getLogger().log(Level.WARNING, msg, e);
 
             try {
                 FileOutputStream out = new FileOutputStream(PROPERTIES_FILE);
                 properties.storeToXML(out, "Server Configuration File");
                 out.close();
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                //Give up.
-                e1.printStackTrace();
+            	String errorMsg = "Could not write server configuration file: " + PROPERTIES_FILE;
+            	this.getLogger().log(Level.WARNING, errorMsg, e1);
             }
         }
         
@@ -218,33 +216,34 @@ public class Server {
     	this.properties = this.readProperties();
     	
     	// Initialize logger.
+		this.logger.setLevel(Level.ALL);
+		
+		// TODO this log Handler is for debug purposes. remove or configure.
+		Handler debug = new ConsoleHandler();
+		debug.setLevel(Level.ALL);
+		this.logger.addHandler(debug);
+
+		// Handler to write logs to file.
+		Handler fileHandler = null;
     	try {
-			this.logger.setLevel(Level.ALL);
-			
-			Handler fileHandler = new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT);
-			fileHandler.setLevel(Level.CONFIG);
-			this.logger.addHandler(fileHandler);
-			
-			// TODO this logger for debug purposes. remove or configure.
-			Handler debug = new ConsoleHandler();
-			debug.setLevel(Level.ALL);
-			this.logger.addHandler(debug);
-			
+			fileHandler = new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT);
     	} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		String msg = "Insuffient permissions to write to log files: " + LOG_FILE_NAME;
+    		logger.log(Level.SEVERE, msg, e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+    		String msg = "Could not write to log files: " + LOG_FILE_NAME;
+    		logger.log(Level.SEVERE, msg, e);
 		}
+    	if (fileHandler != null) {
+    		fileHandler.setLevel(Level.CONFIG);
+    		this.logger.addHandler(fileHandler);
+    	}
     	
     	// Set uncaught exception handler
-    	Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+    	Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
 				String errorMsg = "Unexpected error in main server thread/incoming connection handler.";
-				System.err.println(errorMsg);
-				e.printStackTrace();
 				Server.this.getLogger().log(Level.SEVERE, errorMsg, e);
 			}
     	});

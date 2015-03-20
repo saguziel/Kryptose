@@ -53,7 +53,8 @@ class ClientHandler implements Runnable {
 
 	/**
 	 * Listen for a request from the client.
-	 * @return The request heard, or {@literal null} if the connection is no longer valid.
+	 * @return The request heard, or {@literal null} if the connection is no longer valid
+	 * 		or the input is malformed.
 	 */
 	private Request listen() {
 		ObjectInputStream in=null;

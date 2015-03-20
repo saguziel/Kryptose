@@ -4,6 +4,14 @@ import java.io.Serializable;
 
 import org.kryptose.server.Connection;
 
+/**
+ * A request to send from the client to the server.
+ * 
+ * Includes Connection information recorded by the server when
+ * the request has been received.
+ * 
+ * @author jnshi
+ */
 public abstract class Request implements Serializable {
 
     private final User user;
@@ -28,12 +36,26 @@ public abstract class Request implements Serializable {
         this.user.validateInstance();
     }
 
+    /**
+     * Returns a String used to make a log of this request.
+     * @return
+     */
     public abstract String logEntry();
 
+    /**
+     * Gets information about the connection from which this request originated.
+     * To be called on the server.
+     * @return
+     */
     public Connection getConnection() {
 		return connection;
 	}
 
+    /**
+     * Stores information about the connection from which this request originated.
+     * To be called on the server.
+     * @param connection
+     */
 	public void setConnection(Connection connection) {
 		this.connection = connection;
 	}

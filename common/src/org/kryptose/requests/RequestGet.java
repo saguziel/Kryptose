@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 /**
+ * A request to get the blob stored by this user.
+ * 
  * Created by alexguziel on 3/15/15.
  */
 public final class RequestGet extends Request {

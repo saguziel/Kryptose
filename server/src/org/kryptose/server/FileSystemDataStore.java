@@ -5,8 +5,11 @@ import org.kryptose.requests.User;
 
 import java.io.*;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
+ * A DataStore which stores each user's blob in a separate file on disk.
  * This DataStore assumes for each User, only one thread is accessing their files at a time.
  * @author jshi
  */
@@ -17,21 +20,37 @@ public class FileSystemDataStore implements DataStore {
 	private static final String USER_BLOB_PREFIX = DATASTORE_PREFIX + "blobs/";
 	private static final String USER_LOG_PREFIX = DATASTORE_PREFIX + "userlogs/";
 	private static final File SYSTEM_LOG_FILE = new File(DATASTORE_PREFIX + "kryptose.log");
+	
+	private Logger logger;
 
-    FileSystemDataStore() {
-
+    FileSystemDataStore(Logger logger) {
+    	this.logger = logger;
     }
 
+    /**
+     * Get the file where we store this user's blob.
+     * @param user User, whose username determines the file location.
+     * @return
+     */
     private static File getUserBlobFile(User user) {
     	assert (User.isValidUsername(user.getUsername()));
     	return new File(USER_BLOB_PREFIX + user.getUsername() + ".blob");
     }
-    
+
+    /**
+     * Get the file where we store this user's logs.
+     * @param user User, whose username determines the file location.
+     * @return
+     */
     private static File getUserLogFile(User user) {
     	assert (User.isValidUsername(user.getUsername()));
     	return new File(USER_LOG_PREFIX + user.getUsername() + ".log");
     }
     
+    /**
+     * Get the file location of the system log. 
+     * @return
+     */
     private static File getSystemLogFile() {
     	return SYSTEM_LOG_FILE;
     }
@@ -41,29 +60,17 @@ public class FileSystemDataStore implements DataStore {
         return getUserBlobFile(user).exists();
     }
 
-    /**
-     * 
-        // attempts to write a blob
-        // digest should be null if this is the first write for this user
-        // return 0 if written successfully
-        //
-        // should fail if digest does not match digest of the previously stored blob
-        // this is to check for merge conflicts
-     */
     @Override
 	public WriteResult writeBlob(User user, Blob blob, byte[] oldDigest) {
-
     	boolean hasBlob = this.userHasBlob(user);
 
     	if (oldDigest == null && hasBlob) {
     		return WriteResult.STALE_WRITE;
     	}
-
     	if (oldDigest != null && !hasBlob) {
     		// TODO not quite the right error condition.
     		return WriteResult.USER_DOES_NOT_EXIST;
     	}
-
     	if (oldDigest != null && hasBlob && !Arrays.equals(oldDigest, (this.readBlob(user).getDigest()))) {
             return WriteResult.STALE_WRITE;
     	}
@@ -77,8 +84,8 @@ public class FileSystemDataStore implements DataStore {
     	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));) {
 			oos.writeObject(blob);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String errorMsg = "Error writing user blob.";
+			logger.log(Level.SEVERE, errorMsg, e);
 			return WriteResult.INTERNAL_ERROR;
 		}
     	
@@ -87,20 +94,19 @@ public class FileSystemDataStore implements DataStore {
 
     @Override
 	public Blob readBlob(User user) {
-
-    	// Actually do the read.
     	File file = getUserBlobFile(user);
 
+    	// Actually do the read.
     	try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));) {
 			return (Blob) ois.readObject();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException("If you see this error message, the developers are incapable.");
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException("If you see this error message, the developers are incapable.");
+			String errorMsg = "Error reading user blob.";
+			logger.log(Level.SEVERE, errorMsg, e);
+			return null;
+		} catch (ClassCastException | ClassNotFoundException e) {
+			String errorMsg = "Error reading user blob.";
+			logger.log(Level.SEVERE, errorMsg, e);
+			return null;
 		}
 	}
     
@@ -115,8 +121,8 @@ public class FileSystemDataStore implements DataStore {
     	try (FileWriter fw = new FileWriter(file, true);) {
 			fw.write(log.toString());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String errorMsg = "Error reading writing user log.";
+			logger.log(Level.SEVERE, errorMsg, e);
 			return WriteResult.INTERNAL_ERROR;
 		}
 
@@ -135,25 +141,37 @@ public class FileSystemDataStore implements DataStore {
         	try (FileWriter fw = new FileWriter(file, true);) {
     			fw.write(log.toString());
     		} catch (IOException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
+    			// TODO: hmm. this is somewhat circular.
+    			String errorMsg = "Error reading writing system log.";
+    			logger.log(Level.SEVERE, errorMsg, e);
     			return WriteResult.INTERNAL_ERROR;
     		}
     		return WriteResult.SUCCESS;
     	}
     }
     
+    /**
+     * Ensure that the file has been created, and that all its parent directories exist.
+     * @param file The file to ensure has been created.
+     */
     private void ensureExists(File file) {
-
-    	//TODO: We do not check for mkdirs' return value. If it is 0, the operation failed.
-    	//The error will be caught later (createNewFile will return IOEXCEPTION, but this is unhandled.
-    	file.getParentFile().mkdirs();
+    	File parentFile = file.getParentFile();
+    	if (parentFile.exists()) {
+    		if (!parentFile.isDirectory()) {
+    			logger.severe("Could not create directory: " + parentFile);
+    		}
+    	} else {
+    		boolean success = parentFile.mkdirs();
+    		if (!success) {
+    			logger.severe("Could not create directory: " + parentFile);
+    		}
+    	}
 
 		try {
 			file.createNewFile();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			String errorMsg = "Error creating file: " + file;
+			logger.log(Level.SEVERE, errorMsg, e1);
 		}
     }
 

@@ -2,11 +2,11 @@ package org.kryptose.server;
 
 
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.logging.Level;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
-
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
@@ -76,6 +76,17 @@ class SecureServerListener{
 		// Handle connection.
 		Runnable job = new ClientHandler(server, clientSocket, connection);
 		Thread t = new Thread(job);
+		
+    	// Set uncaught exception handler
+    	t.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				String errorMsg = "Unexpected error in client-handling thread.";
+				server.getLogger().log(Level.SEVERE, errorMsg, e);
+			}
+    	});
+    	
+    	// Start client-handling thread.
 		t.start();
     }
     

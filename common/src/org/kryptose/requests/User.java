@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
  * 
  * Contains sensitive information!
  * 
+ * Also is immutable.
+ * 
  * @author jshi
  */
 public final class User implements Comparable<User>, Serializable {
@@ -22,10 +24,30 @@ public final class User implements Comparable<User>, Serializable {
     private final String username;
     private byte[] passkey;
     
+    /**
+     * Checks a username for validity.
+     * 
+     * @param username The candidate username whose validity to check.
+     * @return true if and only if the username is valid.
+     * 
+     * @see #VALID_USERNAME_DOC
+     * @see #VALID_USERNAME_PATTERN
+     */
     public static boolean isValidUsername(String username) {
     	return VALID_USERNAME_PATTERN.matcher(username).matches();
     }
 
+    /**
+     * Constructs a User.
+     * 
+     * @param name The username of the user.
+     * @param passkey The passkey used to authenticate with the server.
+     * 
+     * @throws IllegalArgumentException if name does not validate.
+     * @see #isValidUsername(String)
+     * @see #VALID_USERNAME_DOC
+     * @see #VALID_USERNAME_PATTERN
+     */
     public User(String name, byte[] passkey) {
         this.username = name;
         if (passkey != null) this.passkey = passkey.clone();
@@ -33,10 +55,18 @@ public final class User implements Comparable<User>, Serializable {
         this.validateInstance();
     }
 
+    /**
+     * Gets this user's username.
+     * @return
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Gets this user's passkey to authenticate with.
+     * @return
+     */
     public byte[] getPasskey() {
     	// TODO think about security implications of public getPasskey
     	// Ideally the passkey would be erased from memory as soon as the user
@@ -54,6 +84,7 @@ public final class User implements Comparable<User>, Serializable {
         this.validateInstance();
     }
     
+    // Check object invariants and do defensive copying.
     void validateInstance() {
     	if (this.username == null) throw new IllegalArgumentException("username is null");
     	if (!isValidUsername(this.username)) {
