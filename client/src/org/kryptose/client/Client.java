@@ -26,7 +26,7 @@ public class Client {
 
         //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Client settings file)
         properties.setProperty("SERVER_PORT_NUMBER", "5002");
-        properties.setProperty("CLIENT_KEY_STORE_FILE", "src/org/kryptose/certificates/ClientTrustStore.jks");
+        properties.setProperty("CLIENT_KEY_STORE_FILE", "ClientTrustStore.jks");
         properties.setProperty("CLIENT_KEY_STORE_PASSWORD", "aaaaaa");
         properties.setProperty("SERVER_HOSTNAME", "127.0.0.1");
         
@@ -43,7 +43,7 @@ public class Client {
 
             try {
                 FileOutputStream out = new FileOutputStream(PROPERTIES_FILE);
-                properties.storeToXML(out, "Server Configuration File");
+                properties.storeToXML(out, "Client Configuration File");
                 out.close();
             } catch (IOException e1) {
                 // TODO Auto-generated catch block

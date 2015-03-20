@@ -175,8 +175,7 @@ public class Server {
         //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Server settings file
         properties.setProperty("NUMBER_OF_THREADS", "8");
         properties.setProperty("PORT_NUMBER", "5002");
-        // TODO put the keystore in a more sensible place
-        properties.setProperty("SERVER_KEY_STORE_FILE", "src/org/kryptose/certificates/ServerKeyStore.jks");
+        properties.setProperty("SERVER_KEY_STORE_FILE", "ServerKeyStore.jks");
         properties.setProperty("SERVER_KEY_STORE_PASSWORD", "aaaaaa");
 
         try (FileInputStream in = new FileInputStream(PROPERTIES_FILE);) {
