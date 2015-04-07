@@ -45,6 +45,9 @@ public abstract class Request implements Serializable {
     /**
      * Gets information about the connection from which this request originated.
      * To be called on the server.
+     * 
+     * THIS COULD BE NULL.
+     * 
      * @return
      */
     public Connection getConnection() {
