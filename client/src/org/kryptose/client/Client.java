@@ -18,7 +18,7 @@ public class Client {
     PasswordFile passfile;
     LocalDateTime lastmod;
     private String masterpass = "0";
-    private String derivedFilePass = "0";
+    private String derivedFilePass = "TESTTESTTEST";
 
     private Client() {
     	
@@ -30,6 +30,7 @@ public class Client {
         properties.setProperty("CLIENT_KEY_STORE_PASSWORD", "aaaaaa");
         properties.setProperty("SERVER_HOSTNAME", "127.0.0.1");
         properties.setProperty("APPLICATION_SALT", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        properties.setProperty("MAX_USERNAME_LENGTH", "40");
         
         //LOADIG CUSTOM CONFIGURATION FROM FILE.
         FileInputStream in;
@@ -54,7 +55,7 @@ public class Client {
             
         }
 
-        KeyDerivator.setAppSalt(properties.getProperty("APPLICATION_SALT"));
+        KeyDerivator.setParams(properties.getProperty("APPLICATION_SALT"), Integer.parseInt(properties.getProperty("MAX_USERNAME_LENGTH")));
 
     	
         this.reqHandler = new RequestHandler(properties.getProperty("SERVER_HOSTNAME"),Integer.parseInt(properties.getProperty("SERVER_PORT_NUMBER")), properties.getProperty("CLIENT_KEY_STORE_FILE"), properties.getProperty("CLIENT_KEY_STORE_PASSWORD") );

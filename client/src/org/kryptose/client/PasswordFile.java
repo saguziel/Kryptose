@@ -34,9 +34,9 @@ public class PasswordFile {
     String username;
     byte[] oldDigest;
 
-    public PasswordFile(String user, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        decryptBlob(b, pass);
-        this.username = user;
+    public PasswordFile(String username, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        decryptBlob(b, username, pass);
+        this.username = username;
     }
 
     public PasswordFile(String user) {
@@ -58,8 +58,8 @@ public class PasswordFile {
     	}
     }
 
-    public void decryptBlob(Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass.toCharArray(),b.getSalt());
+    public void decryptBlob(Blob b, String username, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
         
     	
         byte[] decrypted = rawBlobDecrypt(b, raw_key);
@@ -74,11 +74,10 @@ public class PasswordFile {
     }
 
     //TODO: use correct timestamp and iv
-    public Blob encryptBlob(String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+    public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         
+    	/*
     	byte[] salt = new byte[64];
-    	
-    	
     	SecureRandom rnd;
 		try {
 			rnd = SecureRandom.getInstance("SHA1PRNG");
@@ -88,10 +87,10 @@ public class PasswordFile {
 			e1.printStackTrace();
 			throw new CryptoPrimitiveNotSupportedException(e1);
 		}
-    	
+    	*/
 
     	
-    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass.toCharArray(),salt);
+    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
 
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -102,7 +101,7 @@ public class PasswordFile {
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
 
-            return rawBlobCreate(bytes, raw_key, salt);
+            return rawBlobCreate(bytes, raw_key);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -157,7 +156,7 @@ public class PasswordFile {
         }
     }
     
-    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key, byte[] salt) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
+    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
     	Blob b;
     	
 		try {
@@ -177,7 +176,7 @@ public class PasswordFile {
 	    	//byte[] head = "Head".getBytes();
 	    	//c.updateAAD(head);
 	    	
-	    	b = new Blob(c.doFinal(raw_data),ivData, salt);		
+	    	b = new Blob(c.doFinal(raw_data),ivData);		
 		
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
 			throw new CryptoPrimitiveNotSupportedException(e);
@@ -224,7 +223,7 @@ public class PasswordFile {
     	p.setVal("MyUser", "MyPwd");
     	
     	try{
-    	Blob b = p.encryptBlob("MasterPassword",LocalDateTime.now());
+    	Blob b = p.encryptBlob("Antonio", "MasterPassword",LocalDateTime.now());
     	
     	PasswordFile p2 = new PasswordFile("Antonio", b, "MasterPassword");
 

@@ -169,7 +169,7 @@ public class UserTable {
 		System.out.println(u.changeAuthKey("Mario", good_pwd, good_pwd));		
 		System.out.println(u.changeAuthKey("Antonio", good_pwd,bad_pwd));		
 		System.out.println(u.auth("Antonio", good_pwd));		
-		System.out.println(u.auth("Antonio", bad_pwd));		
+		System.out.println(u.auth("Antonio", bad_pwd));
 		
 		
 	}

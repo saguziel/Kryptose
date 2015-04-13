@@ -60,7 +60,7 @@ public class ClientController {
     public void save() {
 
         try {
-            Blob newBlob = model.passfile.encryptBlob(model.getFilepass(), model.getLastMod());
+            Blob newBlob = model.passfile.encryptBlob(model.user.getUsername(), model.getFilepass(), model.getLastMod());
             //TODO: use correct digest
             RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
 

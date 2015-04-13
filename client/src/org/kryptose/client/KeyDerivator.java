@@ -11,17 +11,26 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
+import org.junit.internal.ArrayComparisonFailure;
 import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
 
 public class KeyDerivator {
 	
 	static byte[] appSalt;
 	
+	static int usernameMaxLength;
+	
+	static final char[] appName = "Kryptose:".toCharArray();
+	
 //	private char[] password;
 	
-	public static void setAppSalt(String enc_app_salt){
+	public static void setParams(String enc_app_salt, int username_max_length){
 		appSalt =  DatatypeConverter.parseHexBinary(enc_app_salt);
+		usernameMaxLength = username_max_length;
 	}
+	
+	
+	
 /*	
 	public void zeroPassword() {
 		for(int i = 0; i<password.length;i++)
@@ -36,60 +45,68 @@ public class KeyDerivator {
 */
 	
 	
-	public static byte[] getAuthenticationKeyBytes(char[] password) throws CryptoPrimitiveNotSupportedException {
-		//TODO Securely erease intermediate data. How?
-		
-		try{
-		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-		KeySpec spec = new PBEKeySpec(password, appSalt, 65536, 512);
-		
-		byte[] raw_key = factory.generateSecret(spec).getEncoded();
-		byte[] auth_key = Arrays.copyOfRange(raw_key, 0, 32);
+	public static byte[] getAuthenticationKeyBytes(String username, char[] password) throws CryptoPrimitiveNotSupportedException {
+			return Arrays.copyOfRange(computeRawKey(username, password), 0, 32);	
+	}
 
-		
-		return auth_key;
-		}catch(Exception e){
-			//TODO Exception Handling
+	public static byte[] getEncryptionKeyBytes(String username, char[] password) throws CryptoPrimitiveNotSupportedException {
+		return Arrays.copyOfRange(computeRawKey(username, password), 32, 48);	
+	}
+
+	private static byte[] computeRawKey(String username, char[] password){
+		try{
+			char[] s = new char[appName.length + usernameMaxLength + password.length];
+			
+			Arrays.fill(s, '#');
+			System.arraycopy(appName, 0, s, 0, appName.length);
+			System.arraycopy(username.toCharArray(), 0, s, appName.length, username.length());
+			System.arraycopy( password, 0, s, usernameMaxLength + appName.length, password.length);
+	
+			SecretKeyFactory factory;
+			factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+			KeySpec spec = new PBEKeySpec(s, appSalt, 65536, 256+128);
+						
+			return factory.generateSecret(spec).getEncoded();
+		}catch(InvalidKeySpecException | NoSuchAlgorithmException e){
 			e.printStackTrace();
+			throw new CryptoPrimitiveNotSupportedException(e);
 		}
-		return null;
+		
+		
 	}
 
 
-
-	public static byte[] getEncryptionKeyBytes(char[] password, byte[] user_salt) throws CryptoPrimitiveNotSupportedException {
+/*
+	public static byte[] getEncryptionKeyBytes(String username, char[] password) throws CryptoPrimitiveNotSupportedException {
 		//TODO Securely erease intermediate data. How?
 		
 		try{
-		SecretKeyFactory factory;
+			char[] s = new char[appName.length + usernameMaxLength + password.length];
+			
+			Arrays.fill(s, '#');
+			System.arraycopy(appName, 0, s, 0, appName.length);
+			System.arraycopy(username.toCharArray(), 0, s, appName.length, username.length());
+			System.arraycopy( password, 0, s, usernameMaxLength + appName.length, password.length);
+
+			SecretKeyFactory factory;
 			factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-		KeySpec spec = new PBEKeySpec(password, appSalt, 65536, 512);
+			KeySpec spec = new PBEKeySpec(s, appSalt, 65536, 512);
 		
 		byte[] raw_key = factory.generateSecret(spec).getEncoded();
-		byte[] enc_key = Arrays.copyOfRange(raw_key, 32, 64);
+		byte[] enc_key = Arrays.copyOfRange(raw_key, 32, 48);
 		
-		spec = new PBEKeySpec(DatatypeConverter.printHexBinary(enc_key).toCharArray(), user_salt, 65536, 128);
-		
-				
-		return factory.generateSecret(spec).getEncoded();
+		//spec = new PBEKeySpec(DatatypeConverter.printHexBinary(enc_key).toCharArray(), user_salt, 65536, 128);
+		//return factory.generateSecret(spec).getEncoded();
+		return enc_key;
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			throw new CryptoPrimitiveNotSupportedException(e);
 		}
 	}
-
+*/
 	
 	public static void main(String[] args){
-		String password = "TestPassword";
-		
-		byte[] salt = new byte[16];
+	
 		try{
-		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 512);
-		
-		byte[] raw_key = factory.generateSecret(spec).getEncoded();
-		byte[] auth_key = Arrays.copyOfRange(raw_key, 0, 256);
-		
-		
 /*		
 		return auth_key;
 

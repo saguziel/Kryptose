@@ -20,17 +20,17 @@ public final class Blob implements Serializable {
     // TODO: generate serial version UID, after fields are decided.
 
 	// Salt used for encryption
-	private byte[] encSalt;
+//	private byte[] encSalt;
 	// Encrypted content.
     private byte[] encBytes;
     // Initialization vector for encryption.
     private byte[] iv;
     
     
-    public Blob(byte[] encBytes, byte[] iv, byte[] encSalt){
+    public Blob(byte[] encBytes, byte[] iv){ //, byte[] encSalt){
     	this.encBytes = encBytes.clone();
     	this.iv = iv.clone();
-    	this.encSalt = encSalt.clone();
+//    	this.encSalt = encSalt.clone();
 
     }
         
@@ -52,7 +52,7 @@ public final class Blob implements Serializable {
         try {
         	MessageDigest md = MessageDigest.getInstance("SHA");
         	md.update(iv);
-        	md.update(encSalt);
+        	//md.update(encSalt);
         	md.update(encBytes);
 			return md.digest();
 		} catch (NoSuchAlgorithmException e) {
@@ -70,23 +70,23 @@ public final class Blob implements Serializable {
 	void validateInstance() {
     	if (this.iv == null) throw new IllegalArgumentException("iv is null");
     	if (this.encBytes == null) throw new IllegalArgumentException("encBytes is null");
-    	if (this.encSalt == null) throw new IllegalArgumentException("encSalt is null");
+    	//if (this.encSalt == null) throw new IllegalArgumentException("encSalt is null");
     	
     	//TODO: is this needed?
     	this.iv = iv.clone();
     	this.encBytes = encBytes.clone();
-    	this.encSalt = encSalt.clone();
+    	//this.encSalt = encSalt.clone();
 
 	}
 
 	public String toString() {
 		// TODO for debugging purposes
-		return Arrays.toString(encBytes) + "\n" + Arrays.toString(iv) + "\n" + Arrays.toString(encSalt);
+		return Arrays.toString(encBytes) + "\n" + Arrays.toString(iv);// + "\n" + Arrays.toString(encSalt);
 	}
-
+/*
 	public byte[] getSalt() {
 		// TODO Auto-generated method stub
 		return encSalt.clone();
 	}
-    
+  */  
 }
