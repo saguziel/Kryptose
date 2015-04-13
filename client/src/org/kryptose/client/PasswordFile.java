@@ -59,8 +59,9 @@ public class PasswordFile {
     }
 
     public void decryptBlob(Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass);
+    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass.toCharArray(),b.getSalt());
         
+    	
         byte[] decrypted = rawBlobDecrypt(b, raw_key);
         try {
             ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
@@ -74,7 +75,23 @@ public class PasswordFile {
 
     //TODO: use correct timestamp and iv
     public Blob encryptBlob(String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass);
+        
+    	byte[] salt = new byte[64];
+    	
+    	
+    	SecureRandom rnd;
+		try {
+			rnd = SecureRandom.getInstance("SHA1PRNG");
+			rnd.nextBytes(salt);
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new CryptoPrimitiveNotSupportedException(e1);
+		}
+    	
+
+    	
+    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(pass.toCharArray(),salt);
 
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -85,7 +102,7 @@ public class PasswordFile {
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
 
-            return rawBlobCreate(bytes, raw_key);
+            return rawBlobCreate(bytes, raw_key, salt);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -140,7 +157,7 @@ public class PasswordFile {
         }
     }
     
-    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
+    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key, byte[] salt) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
     	Blob b;
     	
 		try {
@@ -160,7 +177,7 @@ public class PasswordFile {
 	    	//byte[] head = "Head".getBytes();
 	    	//c.updateAAD(head);
 	    	
-	    	b = new Blob(c.doFinal(raw_data),ivData);		
+	    	b = new Blob(c.doFinal(raw_data),ivData, salt);		
 		
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
 			throw new CryptoPrimitiveNotSupportedException(e);
@@ -179,6 +196,7 @@ public class PasswordFile {
 	    	final int blockSize = c.getBlockSize();
 	    	
 	    	GCMParameterSpec params = new GCMParameterSpec(blockSize * Byte.SIZE, b.getIv());
+	    	
 	    	
 	    	SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
 	    	c.init(Cipher.DECRYPT_MODE, sks, params);
@@ -199,26 +217,24 @@ public class PasswordFile {
     
     //TODO: for testing only. Remove LATER BY ANTONIO. If it generates errors, just comment it.
     public static void main(String[] args){
-    	byte[] myRawKey = new byte[16];
-//    	Arrays.fill(myRawKey, (byte) 0);
+    	
+    	KeyDerivator.setAppSalt("AAAAAAAAAAAAAAAA");
+
+    	PasswordFile p = new PasswordFile("Antonio");
+    	p.setVal("MyUser", "MyPwd");
     	
     	try{
+    	Blob b = p.encryptBlob("MasterPassword",LocalDateTime.now());
     	
-    	    Blob b = rawBlobCreate("EncryptionTestAA".getBytes(), myRawKey);
-    	    System.out.println("Decrypted: " + new String(rawBlobDecrypt(b, myRawKey)));
-    	
-    	    byte[] raw_ciphertext = b.getEncBytes();
-    	    byte[] iv = b.getIv();
-    	
-    	    raw_ciphertext[2] = (byte) 0;
-    	
-    	    Blob b_tampered = new Blob(raw_ciphertext, iv);
-    	    System.out.println("Decrypted: " + new String(rawBlobDecrypt(b_tampered, myRawKey)));
+    	PasswordFile p2 = new PasswordFile("Antonio", b, "MasterPassword");
 
+        for (Credential c : p2.credentials) {
+            System.out.println("Domain: " + c.getDomain() + " Password: " + c.getPassword());
+        }
+    	
     	} catch(Exception e){
     		e.printStackTrace();
     	}
-
     }
 
 

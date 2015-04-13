@@ -177,6 +177,7 @@ public class Server {
         properties.setProperty("PORT_NUMBER", "5002");
         properties.setProperty("SERVER_KEY_STORE_FILE", "ServerKeyStore.jks");
         properties.setProperty("SERVER_KEY_STORE_PASSWORD", "aaaaaa");
+        
 
         try (FileInputStream in = new FileInputStream(PROPERTIES_FILE);) {
         	// TODO validate and fail fast.

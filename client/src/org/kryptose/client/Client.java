@@ -29,6 +29,7 @@ public class Client {
         properties.setProperty("CLIENT_KEY_STORE_FILE", "ClientTrustStore.jks");
         properties.setProperty("CLIENT_KEY_STORE_PASSWORD", "aaaaaa");
         properties.setProperty("SERVER_HOSTNAME", "127.0.0.1");
+        properties.setProperty("APPLICATION_SALT", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         
         //LOADIG CUSTOM CONFIGURATION FROM FILE.
         FileInputStream in;
@@ -50,7 +51,10 @@ public class Client {
                 //Give up.
                 e1.printStackTrace();
             }
+            
         }
+
+        KeyDerivator.setAppSalt(properties.getProperty("APPLICATION_SALT"));
 
     	
         this.reqHandler = new RequestHandler(properties.getProperty("SERVER_HOSTNAME"),Integer.parseInt(properties.getProperty("SERVER_PORT_NUMBER")), properties.getProperty("CLIENT_KEY_STORE_FILE"), properties.getProperty("CLIENT_KEY_STORE_PASSWORD") );
