@@ -12,7 +12,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 import org.junit.internal.ArrayComparisonFailure;
-import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
+import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 
 public class KeyDerivator {
 	

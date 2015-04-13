@@ -12,7 +12,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
-import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
+import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 
 public class UserTable {
 	

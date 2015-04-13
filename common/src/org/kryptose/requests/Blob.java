@@ -7,6 +7,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
+
 /**
  * Represents all the encrypted information stored by a single client on the server.
  * Also includes initialization vector used in encryption.

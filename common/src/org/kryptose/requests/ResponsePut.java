@@ -1,26 +1,40 @@
 package org.kryptose.requests;
 
+import org.kryptose.exceptions.ServerException;
+
 /**
  * Created by alexguziel on 3/15/15.
  */
 public final class ResponsePut extends Response {
-    private final User user;
-    private final byte[] digest;
+    
+	// TODO: is digest allowed to be null? if not, that needs to be checked,
+	// both during construction and during deserialization.
+	private final byte[] digest;
 
-    public ResponsePut(User u, byte[] digest) {
-        this.user = u;
-        this.digest = digest;
+    public ResponsePut(byte[] digest) {
+    	super();
+        this.digest = digest.clone();
     }
 
-    public byte[] getDigest() {
+    public ResponsePut(ServerException exception) {
+    	super(exception);
+    	assert exception != null;
+        this.digest = null;
+    }
+
+    public byte[] getDigest() throws ServerException {
+    	// Is this an exception response? Throw exception if so.
+    	if (this.getException() != null) {
+    		throw this.getException();
+    	}
+    	// Return digest.
         return digest;
     }
 
-    public User getUser() {
-        return user;
-    }
-
     public String logEntry() {
+    	if (this.getException() != null) {
+    		return "RESPONSE: " + this.getException().toString();
+    	}
         return "RESPONSE: Put request successful\n";
     }
 }

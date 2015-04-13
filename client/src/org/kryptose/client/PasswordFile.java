@@ -1,7 +1,7 @@
 package org.kryptose.client;
+import org.kryptose.exceptions.CryptoErrorException;
+import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.Blob;
-import org.kryptose.requests.CryptoErrorException;
-import org.kryptose.requests.CryptoPrimitiveNotSupportedException;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

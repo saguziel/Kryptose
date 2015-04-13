@@ -1,5 +1,6 @@
 package org.kryptose.client;
 
+import org.kryptose.exceptions.ServerException;
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
 import org.kryptose.requests.RequestTest;
@@ -53,7 +54,7 @@ public class RequestHandler {
 	}
 
 	
-	Response send(Request req) throws UnknownHostException, IOException{
+	Response send(Request req) throws UnknownHostException, IOException, ServerException {
         try {
     	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
 
@@ -78,17 +79,19 @@ public class RequestHandler {
 
             Response resp;
 			resp = (Response) in.readObject();
+			// See if Response was an Exception response, throw if so.
+			resp.checkException();
 
 			//TODO: remove later (testing only).
 			System.out.println("Response received: " + resp.toString());
-            
-            sock.close();
       
             return resp;
             
-        }catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} finally {
+            sock.close();
 		}
         
         //TODO: Remove after meaningful Error Handling has been done.

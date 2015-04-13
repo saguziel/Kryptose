@@ -1,4 +1,4 @@
-package org.kryptose.requests;
+package org.kryptose.exceptions;
 
 //This is probably a problem of the jvm, which does not support the crypto we wanna use.
 //Suggested response: quit the program, and ask user to update the jvm.

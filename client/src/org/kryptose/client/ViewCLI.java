@@ -1,7 +1,7 @@
 package org.kryptose.client;
 
 import org.kryptose.client.PasswordFile.BadBlobException;
-import org.kryptose.requests.CryptoErrorException;
+import org.kryptose.exceptions.CryptoErrorException;
 
 import java.util.Scanner;
 

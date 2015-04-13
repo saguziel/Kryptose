@@ -1,4 +1,4 @@
-package org.kryptose.requests;
+package org.kryptose.exceptions;
 
 //This exception is a generic Cryptographic problem. 
 // It also includes the case where a blob has been tampered with (the Authenticated Encryption verification fails).

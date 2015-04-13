@@ -1,5 +1,8 @@
 package org.kryptose.server;
 
+import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
+import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.exceptions.StaleWriteException;
 import org.kryptose.requests.*;
 
 import java.io.FileInputStream;
@@ -89,14 +92,13 @@ public class Server {
         } else if (request instanceof RequestTest) { //TODO: remove later, testing only.
         	return this.handleRequestTest((RequestTest) request);
         } else {
-        	//TODO: Maybe include some specific description like
-        	// "Unrecognized request type"
-            return new ResponseInternalServerError();
+        	// TODO: make sure this is included on server logs.
+            return new ResponseMalformedRequest();
         }
     }
 
-    private Response handleRequestGet(RequestGet request) {
-        Response response;
+    private ResponseGet handleRequestGet(RequestGet request) {
+        ResponseGet response;
         User u = request.getUser();
 
         boolean hasBlob = this.dataStore.userHasBlob(u);
@@ -107,19 +109,22 @@ public class Server {
             if (b != null) {
                 response = new ResponseGet(b); // TODO userauditlog
             } else {
-                response = new ResponseInternalServerError();
+                response = new ResponseGet(new InternalServerErrorException());
+                String errorMsg = "Blob was null, but hasBlob was true. User: " + u.getUsername();
+                this.getLogger().log(Level.SEVERE, errorMsg);
             }
         } else {
         	// User has not yet stored a blob.
-            response = new ResponseGet(null); // TODO userauditlog
+            response = new ResponseGet((Blob)null); // TODO userauditlog
+            // TODO is this an exceptional response? Do we need to create an exception?
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
         return response;
     }
 
-    private Response handleRequestPut(RequestPut request) {
-        Response response;
+    private ResponsePut handleRequestPut(RequestPut request) {
+        ResponsePut response;
         User u = request.getUser();
         byte[] oldDigest = request.getOldDigest();
         Blob toBeWritten = request.getBlob();
@@ -129,26 +134,25 @@ public class Server {
         switch (writeResult) {
             case SUCCESS:
             	try {
-                    response = new ResponsePut(u, toBeWritten.getDigest());
+                    response = new ResponsePut(toBeWritten.getDigest());
                 } catch (CryptoPrimitiveNotSupportedException e) {
                 	String errorMsg = "Java Runtime does not support required cryptography operations.";
                 	this.getLogger().log(Level.SEVERE, errorMsg, e);
-                    response = new ResponseInternalServerError();
+                    response = new ResponsePut(new InternalServerErrorException());
                 }
                 break;
             case STALE_WRITE:
-            	try {
-                    response = new ResponseStaleWrite(u, oldDigest, toBeWritten.getDigest());
-                } catch (CryptoPrimitiveNotSupportedException e) {
-                	String errorMsg = "Java Runtime does not support required cryptography operations.";
-                	this.getLogger().log(Level.SEVERE, errorMsg, e);
-                    response = new ResponseInternalServerError();
-                }
+                response = new ResponsePut(new StaleWriteException());
+                break;
+            case INTERNAL_ERROR:
+                response = new ResponsePut(new InternalServerErrorException());
+                // Assume logging has already been done.
                 break;
             case USER_DOES_NOT_EXIST: // we should have authenticated by now.
-            case INTERNAL_ERROR:
             default:
-                response = new ResponseInternalServerError();
+                response = new ResponsePut(new InternalServerErrorException());
+            	String errorMsg = "Switch-case fall-through in handleRequestPut.";
+            	this.getLogger().log(Level.SEVERE, errorMsg, Thread.currentThread().getStackTrace());
                 break;
         }
         this.dataStore.writeUserLog(u, new Log(u, request, response));
