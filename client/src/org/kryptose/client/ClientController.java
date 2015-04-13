@@ -66,7 +66,6 @@ public class ClientController {
             RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
 
 
-            @SuppressWarnings("unused")
             Response r = model.reqHandler.send(req);
             if (r instanceof ResponsePut) {
                 model.passfile.setOldDigest(req.getBlob().getDigest());
