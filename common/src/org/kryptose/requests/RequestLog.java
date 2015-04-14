@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 /**
- * Created by jeff on 4/14/15.
+ * A request to get the blob stored by this user.
+ * <p>
+ * Created by alexguziel on 3/15/15.
  */
 public final class RequestLog extends Request {
 
@@ -27,6 +29,6 @@ public final class RequestLog extends Request {
 
     @Override
     public String logEntry() {
-        return String.format("REQUEST: Get log from %s\n", super.getUser().getUsername());
+        return String.format("REQUEST: Log from %s\n", super.getUser().getUsername());
     }
 }

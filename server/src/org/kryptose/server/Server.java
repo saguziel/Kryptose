@@ -9,10 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.logging.*;
 
 public class Server {
@@ -21,13 +18,13 @@ public class Server {
     
     private static final String LOGGER_NAME = "org.kryptose.server";
     private Logger logger = Logger.getLogger(LOGGER_NAME);
+    private DataStore dataStore = new FileSystemDataStore(logger);
     // TODO make configurable?
     private static final int LOG_FILE_COUNT = 20;
     private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
     private static final String LOG_FILE_NAME = "datastore/kryptose.%g.%u.log";
     // INSTANCE FIELDS
     Properties properties;
-    private DataStore dataStore = new FileSystemDataStore(logger);
     private SecureServerListener listener;
  
     // An object for each user, to lock on, to make sure each user only has one
@@ -90,7 +87,9 @@ public class Server {
         } else if (request instanceof RequestPut) {
             return this.handleRequestPut((RequestPut)request);
         } else if (request instanceof RequestTest) { //TODO: remove later, testing only.
-        	return this.handleRequestTest((RequestTest) request);
+            return this.handleRequestTest((RequestTest) request);
+        } else if (request instanceof RequestLog) {
+            return this.handleRequestLog((RequestLog) request);
         } else {
         	// TODO: make sure this is included on server logs.
             return new ResponseMalformedRequest();
@@ -120,6 +119,16 @@ public class Server {
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
+        return response;
+    }
+
+    private ResponseLog handleRequestLog(RequestLog request) {
+        ResponseLog response;
+        User u = request.getUser();
+        ArrayList<Log> logs = this.dataStore.readUserLogs(u, -1);
+        response = new ResponseLog(logs);
+        this.dataStore.writeUserLog(u, new Log(u, request, response));
+
         return response;
     }
 

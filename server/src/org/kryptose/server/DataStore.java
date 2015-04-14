@@ -1,7 +1,10 @@
 package org.kryptose.server;
 
 import org.kryptose.requests.Blob;
+import org.kryptose.requests.Log;
 import org.kryptose.requests.User;
+
+import java.util.ArrayList;
 
 public interface DataStore {
 
@@ -33,6 +36,15 @@ public interface DataStore {
 	 * @return The blob read, or null on read error.
 	 */
 	public abstract Blob readBlob(User user);
+
+    /**
+     * Write a user-specific log entry.
+     *
+     * @param user       The user whose log to write.
+     * @param maxEntries - maximum number of entries to return, -1 if no limit, returns maxEntries most recent entries
+     * @return The logs in question
+     */
+    public abstract ArrayList<Log> readUserLogs(User user, int maxEntries);
 
 	/**
 	 * Write a user-specific log entry.
