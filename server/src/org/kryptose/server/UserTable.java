@@ -13,9 +13,14 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
+import org.kryptose.requests.User;
 
 public class UserTable {
 	
+	private static final int DEFAULT_SALT_SIZE = 50;
+
+
+
 	private class UserRecord{
 		final String username;
 		byte[] salt;
@@ -105,47 +110,62 @@ public class UserTable {
 				
 	}
 	
-	int salt_size;
+	private final int salt_size;
 	private ConcurrentHashMap<String,UserRecord> Users;
 	
-	public enum result{USER_NOT_FOUND, USER_ALREADY_EXISTS, USER_ADDED, WRONG_CREDENTIALS, AUTHENTICATION_SUCCESS, AUTH_KEY_CHANGED};
+	public enum Result{USER_NOT_FOUND, USER_ALREADY_EXISTS, USER_ADDED, WRONG_CREDENTIALS, AUTHENTICATION_SUCCESS, AUTH_KEY_CHANGED};
 
-	public boolean contains(String username){
-		return Users.containsKey(username);
-	}
-	
-	public result addUser(String username, byte[] auth_key){
-		if (this.contains(username)) 
-			return result.USER_ALREADY_EXISTS;
-		
-		Users.put(username, new UserRecord(username, auth_key));
-		return result.USER_ADDED;
-	}
-	
-	public result auth(String username, byte[] auth_key){
-		if (!this.contains(username)) 
-			return result.USER_NOT_FOUND;
-		else if(Users.get(username).authenticate(auth_key))
-			return result.AUTHENTICATION_SUCCESS;
-		else 
-			return result.WRONG_CREDENTIALS;
-	}
-	
-	public result changeAuthKey(String username, byte[] old_key, byte[] new_key){
-		if (!this.contains(username)) 
-			return result.USER_NOT_FOUND;
-		else if(Users.get(username).changeUserAuthKey(old_key,new_key))	
-			return result.AUTH_KEY_CHANGED;
-		else 
-			return result.WRONG_CREDENTIALS;
 
+	public UserTable() {
+		this(DEFAULT_SALT_SIZE);
 	}
-	
 	
 	public UserTable(int salt_size) {
 		this.salt_size = salt_size;
 		Users = new ConcurrentHashMap<String,UserRecord>();
 //		Users.put("me", new UserRecord("me", "AAAAAAAAAAAAAAAA", "A"));
+	}
+	
+	public boolean contains(String username){
+		return Users.containsKey(username);
+	}
+	
+	public Result addUser(User user){
+		if (this.contains(user.getUsername())) 
+			return Result.USER_ALREADY_EXISTS;
+		
+		Users.put(user.getUsername(),
+				new UserRecord(user.getUsername(), user.getPasskey()));
+		return Result.USER_ADDED;
+	}
+	
+	public Result auth(User user){
+		if (!this.contains(user.getUsername())) 
+			return Result.USER_NOT_FOUND;
+		else if(Users.get(user.getUsername()).authenticate(user.getPasskey()))
+			return Result.AUTHENTICATION_SUCCESS;
+		else 
+			return Result.WRONG_CREDENTIALS;
+	}
+	
+	public Result changeAuthKey(String username, byte[] old_key, byte[] new_key){
+		if (!this.contains(username)) 
+			return Result.USER_NOT_FOUND;
+		else if(Users.get(username).changeUserAuthKey(old_key,new_key))	
+			return Result.AUTH_KEY_CHANGED;
+		else 
+			return Result.WRONG_CREDENTIALS;
+
+	}
+
+	public static UserTable loadFromFile(String filename) {
+		throw new RuntimeException("User Table not yet implemented");
+		// TODO: do this.
+	}
+	
+	public void saveToFile(String filename) {
+		throw new RuntimeException("User Table not yet implemented");
+		// TODO: do this.
 	}
 	
 	
@@ -158,18 +178,18 @@ public class UserTable {
 		byte[] bad_pwd = "bad".getBytes();
 		
 		System.out.println(u.contains("Antonio"));
-		u.addUser("Antonio", good_pwd);
+		//u.addUser("Antonio", good_pwd);
 		System.out.println(u.contains("Antonio"));
 		System.out.println(u.contains("AntonioAAAA"));
 		
-		System.out.println(u.auth("Mario", good_pwd));		
-		System.out.println(u.auth("Antonio", good_pwd));		
-		System.out.println(u.auth("Antonio", bad_pwd));		
+		//System.out.println(u.auth("Mario", good_pwd));		
+		//System.out.println(u.auth("Antonio", good_pwd));		
+		//System.out.println(u.auth("Antonio", bad_pwd));		
 		
 		System.out.println(u.changeAuthKey("Mario", good_pwd, good_pwd));		
 		System.out.println(u.changeAuthKey("Antonio", good_pwd,bad_pwd));		
-		System.out.println(u.auth("Antonio", good_pwd));		
-		System.out.println(u.auth("Antonio", bad_pwd));
+		//System.out.println(u.auth("Antonio", good_pwd));		
+		//System.out.println(u.auth("Antonio", bad_pwd));
 		
 		
 	}
