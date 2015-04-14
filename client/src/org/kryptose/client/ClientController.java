@@ -24,7 +24,7 @@ public class ClientController {
     static final String PRINT = "print";
     static final String PRINT_SYNTAX = "Syntax: print";
     static final String LOGS = "logs";
-    static final String LOG_SYNTAX = "Syntax: logs";
+    static final String LOGS_SYNTAX = "Syntax: logs";
     static final String LOGOUT = "logout";
     static final String LOGOUT_SYNTAX = "Syntax: logout";
     static final String HELP = "help";
@@ -58,6 +58,21 @@ public class ClientController {
 		} catch (IOException e1) {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
 		}
+
+    }
+
+    public void fetchLogs() throws ServerException {
+        ResponseLog r;
+
+        try {
+            r = (ResponseLog) model.reqHandler.send(new RequestLog(model.user));
+            model.setLogs(r.getLogs());
+            model.displayLogs();
+        } catch (UnknownHostException e1) {
+            model.continuePrompt("The host could not be found");
+        } catch (IOException e1) {
+            model.continuePrompt("There was an SSL error, contact your local library for help");
+        }
 
     }
 
@@ -136,6 +151,12 @@ public class ClientController {
             } else {
                 model.continuePrompt(DEL_SYNTAX);
             }
+        } else if (command.equals(LOGS)) {
+            if (args.length == 1) {
+                fetchLogs();
+            } else {
+                model.continuePrompt(LOGS_SYNTAX);
+            }
         } else if (command.equals(LOGOUT)) {
             if (args.length == 1) {
                 model.logout();
@@ -164,7 +185,7 @@ public class ClientController {
                     "LOGOUT: Logs out of current account\n" +
                     LOGOUT_SYNTAX + "\n\n" +
                     "LOGS: Displays log of all current user interactions with server\n" +
-                    LOG_SYNTAX + "\n\n" +
+                    LOGS_SYNTAX + "\n\n" +
                     "PRINT: Prints all usernames and password pairs\n" +
                     PRINT_SYNTAX + "\n\n" +
                     "HELP: Prints commands, their uses, and their syntax\n" +

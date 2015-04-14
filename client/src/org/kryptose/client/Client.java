@@ -1,11 +1,13 @@
 package org.kryptose.client;
 
+import org.kryptose.requests.Log;
 import org.kryptose.requests.User;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Properties;
 
 public class Client {
@@ -19,6 +21,7 @@ public class Client {
     LocalDateTime lastmod;
     private String masterpass = "0";
     private String derivedFilePass = "TESTTESTTEST";
+    ArrayList<Log> userlog;
 
     private Client() {
     	
@@ -145,6 +148,17 @@ public class Client {
     public void newPassFile() {
         this.passfile = new PasswordFile(this.user.getUsername());
         view.promptCmd("New password file created");
+    }
+
+    void setLogs(ArrayList<Log> a){
+        userlog = a;
+    }
+
+    void displayLogs() {
+        for(Log l : userlog){
+            view.displayMessage(l.toString());
+        }
+        view.promptCmd();
     }
 
     String getMasterpass() {
