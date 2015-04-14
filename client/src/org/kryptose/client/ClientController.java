@@ -47,7 +47,7 @@ public class ClientController {
                 model.newPassFile();
             } else {
                 try {
-                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
+                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getMasterpass()));
                     model.passfile.setOldDigest(r.getBlob().getDigest());
                 } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
                     model.badMasterPass();
@@ -85,7 +85,7 @@ public class ClientController {
     public void save() {
 
         try {
-            Blob newBlob = model.passfile.encryptBlob(model.user.getUsername(), model.getFilepass(), model.getLastMod());
+            Blob newBlob = model.passfile.encryptBlob(model.user.getUsername(), model.getMasterpass(), model.getLastMod());
             //TODO: use correct digest
             RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
 
