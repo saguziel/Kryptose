@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <comment>Server Configuration File</comment>
-    <entry key="SERVER_HOSTNAME">js2845.cs.cornell.edu</entry>
+    <entry key="SERVER_HOSTNAME">127.0.0.1</entry>
     <entry key="CLIENT_KEY_STORE_PASSWORD">aaaaaa</entry>
     <entry key="SERVER_PORT_NUMBER">5002</entry>
     <entry key="CLIENT_KEY_STORE_FILE">ClientTrustStore.jks</entry>
