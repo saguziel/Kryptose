@@ -4,6 +4,7 @@ import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.exceptions.ServerException;
 import org.kryptose.requests.*;
+import org.kryptose.exceptions.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -110,7 +111,7 @@ public class ClientController {
 
     }
 
-	public void handleRequest(String request) throws CryptoErrorException, BadBlobException, ServerException {
+	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 
 		String[] args = request.trim().split("\\s+");
         if (args.length == 0) {
@@ -197,15 +198,22 @@ public class ClientController {
         }
 	}
 
-    public void handleUserName(String userName) throws ServerException {
+    public void handleUserName(String userName) {
         if (model.setUsername(userName)) {
-            fetch();
+//            fetch();
+            model.promptMasterpass();
         } else {
             model.start();
         }
     }
 
 	public void handlePassword(String pass) {
+        model.setMasterpass(pass);
+        if () {
+
+        } else {
+            model.start();
+        }
 		
 	}
 

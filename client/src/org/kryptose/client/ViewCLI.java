@@ -4,11 +4,13 @@ import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
 
 import java.util.Scanner;
+import org.kryptose.exceptions.*;
 
 public class ViewCLI extends View {
 
     final static int CMD = 0;
     final static int USERNAME = 1;
+    final static int PASSWORD = 2;
 	
 	ClientController ctrl;
     Scanner in;
@@ -33,8 +35,9 @@ public class ViewCLI extends View {
 	@Override
 	void promptPassword() {
 		System.out.println("Enter master password");
-		
+        awaitInput(PASSWORD);
 	}
+
 
     @Override
     void promptCmd() {
@@ -80,6 +83,8 @@ public class ViewCLI extends View {
                 }
             } else if (cmd == USERNAME) {
                 ctrl.handleUserName(input);
+            } else if (cmd == PASSWORD) {
+                ctrl.handlePassword(input);
             }
 	    }
 
