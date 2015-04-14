@@ -17,7 +17,7 @@ public class ClientController {
     static final String SAVE = "save";
     static final String SAVE_SYNTAX = "Syntax: save";
     static final String SET = "set";
-    static final String SET_SYNTAX = "Syntax: set $username $password";
+    static final String SET_SYNTAX = "Syntax: set $domain $username $password";
     static final String DEL = "del";
     static final String DEL_SYNTAX = "Syntax: del $username";
     static final String QUERY = "query";
@@ -29,10 +29,9 @@ public class ClientController {
     static final String LOGOUT = "logout";
     static final String LOGOUT_SYNTAX = "Syntax: logout";
     static final String HELP = "help";
-    static final String HELP_SYNTAX = "Syntax: help";
     static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, LOGS, LOGOUT, HELP};
-
-	Client model;
+    static final String HELP_SYNTAX = "Syntax: help";
+    Client model;
 	
 	public ClientController(Client c) {
 		this.model = c;
