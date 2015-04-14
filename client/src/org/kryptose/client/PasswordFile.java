@@ -213,28 +213,5 @@ public class PasswordFile {
 		}
     }
     
-    
-    //TODO: for testing only. Remove LATER BY ANTONIO. If it generates errors, just comment it.
-    public static void main(String[] args){
-    	
-    	KeyDerivator.setAppSalt("AAAAAAAAAAAAAAAA");
-
-    	PasswordFile p = new PasswordFile("Antonio");
-    	p.setVal("MyUser", "MyPwd");
-    	
-    	try{
-    	Blob b = p.encryptBlob("Antonio", "MasterPassword",LocalDateTime.now());
-    	
-    	PasswordFile p2 = new PasswordFile("Antonio", b, "MasterPassword");
-
-        for (Credential c : p2.credentials) {
-            System.out.println("Domain: " + c.getDomain() + " Password: " + c.getPassword());
-        }
-    	
-    	} catch(Exception e){
-    		e.printStackTrace();
-    	}
-    }
-
 
 }
