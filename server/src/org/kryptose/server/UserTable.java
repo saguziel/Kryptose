@@ -111,7 +111,7 @@ public class UserTable {
 	}
 	
 	private final int salt_size;
-	private ConcurrentHashMap<String,UserRecord> Users;
+	private ConcurrentHashMap<String,UserRecord> users;
 	
 	public enum Result{USER_NOT_FOUND, USER_ALREADY_EXISTS, USER_ADDED, WRONG_CREDENTIALS, AUTHENTICATION_SUCCESS, AUTH_KEY_CHANGED};
 
@@ -122,19 +122,19 @@ public class UserTable {
 	
 	public UserTable(int salt_size) {
 		this.salt_size = salt_size;
-		Users = new ConcurrentHashMap<String,UserRecord>();
+		this.users = new ConcurrentHashMap<String,UserRecord>();
 //		Users.put("me", new UserRecord("me", "AAAAAAAAAAAAAAAA", "A"));
 	}
 	
 	public boolean contains(String username){
-		return Users.containsKey(username);
+		return users.containsKey(username);
 	}
 	
 	public Result addUser(User user){
 		if (this.contains(user.getUsername())) 
 			return Result.USER_ALREADY_EXISTS;
 		
-		Users.put(user.getUsername(),
+		users.put(user.getUsername(),
 				new UserRecord(user.getUsername(), user.getPasskey()));
 		return Result.USER_ADDED;
 	}
@@ -142,7 +142,7 @@ public class UserTable {
 	public Result auth(User user){
 		if (!this.contains(user.getUsername())) 
 			return Result.USER_NOT_FOUND;
-		else if(Users.get(user.getUsername()).authenticate(user.getPasskey()))
+		else if(users.get(user.getUsername()).authenticate(user.getPasskey()))
 			return Result.AUTHENTICATION_SUCCESS;
 		else 
 			return Result.WRONG_CREDENTIALS;
@@ -151,7 +151,7 @@ public class UserTable {
 	public Result changeAuthKey(String username, byte[] old_key, byte[] new_key){
 		if (!this.contains(username)) 
 			return Result.USER_NOT_FOUND;
-		else if(Users.get(username).changeUserAuthKey(old_key,new_key))	
+		else if(users.get(username).changeUserAuthKey(old_key,new_key))	
 			return Result.AUTH_KEY_CHANGED;
 		else 
 			return Result.WRONG_CREDENTIALS;
