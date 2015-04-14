@@ -147,8 +147,9 @@ public class Client {
     }
 
     public void setMasterpass(String pass) {
-
         this.masterpass = pass;
+        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.user.getUsername(), this.masterpass.toCharArray());
+        this.derivedFilePass = new String(derived);
     }
 
     public void newPassFile() {
@@ -175,8 +176,6 @@ public class Client {
         view.promptPassword();
     }
 
-
-
     String getFilepass() {
         return derivedFilePass;
     }
@@ -185,6 +184,9 @@ public class Client {
         view.promptUserName();
     }
 
-
+    public void restart() {
+        view.displayMessage("Invalid user name or password, please try again");
+        view.promptUserName();
+    }
 
 }

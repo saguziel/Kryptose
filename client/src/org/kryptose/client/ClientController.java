@@ -37,7 +37,7 @@ public class ClientController {
 		this.model = c;
 	}
 
-	public void fetch() throws ServerException {
+	public void fetch() {
 
         ResponseGet r;
 
@@ -57,11 +57,15 @@ public class ClientController {
 			model.continuePrompt("The host could not be found");
 		} catch (IOException e1) {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
-		}
+		} catch (InvalidCredentialsException e1) {
+            model.restart();
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
+        }
 
     }
 
-    public void fetchLogs() throws ServerException {
+    public void fetchLogs() {
         ResponseLog r;
 
         try {
@@ -72,11 +76,13 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
         }
 
     }
 
-    public void save() throws ServerException {
+    public void save() {
 
         try {
             Blob newBlob = model.passfile.encryptBlob(model.user.getUsername(), model.getFilepass(), model.getLastMod());
@@ -106,6 +112,8 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
         }
 
     }
@@ -208,11 +216,7 @@ public class ClientController {
 
 	public void handlePassword(String pass) {
         model.setMasterpass(pass);
-        if () {
-
-        } else {
-            model.start();
-        }
+        fetch();
 		
 	}
 
