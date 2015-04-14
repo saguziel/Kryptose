@@ -2,6 +2,7 @@ package org.kryptose.client;
 
 import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
+import org.kryptose.exceptions.ServerException;
 import org.kryptose.requests.*;
 
 import java.io.IOException;
@@ -22,11 +23,13 @@ public class ClientController {
     static final String QUERY_SYNTAX = "Syntax: query $username";
     static final String PRINT = "print";
     static final String PRINT_SYNTAX = "Syntax: print";
+    static final String LOGS = "logs";
+    static final String LOG_SYNTAX = "Syntax: logs";
     static final String LOGOUT = "logout";
     static final String LOGOUT_SYNTAX = "Syntax: logout";
     static final String HELP = "help";
     static final String HELP_SYNTAX = "Syntax: help";
-    static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, LOGOUT, HELP};
+    static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, LOGS, LOGOUT, HELP};
 
 	Client model;
 	
@@ -34,7 +37,7 @@ public class ClientController {
 		this.model = c;
 	}
 
-	public void fetch() {
+	public void fetch() throws ServerException {
 
         ResponseGet r;
 
@@ -58,7 +61,7 @@ public class ClientController {
 
     }
 
-    public void save() {
+    public void save() throws ServerException {
 
         try {
             Blob newBlob = model.passfile.encryptBlob(model.user.getUsername(), model.getFilepass(), model.getLastMod());
@@ -92,7 +95,7 @@ public class ClientController {
 
     }
 
-	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
+	public void handleRequest(String request) throws CryptoErrorException, BadBlobException, ServerException {
 
 		String[] args = request.trim().split("\\s+");
         if (args.length == 0) {
@@ -160,6 +163,8 @@ public class ClientController {
                     DEL_SYNTAX + "\n\n" +
                     "LOGOUT: Logs out of current account\n" +
                     LOGOUT_SYNTAX + "\n\n" +
+                    "LOGS: Displays log of all current user interactions with server\n" +
+                    LOG_SYNTAX + "\n\n" +
                     "PRINT: Prints all usernames and password pairs\n" +
                     PRINT_SYNTAX + "\n\n" +
                     "HELP: Prints commands, their uses, and their syntax\n" +
@@ -171,7 +176,7 @@ public class ClientController {
         }
 	}
 
-    public void handleUserName(String userName) {
+    public void handleUserName(String userName) throws ServerException {
         if (model.setUsername(userName)) {
             fetch();
         } else {
