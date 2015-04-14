@@ -1,9 +1,11 @@
 package org.kryptose.server;
 
 import org.kryptose.requests.Blob;
+import org.kryptose.requests.Log;
 import org.kryptose.requests.User;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -127,6 +129,11 @@ public class FileSystemDataStore implements DataStore {
 		}
 
         return WriteResult.SUCCESS;
+    }
+
+    @Override
+    public ArrayList<Log> readUserLogs(User user, int maxEntries) {
+        return null;
     }
     
     @Override

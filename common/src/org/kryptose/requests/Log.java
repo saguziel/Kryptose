@@ -1,8 +1,4 @@
-package org.kryptose.server;
-
-import org.kryptose.requests.Request;
-import org.kryptose.requests.Response;
-import org.kryptose.requests.User;
+package org.kryptose.requests;
 
 import java.io.Serializable;
 import java.time.ZoneId;
