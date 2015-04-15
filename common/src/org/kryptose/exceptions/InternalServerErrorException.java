@@ -11,7 +11,7 @@ package org.kryptose.exceptions;
  * 
  * @author jshi
  */
-public class InternalServerErrorException extends ServerException {
+public class InternalServerErrorException extends Exception {
 	
 	public InternalServerErrorException() {
 		super();

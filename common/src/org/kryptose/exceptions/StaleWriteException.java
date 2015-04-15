@@ -5,7 +5,7 @@ package org.kryptose.exceptions;
  * 
  * @author jshi
  */
-public class StaleWriteException extends ServerException {
+public class StaleWriteException extends Exception {
 
 	public StaleWriteException() {
 	}

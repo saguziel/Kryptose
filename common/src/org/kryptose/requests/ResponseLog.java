@@ -1,7 +1,5 @@
 package org.kryptose.requests;
 
-import org.kryptose.exceptions.ServerException;
-
 import java.util.ArrayList;
 import org.kryptose.exceptions.*;
 
@@ -17,11 +15,6 @@ public final class ResponseLog extends Response {
     public ResponseLog(ArrayList<Log> entries) {
         super();
         this.entries = entries;
-    }
-
-    public ResponseLog(ServerException exception) {
-        super(exception);
-        this.entries = null;
     }
 
     public ArrayList<Log> getLogs() {
