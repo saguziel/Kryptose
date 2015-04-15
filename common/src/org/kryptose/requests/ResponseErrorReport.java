@@ -4,24 +4,24 @@ import org.kryptose.exceptions.InternalServerErrorException;
 import org.kryptose.exceptions.InvalidCredentialsException;
 import org.kryptose.exceptions.MalformedRequestException;
 
-public class ResponseExceptionReport extends Response {
+public class ResponseErrorReport extends Response {
 	
 	private InvalidCredentialsException icex = null;
 	private MalformedRequestException mrex = null;
 	private InternalServerErrorException iseex = null; 
 
 	
-    public ResponseExceptionReport(InvalidCredentialsException ex) {
+    public ResponseErrorReport(InvalidCredentialsException ex) {
 		super();
 		this.icex = ex;
 	}
 	
-    public ResponseExceptionReport(MalformedRequestException ex) {
+    public ResponseErrorReport(MalformedRequestException ex) {
 		super();
 		this.mrex = ex;
 	}
 	
-    public ResponseExceptionReport(InternalServerErrorException ex) {
+    public ResponseErrorReport(InternalServerErrorException ex) {
 		super();
 		this.iseex = ex;
 	}

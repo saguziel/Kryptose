@@ -3,6 +3,7 @@ package org.kryptose.server;
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.exceptions.InternalServerErrorException;
 import org.kryptose.exceptions.InvalidCredentialsException;
+import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.exceptions.StaleWriteException;
 import org.kryptose.exceptions.UsernameInUseException;
 import org.kryptose.requests.*;
@@ -86,7 +87,7 @@ public class Server {
     			if (result == Result.WRONG_CREDENTIALS ||
     					result == Result.USER_NOT_FOUND) {
     				InvalidCredentialsException ex = new InvalidCredentialsException();
-    				return new ResponseExceptionReport(ex);
+    				return new ResponseErrorReport(ex);
     			}
     			// Authentication succeeded; continue.
     			if (result == Result.AUTHENTICATION_SUCCESS) {
@@ -95,7 +96,7 @@ public class Server {
     			// result check fell through, log error.
     			String errorMsg = "Unexpected UserTable.Result in authentication.";
     			this.getLogger().log(Level.SEVERE, errorMsg, result);
-    			return new ResponseExceptionReport(new InternalServerErrorException());
+    			return new ResponseErrorReport(new InternalServerErrorException());
     		}
     	}
     }
@@ -116,12 +117,12 @@ public class Server {
             return this.handleRequestLog((RequestLog) request);
         } else {
         	// TODO: make sure this is included on server logs.
-            return new ResponseMalformedRequest();
+            return new ResponseErrorReport(new MalformedRequestException());
         }
     }
 
-    private ResponseGet handleRequestGet(RequestGet request) {
-        ResponseGet response;
+    private Response handleRequestGet(RequestGet request) {
+        Response response;
         User u = request.getUser();
 
         boolean hasBlob = this.dataStore.userHasBlob(u);
@@ -132,7 +133,7 @@ public class Server {
             if (b != null) {
                 response = new ResponseGet(b); // TODO userauditlog
             } else {
-                response = new ResponseGet(new InternalServerErrorException());
+                response = new ResponseErrorReport(new InternalServerErrorException());
                 String errorMsg = "Blob was null, but hasBlob was true. User: " + u.getUsername();
                 this.getLogger().log(Level.SEVERE, errorMsg);
             }
@@ -157,8 +158,8 @@ public class Server {
         return response;
     }
 
-    private ResponsePut handleRequestPut(RequestPut request) {
-        ResponsePut response;
+    private Response handleRequestPut(RequestPut request) {
+        Response response;
         User u = request.getUser();
         byte[] oldDigest = request.getOldDigest();
         Blob toBeWritten = request.getBlob();
@@ -172,19 +173,19 @@ public class Server {
                 } catch (CryptoPrimitiveNotSupportedException e) {
                 	String errorMsg = "Java Runtime does not support required cryptography operations.";
                 	this.getLogger().log(Level.SEVERE, errorMsg, e);
-                    response = new ResponsePut(new InternalServerErrorException());
+                    response = new ResponseErrorReport(new InternalServerErrorException());
                 }
                 break;
             case STALE_WRITE:
                 response = new ResponsePut(new StaleWriteException());
                 break;
             case INTERNAL_ERROR:
-                response = new ResponsePut(new InternalServerErrorException());
+                response = new ResponseErrorReport(new InternalServerErrorException());
                 // Assume logging has already been done.
                 break;
             case USER_DOES_NOT_EXIST: // we should have authenticated by now.
             default:
-                response = new ResponsePut(new InternalServerErrorException());
+                response = new ResponseErrorReport(new InternalServerErrorException());
             	String errorMsg = "Switch-case fall-through in handleRequestPut.";
             	this.getLogger().log(Level.SEVERE, errorMsg, Thread.currentThread().getStackTrace());
                 break;
