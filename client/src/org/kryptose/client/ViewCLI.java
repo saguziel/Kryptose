@@ -5,6 +5,7 @@ import org.kryptose.exceptions.CryptoErrorException;
 
 import java.util.Scanner;
 import org.kryptose.exceptions.*;
+import java.io.Console;
 
 public class ViewCLI extends View {
 
@@ -14,7 +15,8 @@ public class ViewCLI extends View {
     final static int START = 3;
     final static int CREATEUSR = 4;
     final static int CREATEPASS = 5;
-	
+
+    Console console = System.console();
 	ClientController ctrl;
     Scanner in;
 
@@ -37,7 +39,7 @@ public class ViewCLI extends View {
     @Override
     void createPass() {
         System.out.println("Enter new account password");
-        awaitInput(CREATEPASS);
+        ctrl.handleCreatepass(new String(console.readPassword()));
     }
 
     @Override
@@ -46,11 +48,22 @@ public class ViewCLI extends View {
         awaitInput(USERNAME);
 
     }
+
+    @Override
+    void set(){
+        System.out.print("Enter domain name\n> ");
+        String dom = in.nextLine();
+        System.out.print("Enter user name\n> ");
+        String user = in.nextLine();
+        System.out.print("Enter password\n> ");
+        String pass = new String(console.readPassword());
+        ctrl.handleSet(dom, user, pass);
+    }
 	
 	@Override
 	void promptPassword() {
 		System.out.println("Enter master password");
-        awaitInput(PASSWORD);
+        ctrl.handlePassword(new String(console.readPassword()));
 	}
 
 
@@ -103,15 +116,18 @@ public class ViewCLI extends View {
                 }
             } else if (cmd == USERNAME) {
                 ctrl.handleUserName(input);
-            } else if (cmd == PASSWORD) {
-                ctrl.handlePassword(input);
-            } else if (cmd == START) {
+            }
+//            else if (cmd == PASSWORD) {
+//                ctrl.handlePassword(input);
+//            }
+            else if (cmd == START) {
                 ctrl.handleStart(input);
             } else if (cmd == CREATEUSR) {
                 ctrl.handleCreateuser(input);
-            } else if (cmd == CREATEPASS){
-                ctrl.handleCreatepass(input);
             }
+//            else if (cmd == CREATEPASS){
+//                ctrl.handleCreatepass(input);
+//            }
 	    }
 
 	}

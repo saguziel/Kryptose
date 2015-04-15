@@ -82,14 +82,17 @@ public class Client {
         view.promptCmd("Password file successfully fetched");
     }
 
-    public void setVal(String dom, String newVal) {
-        Boolean succ = this.passfile.setVal(dom, newVal);
+    public void setVal(String dom, String user, String pass) {
+        Boolean succ = this.passfile.setVal(dom, user, pass);
         lastmod = LocalDateTime.now();
         if(succ){
-            view.displayMessage("password for key: " + dom + " successfully set");
+            view.displayMessage("password for domain: " + dom + ", user: " + user + " successfully set");
         } else {
-            view.displayMessage("password for key: " + dom + " successfully created");
+            view.displayMessage("password for domain: " + dom + ", user: " + user + " successfully created");
         }
+    }
+    public void set() {
+        view.set();
     }
 
     public void delVal(String dom) {
@@ -110,8 +113,13 @@ public class Client {
     }
 
     public void printAll() {
+        int i = 0;
         for (Credential c : passfile.credentials) {
-            System.out.println("Domain: " + c.getDomain() + " Password: " + c.getPassword());
+            System.out.println(
+                    ++i + ": Domain: " + c.getDomain() +
+                    " Username: " + c.getUsername() +
+                    " Password: " + c.getPassword() +
+                    " Lastmod: " + c.getMod().toString());
         }
         view.promptCmd();
     }
