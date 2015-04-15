@@ -258,12 +258,14 @@ public class UserTable implements Serializable {
 			ut.initFromDeserialization(logger, fileName);
 			return ut;
 		} catch (ClassNotFoundException e) {
-			String errorMsg = "UserTable file incorrectly formatted. Maybe outdated file version?";
+			String errorMsg = String.format("UserTable file at %s incorrectly formatted. Maybe outdated file version?",
+					fileName);
 			logger.log(Level.SEVERE, errorMsg, e);
 			throw new IOException(errorMsg, e);
 		} catch (FileNotFoundException e) {
-			String errorMsg = "No existing user table file found... reverting to no existing users.";
-			logger.log(Level.WARNING, errorMsg, e);
+			String errorMsg = String.format("No existing user table file found at %s... reverting to empty user table.",
+					fileName);
+			logger.log(Level.WARNING, errorMsg);
 			return new UserTable(logger);
 		}
 	}

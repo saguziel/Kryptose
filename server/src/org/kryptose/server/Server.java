@@ -267,9 +267,9 @@ public class Server {
 		this.logger.setLevel(Level.ALL);
 		
 		// TODO this log Handler is for debug purposes. remove or configure.
-		Handler debug = new ConsoleHandler();
-		debug.setLevel(Level.ALL);
-		this.logger.addHandler(debug);
+		//Handler debug = new ConsoleHandler();
+		//debug.setLevel(Level.ALL);
+		//this.logger.addHandler(debug);
 
 		// Handler to write logs to file.
 		Handler fileHandler = null;
