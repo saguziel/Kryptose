@@ -28,8 +28,8 @@ public class UserTable {
 	private static final int DEFAULT_SALT_SIZE = 50;
 
 	// TODO: make configurable
-	private static final String USER_TABLE_FILE_NAME = "usertable.bin";
-	private static final String USER_TABLE_TEMP_NAME = "usertable.bin.tmp";
+	private static final String DEFAULT_FILENAME = "usertable.bin";
+	private static final String FILENAME_TEMP_SUFFIX = ".tmp";
 
 	public enum Result{USER_NOT_FOUND, USER_ALREADY_EXISTS, USER_ADDED, WRONG_CREDENTIALS, AUTHENTICATION_SUCCESS, AUTH_KEY_CHANGED};
 	
@@ -162,19 +162,30 @@ public class UserTable {
 	// INSTANCE VARIABLES
 	
 	private final Logger logger;
+	// TODO: sort of janky that you can't permanently move the file after the instance is created.
+	private final String fileName;
+	private final String tmpFileName;
 	private final int salt_size;
 	private ConcurrentHashMap<String,UserRecord> users;
+	
 	private final Object persistLock = new Object();
 	private final Object ensurePersistMonitor = new Object();
-	private volatile boolean persistInProgress = false;
+	private transient volatile boolean persistInProgress = false;
 	
 
 	public UserTable(Logger logger) {
-		this(logger, DEFAULT_SALT_SIZE);
+		this(logger, DEFAULT_FILENAME, DEFAULT_SALT_SIZE);
 	}
 	
-	public UserTable(Logger logger, int salt_size) {
+	public UserTable(Logger logger, String fileName) {
+		this(logger, fileName, DEFAULT_SALT_SIZE);
+	}
+	
+	// TODO: make this configurable from properties
+	public UserTable(Logger logger, String fileName, int salt_size) {
 		this.logger = logger;
+		this.fileName = fileName;
+		this.tmpFileName = fileName + FILENAME_TEMP_SUFFIX;
 		this.salt_size = salt_size;
 		this.users = new ConcurrentHashMap<String,UserRecord>();
 //		Users.put("me", new UserRecord("me", "AAAAAAAAAAAAAAAA", "A"));
@@ -226,8 +237,12 @@ public class UserTable {
 	}
 
 	public static UserTable loadFromFile(Logger logger) throws IOException {
+		return UserTable.loadFromFile(logger, DEFAULT_FILENAME);
+	}
+
+	public static UserTable loadFromFile(Logger logger, String fileName) throws IOException {
 		try (ObjectInputStream fw = new ObjectInputStream(
-				new FileInputStream(USER_TABLE_FILE_NAME))) {
+				new FileInputStream(fileName))) {
 			return (UserTable) fw.readObject();
 		} catch (ClassNotFoundException e) {
 			String errorMsg = "UserTable file incorrectly formatted. Maybe outdated file version?";
@@ -242,21 +257,23 @@ public class UserTable {
 	
 	public void saveToFile() throws IOException {
 		try (ObjectOutputStream fw = new ObjectOutputStream(
-				new FileOutputStream(USER_TABLE_TEMP_NAME))) {
+				new FileOutputStream(this.tmpFileName))) {
 			fw.writeObject(this);
 		}
-		File finalFile = new File(USER_TABLE_FILE_NAME);
+		File finalFile = new File(this.fileName);
 		finalFile.delete();
-		new File(USER_TABLE_TEMP_NAME).renameTo(finalFile);
+		new File(this.tmpFileName).renameTo(finalFile);
 	}
 	
-	public void ensurePersistNewThread() {
-		new Thread(new Runnable() {
+	public Thread ensurePersistNewThread() {
+		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				UserTable.this.ensurePersist();
 			}
-		}).start();
+		});
+		t.start();
+		return t;
 	}
 	
 	public void ensurePersist() {
@@ -295,7 +312,7 @@ public class UserTable {
 	}
 
 	public static void main(String[] args) {
-		UserTable u = new UserTable(null, 50);
+		UserTable u = new UserTable(null);
 		
 		byte[] good_pwd = "good".getBytes();
 		byte[] bad_pwd = "bad".getBytes();
