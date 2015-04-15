@@ -1,11 +1,18 @@
 package org.kryptose.server;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
-import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.crypto.SecretKeyFactory;
@@ -164,7 +171,6 @@ public class UserTable {
 	private final Object persistLock = new Object();
 	private final Object ensurePersistMonitor = new Object();
 	private volatile boolean persistInProgress = false;
-	private volatile boolean persistQueued = false;
 	
 
 	public UserTable() {
@@ -210,14 +216,21 @@ public class UserTable {
 
 	}
 
-	public static UserTable loadFromFile() {
-		throw new RuntimeException("User Table not yet implemented");
-		// TODO: do this.
+	public static UserTable loadFromFile() throws FileNotFoundException, IOException {
+		try (ObjectInputStream fw = new ObjectInputStream(
+				new FileInputStream(USER_TABLE_FILE_NAME))) {
+			return (UserTable) fw.readObject();
+		}
 	}
 	
-	public void saveToFile() {
-		throw new RuntimeException("User Table not yet implemented");
-		// TODO: do this.
+	public void saveToFile() throws IOException {
+		try (ObjectOutputStream fw = new ObjectOutputStream(
+				new FileOutputStream(USER_TABLE_TEMP_NAME))) {
+			fw.writeObject(this);
+		}
+		File finalFile = new File(USER_TABLE_FILE_NAME);
+		finalFile.delete();
+		new File(USER_TABLE_TEMP_NAME).renameTo(finalFile);
 	}
 	
 	public void ensurePersistNewThread() {
@@ -234,10 +247,11 @@ public class UserTable {
 		synchronized (ensurePersistMonitor) {
 			if (persistInProgress) {
 				// Queue this thread up as responsible for ensuring a persist.
-				persistQueued = true;
 				ensurePersistMonitor.notifyAll(); // relieve other threads of responsibility.
 				boolean interrupted = false;
-				try { ensurePersistMonitor.wait(); }
+				try {
+					ensurePersistMonitor.wait();
+				}
 				catch (InterruptedException ex) { interrupted = true; }
 				// If woken while persist in progress, means this thread
 				// no longer responsible for ensuring a persist.
@@ -245,7 +259,6 @@ public class UserTable {
 			}
 			// This thread about to start a persist.
 			persistInProgress = true;
-			persistQueued = false;
 		}
 		// Persist the UserTable.
 		synchronized (persistLock) {
