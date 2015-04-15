@@ -1,10 +1,10 @@
 package org.kryptose.client;
 
-import org.kryptose.exceptions.ServerException;
+import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.exceptions.InvalidCredentialsException;
+import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
-import org.kryptose.requests.RequestTest;
-import org.kryptose.requests.ResponseTest;
 
 import java.io.*;
 import java.net.UnknownHostException;
@@ -13,13 +13,12 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 
-// TODO: rename this class.
 public class RequestHandler {
 
-	static String serverHostname;
-	static int serverPort;
-	static String clientTrustStore; 
-	static String clientTrustStorePassword;
+	String serverHostname;
+	int serverPort;
+	String clientTrustStore; 
+	String clientTrustStorePassword;
 	
     SSLSocketFactory sslsocketfactory; 
     SSLSocket sock; 
@@ -54,7 +53,7 @@ public class RequestHandler {
 	}
 
 	
-	Response send(Request req) throws UnknownHostException, IOException, ServerException {
+	Response send(Request req) throws UnknownHostException, IOException, MalformedRequestException, InvalidCredentialsException, InternalServerErrorException {
         try {
     	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
 

@@ -2,7 +2,6 @@ package org.kryptose.client;
 
 import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
-import org.kryptose.exceptions.ServerException;
 import org.kryptose.requests.*;
 import org.kryptose.exceptions.*;
 
@@ -62,8 +61,6 @@ public class ClientController {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
 		} catch (InvalidCredentialsException e1) {
             model.restartLogin();
-        } catch (ServerException e1) {
-            model.continuePrompt("A server error occurred, please try again :)");
         }
 
     }
@@ -79,8 +76,6 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
-        } catch (ServerException e1) {
-            model.continuePrompt("A server error occurred, please try again :)");
         }
     }
 
@@ -98,8 +93,6 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
-        } catch (ServerException e1) {
-            model.continuePrompt("A server error occurred, please try again :)");
         }
     }
 
@@ -136,8 +129,6 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
-        } catch (ServerException e1) {
-            model.continuePrompt("A server error occurred, please try again :)");
         }
 
     }
