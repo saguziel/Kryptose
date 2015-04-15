@@ -60,7 +60,7 @@ class SecureServerListener{
     }
     
     private void listenForClient() {
-    	SSLSocket clientSocket;
+    	final SSLSocket clientSocket;
     	
     	// Wait for and accept connection.
     	try {
@@ -76,7 +76,7 @@ class SecureServerListener{
 		this.server.getLogger().log(Level.CONFIG, printSocketInfo(connection));
 
 		// Handle connection.
-		ClientHandler job = new ClientHandler(server, clientSocket, connection);
+		final ClientHandler job = new ClientHandler(server, clientSocket, connection);
 		Thread t = new Thread(job);
 		
     	// Set uncaught exception handler
