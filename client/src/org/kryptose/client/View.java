@@ -16,7 +16,12 @@ public abstract class View {
 
 	abstract void logout();
 
+    abstract void promptStart();
+
     abstract void displayMessage(String s);
-	
+
+    abstract void createUsername();
+
+    abstract void createPass();
 
 }

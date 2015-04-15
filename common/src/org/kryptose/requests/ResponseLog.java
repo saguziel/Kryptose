@@ -1,5 +1,7 @@
 package org.kryptose.requests;
+
 import java.util.ArrayList;
+import org.kryptose.exceptions.*;
 
 
 /**
@@ -15,16 +17,7 @@ public final class ResponseLog extends Response {
         this.entries = entries;
     }
 
-    public ResponseLog(ServerException exception) {
-        super(exception);
-        this.entries = null;
-    }
-
-    public ArrayList<Log> getLogs() throws ServerException {
-        // Is this an exception response? Throw exception if so.
-        if (this.getException() != null) {
-            throw this.getException();
-        }
+    public ArrayList<Log> getLogs() {
         // Return blob.
         return entries;
     }

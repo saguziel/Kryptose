@@ -22,8 +22,9 @@ public class FileSystemDataStore implements DataStore {
 	private static final String USER_BLOB_PREFIX = DATASTORE_PREFIX + "blobs/";
 	private static final String USER_LOG_PREFIX = DATASTORE_PREFIX + "userlogs/";
 	private static final File SYSTEM_LOG_FILE = new File(DATASTORE_PREFIX + "kryptose.log");
-	
-	private Logger logger;
+
+
+    private Logger logger;
 
     FileSystemDataStore(Logger logger) {
     	this.logger = logger;

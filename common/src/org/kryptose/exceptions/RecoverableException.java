@@ -5,7 +5,7 @@ package org.kryptose.exceptions;
  * 
  * @author jshi
  */
-public class RecoverableException extends ServerException {
+public class RecoverableException extends Exception {
 
 	public RecoverableException() {
 	}

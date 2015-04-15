@@ -27,9 +27,7 @@ public class KeyDerivator {
 		appSalt =  DatatypeConverter.parseHexBinary(enc_app_salt);
 		usernameMaxLength = username_max_length;
 	}
-	
-	
-	
+
 	public static byte[] getAuthenticationKeyBytes(String username, char[] password) throws CryptoPrimitiveNotSupportedException {
 			return Arrays.copyOfRange(computeRawKey(username, password), 0, 32);	
 	}

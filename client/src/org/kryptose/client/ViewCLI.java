@@ -4,11 +4,16 @@ import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
 
 import java.util.Scanner;
+import org.kryptose.exceptions.*;
 
 public class ViewCLI extends View {
 
     final static int CMD = 0;
     final static int USERNAME = 1;
+    final static int PASSWORD = 2;
+    final static int START = 3;
+    final static int CREATEUSR = 4;
+    final static int CREATEPASS = 5;
 	
 	ClientController ctrl;
     Scanner in;
@@ -24,6 +29,18 @@ public class ViewCLI extends View {
 
 
     @Override
+    void createUsername() {
+        System.out.println("Enter new account user name");
+        awaitInput(CREATEUSR);
+    }
+
+    @Override
+    void createPass() {
+        System.out.println("Enter new account password");
+        awaitInput(CREATEPASS);
+    }
+
+    @Override
     void promptUserName() {
         System.out.println("Enter user name");
         awaitInput(USERNAME);
@@ -33,12 +50,18 @@ public class ViewCLI extends View {
 	@Override
 	void promptPassword() {
 		System.out.println("Enter master password");
-		
+        awaitInput(PASSWORD);
 	}
+
 
     @Override
     void promptCmd() {
         awaitInput(CMD);
+    }
+
+    @Override
+    void promptStart() {
+        awaitInput(START);
     }
 
 	@Override
@@ -80,6 +103,14 @@ public class ViewCLI extends View {
                 }
             } else if (cmd == USERNAME) {
                 ctrl.handleUserName(input);
+            } else if (cmd == PASSWORD) {
+                ctrl.handlePassword(input);
+            } else if (cmd == START) {
+                ctrl.handleStart(input);
+            } else if (cmd == CREATEUSR) {
+                ctrl.handleCreateuser(input);
+            } else if (cmd == CREATEPASS){
+                ctrl.handleCreatepass(input);
             }
 	    }
 

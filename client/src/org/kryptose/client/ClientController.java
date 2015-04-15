@@ -4,6 +4,7 @@ import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.exceptions.ServerException;
 import org.kryptose.requests.*;
+import org.kryptose.exceptions.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -11,12 +12,15 @@ import java.util.Arrays;
 
 public class ClientController {
 
+    static final String LOGIN = "get";
+    static final String CREATE = "create";
+
     static final String GET = "get";
     static final String GET_SYNTAX = "Syntax: get";
     static final String SAVE = "save";
     static final String SAVE_SYNTAX = "Syntax: save";
     static final String SET = "set";
-    static final String SET_SYNTAX = "Syntax: set $username $password";
+    static final String SET_SYNTAX = "Syntax: set $domain $username $password";
     static final String DEL = "del";
     static final String DEL_SYNTAX = "Syntax: del $username";
     static final String QUERY = "query";
@@ -28,16 +32,15 @@ public class ClientController {
     static final String LOGOUT = "logout";
     static final String LOGOUT_SYNTAX = "Syntax: logout";
     static final String HELP = "help";
-    static final String HELP_SYNTAX = "Syntax: help";
     static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, LOGS, LOGOUT, HELP};
-
-	Client model;
+    static final String HELP_SYNTAX = "Syntax: help";
+    Client model;
 	
 	public ClientController(Client c) {
 		this.model = c;
 	}
 
-	public void fetch() throws ServerException {
+	public void fetch() {
 
         ResponseGet r;
 
@@ -47,7 +50,7 @@ public class ClientController {
                 model.newPassFile();
             } else {
                 try {
-                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getFilepass()));
+                    model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getMasterpass()));
                     model.passfile.setOldDigest(r.getBlob().getDigest());
                 } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
                     model.badMasterPass();
@@ -57,11 +60,15 @@ public class ClientController {
 			model.continuePrompt("The host could not be found");
 		} catch (IOException e1) {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
-		}
+		} catch (InvalidCredentialsException e1) {
+            model.restartLogin();
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
+        }
 
     }
 
-    public void fetchLogs() throws ServerException {
+    public void fetchLogs() {
         ResponseLog r;
 
         try {
@@ -72,14 +79,34 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
         }
-
     }
 
-    public void save() throws ServerException {
+
+    public void handleCreatepass(String pass) {
+        ResponseCreateAccount r;
+
+        model.setMasterpass(pass);
 
         try {
-            Blob newBlob = model.passfile.encryptBlob(model.user.getUsername(), model.getFilepass(), model.getLastMod());
+            r = (ResponseCreateAccount) model.reqHandler.send(new RequestCreateAccount(model.user));
+            model.continuePrompt("Account successfully created!");
+
+        } catch (UnknownHostException e1) {
+            model.continuePrompt("The host could not be found");
+        } catch (IOException e1) {
+            model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
+        }
+    }
+
+    public void save() {
+
+        try {
+            Blob newBlob = model.passfile.encryptBlob(model.user.getUsername(), model.getMasterpass(), model.getLastMod());
             //TODO: use correct digest
             RequestPut req = new RequestPut(model.user, newBlob, model.passfile.getOldDigest());
 
@@ -88,7 +115,10 @@ public class ClientController {
             if (r instanceof ResponsePut) {
                 model.passfile.setOldDigest(req.getBlob().getDigest());
                 model.continuePrompt("Successfully saved to server");
-            } else if (r instanceof ResponseInternalServerError) {
+            }
+
+            /**
+            else if (r instanceof ResponseInternalServerError) {
                 model.continuePrompt("ERROR: Response not saved due to internal server error");
             } else if (r instanceof ResponseInvalidCredentials) {
                 model.continuePrompt("Credentials invalid: please logout and try again");
@@ -98,7 +128,7 @@ public class ClientController {
                 model.continuePrompt("ERROR: Response not saved. Please run GET again before using SET");
             } else {
                 model.continuePrompt("ERROR: Response may not have been saved. Server returned bad response.");
-            }
+            }*/
 
         } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
             model.badMasterPass();
@@ -106,11 +136,13 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
         }
 
     }
 
-	public void handleRequest(String request) throws CryptoErrorException, BadBlobException, ServerException {
+	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 
 		String[] args = request.trim().split("\\s+");
         if (args.length == 0) {
@@ -197,17 +229,43 @@ public class ClientController {
         }
 	}
 
-    public void handleUserName(String userName) throws ServerException {
+    public void handleStart(String cmd) {
+        if(cmd.equals(CREATE)) {
+            model.startCreate();
+        } else if(cmd.equals(LOGIN)) {
+            model.startLogin();
+        } else {
+            model.start(
+                    "Valid Commands:\n" +
+                    "LOGIN: log in with username and password\n\n" +
+                    "CREATE: create a new account"
+            );
+        }
+    }
+
+    public void handleUserName(String userName) {
         if (model.setUsername(userName)) {
-            fetch();
+            model.promptMasterpass();
         } else {
             model.start();
         }
     }
 
 	public void handlePassword(String pass) {
+        model.setMasterpass(pass);
+        fetch();
 		
 	}
+
+    public void handleCreateuser(String name) {
+        if (model.setUsername(name)) {
+            model.startSetPass();
+        } else {
+            model.startCreate();
+        }
+    }
+
+
 
 
 

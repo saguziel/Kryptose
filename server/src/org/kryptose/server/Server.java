@@ -2,8 +2,12 @@ package org.kryptose.server;
 
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.exceptions.InvalidCredentialsException;
+import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.exceptions.StaleWriteException;
+import org.kryptose.exceptions.UsernameInUseException;
 import org.kryptose.requests.*;
+import org.kryptose.server.UserTable.Result;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,8 +27,9 @@ public class Server {
     private static final int LOG_FILE_COUNT = 20;
     private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
     private static final String LOG_FILE_NAME = "datastore/kryptose.%g.%u.log";
+    
     // INSTANCE FIELDS
-    Properties properties;
+    private Properties properties;
     private SecureServerListener listener;
  
     // An object for each user, to lock on, to make sure each user only has one
@@ -32,6 +37,7 @@ public class Server {
     private Map<User, Object> userLocks =
     		Collections.synchronizedMap(new WeakHashMap<User,Object>());
 
+    private UserTable userTable = new UserTable();
 
     // INSTANCE METHODS
 
@@ -71,8 +77,27 @@ public class Server {
     	}
 
     	synchronized (userLock) {
-    		// TODO: user authentication.
-    		return this.handleRequestWithLocksAcquired(request);
+    		if (request instanceof RequestCreateAccount) {
+    			// Skip authentication
+    	    	return this.handleRequestWithLocksAcquired(request);
+    		} else {
+    			// Authenticate user.
+    			Result result = this.userTable.auth(request.getUser());
+    			// If authentication failed, respond with exception.
+    			if (result == Result.WRONG_CREDENTIALS ||
+    					result == Result.USER_NOT_FOUND) {
+    				InvalidCredentialsException ex = new InvalidCredentialsException();
+    				return new ResponseErrorReport(ex);
+    			}
+    			// Authentication succeeded; continue.
+    			if (result == Result.AUTHENTICATION_SUCCESS) {
+    	    		return this.handleRequestWithLocksAcquired(request);
+    			}
+    			// result check fell through, log error.
+    			String errorMsg = "Unexpected UserTable.Result in authentication.";
+    			this.getLogger().log(Level.SEVERE, errorMsg, result);
+    			return new ResponseErrorReport(new InternalServerErrorException());
+    		}
     	}
     }
     
@@ -92,12 +117,12 @@ public class Server {
             return this.handleRequestLog((RequestLog) request);
         } else {
         	// TODO: make sure this is included on server logs.
-            return new ResponseMalformedRequest();
+            return new ResponseErrorReport(new MalformedRequestException());
         }
     }
 
-    private ResponseGet handleRequestGet(RequestGet request) {
-        ResponseGet response;
+    private Response handleRequestGet(RequestGet request) {
+        Response response;
         User u = request.getUser();
 
         boolean hasBlob = this.dataStore.userHasBlob(u);
@@ -108,7 +133,7 @@ public class Server {
             if (b != null) {
                 response = new ResponseGet(b); // TODO userauditlog
             } else {
-                response = new ResponseGet(new InternalServerErrorException());
+                response = new ResponseErrorReport(new InternalServerErrorException());
                 String errorMsg = "Blob was null, but hasBlob was true. User: " + u.getUsername();
                 this.getLogger().log(Level.SEVERE, errorMsg);
             }
@@ -116,6 +141,7 @@ public class Server {
         	// User has not yet stored a blob.
             response = new ResponseGet((Blob)null); // TODO userauditlog
             // TODO is this an exceptional response? Do we need to create an exception?
+            // ^ probably not.
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
@@ -132,8 +158,8 @@ public class Server {
         return response;
     }
 
-    private ResponsePut handleRequestPut(RequestPut request) {
-        ResponsePut response;
+    private Response handleRequestPut(RequestPut request) {
+        Response response;
         User u = request.getUser();
         byte[] oldDigest = request.getOldDigest();
         Blob toBeWritten = request.getBlob();
@@ -147,19 +173,19 @@ public class Server {
                 } catch (CryptoPrimitiveNotSupportedException e) {
                 	String errorMsg = "Java Runtime does not support required cryptography operations.";
                 	this.getLogger().log(Level.SEVERE, errorMsg, e);
-                    response = new ResponsePut(new InternalServerErrorException());
+                    response = new ResponseErrorReport(new InternalServerErrorException());
                 }
                 break;
             case STALE_WRITE:
                 response = new ResponsePut(new StaleWriteException());
                 break;
             case INTERNAL_ERROR:
-                response = new ResponsePut(new InternalServerErrorException());
+                response = new ResponseErrorReport(new InternalServerErrorException());
                 // Assume logging has already been done.
                 break;
             case USER_DOES_NOT_EXIST: // we should have authenticated by now.
             default:
-                response = new ResponsePut(new InternalServerErrorException());
+                response = new ResponseErrorReport(new InternalServerErrorException());
             	String errorMsg = "Switch-case fall-through in handleRequestPut.";
             	this.getLogger().log(Level.SEVERE, errorMsg, Thread.currentThread().getStackTrace());
                 break;
