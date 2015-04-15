@@ -173,6 +173,7 @@ public class Client {
 
     void setLogs(ArrayList<Log> a){
         userlog = a;
+        System.out.println(userlog);
     }
 
     void displayLogs() {
