@@ -84,6 +84,9 @@ public class Client {
 
     public void setVal(String dom, String user, String pass) {
         Boolean succ = this.passfile.setVal(dom, user, pass);
+        System.out.println(dom);
+        System.out.println(user);
+        System.out.println(pass);
         lastmod = LocalDateTime.now();
         if(succ){
             view.displayMessage("password for domain: " + dom + ", user: " + user + " successfully set");
@@ -157,7 +160,7 @@ public class Client {
 
     public void setMasterpass(String pass) {
         this.masterpass = pass;
-        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.user.getUsername(), this.masterpass.toCharArray());
+        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.username, pass.toCharArray());
         this.user = new User(username, derived);
     }
 

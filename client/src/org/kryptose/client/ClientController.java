@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class ClientController {
 
-    static final String LOGIN = "get";
+    static final String LOGIN = "login";
     static final String CREATE = "create";
 
     static final String GET = "get";
@@ -62,6 +62,8 @@ public class ClientController {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
 		} catch (InvalidCredentialsException e1) {
             model.restartLogin();
+        } catch (MalformedRequestException | InternalServerErrorException e1) {
+            model.continuePrompt("An error occurred, please try again");
         }
 
     }
@@ -78,6 +80,10 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (MalformedRequestException | InternalServerErrorException e1) {
+            model.continuePrompt("An error occurred, please try again");
+        } catch (InvalidCredentialsException e1) {
+            model.restartLogin();
         }
     }
 
@@ -97,6 +103,12 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (MalformedRequestException | InternalServerErrorException e1) {
+            model.continuePrompt("An error occurred, please try again");
+        } catch (InvalidCredentialsException e1) {
+            model.restartLogin();
+        } catch (UsernameInUseException e1) {
+            model.start("Username in use, please try a different name");
         }
     }
 
@@ -133,6 +145,10 @@ public class ClientController {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
             model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (MalformedRequestException | InternalServerErrorException e1) {
+            model.continuePrompt("An error occurred, please try again");
+        } catch (InvalidCredentialsException e1) {
+            model.restartLogin();
         }
 
     }
@@ -226,6 +242,7 @@ public class ClientController {
 	}
 
     public void handleStart(String cmd) {
+        cmd = cmd.trim().toLowerCase();
         if(cmd.equals(CREATE)) {
             model.startCreate();
         } else if(cmd.equals(LOGIN)) {
@@ -233,7 +250,7 @@ public class ClientController {
         } else {
             model.start(
                     "Valid Commands:\n" +
-                    "LOGIN: log in with username and password\n\n" +
+                    "LOGIN: log in with username and password\n" +
                     "CREATE: create a new account"
             );
         }
@@ -249,6 +266,7 @@ public class ClientController {
 
     public void handleSet(String dom, String user, String pass) {
         model.setVal(dom, user, pass);
+        save();
     }
 
 	public void handlePassword(String pass) {

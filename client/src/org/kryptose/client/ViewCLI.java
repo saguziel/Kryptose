@@ -39,7 +39,10 @@ public class ViewCLI extends View {
     @Override
     void createPass() {
         System.out.println("Enter new account password");
-        ctrl.handleCreatepass(new String(console.readPassword()));
+//        String s = new String(console.readPassword());
+        String s = in.nextLine();
+        ctrl.handleCreatepass(s);
+
     }
 
     @Override
@@ -56,14 +59,18 @@ public class ViewCLI extends View {
         System.out.print("Enter user name\n> ");
         String user = in.nextLine();
         System.out.print("Enter password\n> ");
-        String pass = new String(console.readPassword());
+//        String pass = new String(console.readPassword());
+        String pass = in.nextLine();
         ctrl.handleSet(dom, user, pass);
+
     }
 	
 	@Override
 	void promptPassword() {
 		System.out.println("Enter master password");
-        ctrl.handlePassword(new String(console.readPassword()));
+//        String s = new String(console.readPassword());
+        String s = in.nextLine();
+        ctrl.handlePassword(s);
 	}
 
 

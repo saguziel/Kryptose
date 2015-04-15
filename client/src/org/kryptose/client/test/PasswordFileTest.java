@@ -48,7 +48,7 @@ public class PasswordFileTest {
 	public final void blobEncryptionTest() throws Exception {
 
     	PasswordFile p = new PasswordFile("Antonio");
-    	p.setVal("MyUser", "MyPwd");
+    	p.setVal("MyDom", "MyUser", "MyPwd");
     	
     	Blob b = p.encryptBlob("Antonio", "MasterPassword",LocalDateTime.now());
     	
@@ -62,7 +62,7 @@ public class PasswordFileTest {
 	public final void blobEncryptionBadParametersTest() throws Exception {
 		
 		PasswordFile p = new PasswordFile("Antonio");
-    	p.setVal("MyUser", "MyPwd");
+    	p.setVal("MyDom", "MyUser", "MyPwd");
     	
     	Blob b = p.encryptBlob("Antonio", "MasterPassword",LocalDateTime.now());    	
     	
@@ -74,7 +74,7 @@ public class PasswordFileTest {
 	public final void blobEncryptionBadParametersTest1() throws Exception {
 		
 		PasswordFile p = new PasswordFile("Antonio");
-    	p.setVal("MyUser", "MyPwd");
+    	p.setVal("MyDom", "MyUser", "MyPwd");
     	
     	Blob b = p.encryptBlob("Antonio", "MasterPassword",LocalDateTime.now());    	
     	
@@ -87,7 +87,7 @@ public class PasswordFileTest {
 	public final void blobEncryptionBadBlobTest1() throws Exception {
 		
 		PasswordFile p = new PasswordFile("Antonio");
-    	p.setVal("MyUser", "MyPwd");
+    	p.setVal("MyDom", "MyUser", "MyPwd");
     	
     	Blob b = p.encryptBlob("Antonio", "MasterPassword",LocalDateTime.now());    	
     	
@@ -107,7 +107,7 @@ public class PasswordFileTest {
 	public final void blobEncryptionBadBlobTest2() throws Exception {
 		
 		PasswordFile p = new PasswordFile("Antonio");
-    	p.setVal("MyUser", "MyPwd");
+    	p.setVal("MyDom", "MyUser", "MyPwd");
     	
     	Blob b = p.encryptBlob("Antonio", "MasterPassword",LocalDateTime.now());    	
     	
