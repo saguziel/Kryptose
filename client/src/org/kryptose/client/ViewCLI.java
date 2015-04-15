@@ -12,6 +12,8 @@ public class ViewCLI extends View {
     final static int USERNAME = 1;
     final static int PASSWORD = 2;
     final static int START = 3;
+    final static int CREATEUSR = 4;
+    final static int CREATEPASS = 5;
 	
 	ClientController ctrl;
     Scanner in;
@@ -25,6 +27,18 @@ public class ViewCLI extends View {
         (new InputThread(cmd)).start();
 	}
 
+
+    @Override
+    void createUsername() {
+        System.out.println("Enter new account user name");
+        awaitInput(CREATEUSR);
+    }
+
+    @Override
+    void createPass() {
+        System.out.println("Enter new account password");
+        awaitInput(CREATEPASS);
+    }
 
     @Override
     void promptUserName() {
@@ -93,6 +107,10 @@ public class ViewCLI extends View {
                 ctrl.handlePassword(input);
             } else if (cmd == START) {
                 ctrl.handleStart(input);
+            } else if (cmd == CREATEUSR) {
+                ctrl.handleCreateuser(input);
+            } else if (cmd == CREATEPASS){
+                ctrl.handleCreatepass(input);
             }
 	    }
 

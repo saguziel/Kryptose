@@ -82,7 +82,25 @@ public class ClientController {
         } catch (ServerException e1) {
             model.continuePrompt("A server error occurred, please try again :)");
         }
+    }
 
+
+    public void handleCreatepass(String pass) {
+        ResponseCreateAccount r;
+
+        model.setMasterpass(pass);
+
+        try {
+            r = (ResponseCreateAccount) model.reqHandler.send(new RequestCreateAccount(model.user));
+            model.continuePrompt("Account successfully created!");
+
+        } catch (UnknownHostException e1) {
+            model.continuePrompt("The host could not be found");
+        } catch (IOException e1) {
+            model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
+        }
     }
 
     public void save() {
@@ -97,7 +115,10 @@ public class ClientController {
             if (r instanceof ResponsePut) {
                 model.passfile.setOldDigest(req.getBlob().getDigest());
                 model.continuePrompt("Successfully saved to server");
-            } else if (r instanceof ResponseInternalServerError) {
+            }
+
+            /**
+            else if (r instanceof ResponseInternalServerError) {
                 model.continuePrompt("ERROR: Response not saved due to internal server error");
             } else if (r instanceof ResponseInvalidCredentials) {
                 model.continuePrompt("Credentials invalid: please logout and try again");
@@ -107,7 +128,7 @@ public class ClientController {
                 model.continuePrompt("ERROR: Response not saved. Please run GET again before using SET");
             } else {
                 model.continuePrompt("ERROR: Response may not have been saved. Server returned bad response.");
-            }
+            }*/
 
         } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
             model.badMasterPass();
@@ -210,9 +231,9 @@ public class ClientController {
 
     public void handleStart(String cmd) {
         if(cmd.equals(CREATE)) {
-            
+            model.startCreate();
         } else if(cmd.equals(LOGIN)) {
-
+            model.startLogin();
         } else {
             model.start(
                     "Valid Commands:\n" +
@@ -224,7 +245,6 @@ public class ClientController {
 
     public void handleUserName(String userName) {
         if (model.setUsername(userName)) {
-//            fetch();
             model.promptMasterpass();
         } else {
             model.start();
@@ -236,6 +256,16 @@ public class ClientController {
         fetch();
 		
 	}
+
+    public void handleCreateuser(String name) {
+        if (model.setUsername(name)) {
+            model.startSetPass();
+        } else {
+            model.startCreate();
+        }
+    }
+
+
 
 
 
