@@ -45,6 +45,7 @@ public class ClientController {
 
 		try {
 			r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
+            // TODO: catch ClassCastException and handle it.
             if(r.getBlob() == null){
                 model.newPassFile();
             } else {
@@ -70,6 +71,7 @@ public class ClientController {
 
         try {
             r = (ResponseLog) model.reqHandler.send(new RequestLog(model.user));
+            // TODO: catch ClassCastException and handle it.
             model.setLogs(r.getLogs());
             model.displayLogs();
         } catch (UnknownHostException e1) {
@@ -87,6 +89,8 @@ public class ClientController {
 
         try {
             r = (ResponseCreateAccount) model.reqHandler.send(new RequestCreateAccount(model.user));
+            // TODO: catch ClassCastException and handle it.
+            r.verifySuccessful();
             model.continuePrompt("Account successfully created!");
 
         } catch (UnknownHostException e1) {

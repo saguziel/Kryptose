@@ -78,6 +78,8 @@ public class RequestHandler {
 
             Response resp;
 			resp = (Response) in.readObject();
+            // TODO: catch ClassCastException and handle it.
+			
 			// See if Response was an Exception response, throw if so.
 			resp.checkException();
 
