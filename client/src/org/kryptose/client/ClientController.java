@@ -62,7 +62,7 @@ public class ClientController {
 		} catch (IOException e1) {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
 		} catch (InvalidCredentialsException e1) {
-            model.restartLogin();
+            model.start("Invalid login credentials, please try again");
         } catch (MalformedRequestException | InternalServerErrorException e1) {
             model.continuePrompt("An error occurred, please try again");
         }
@@ -98,6 +98,7 @@ public class ClientController {
             r = (ResponseCreateAccount) model.reqHandler.send(new RequestCreateAccount(model.user));
             // TODO: catch ClassCastException and handle it.
             r.verifySuccessful();
+            model.passfile = new PasswordFile(model.user.getUsername());
             model.continuePrompt("Account successfully created!");
 
         } catch (UnknownHostException e1) {
