@@ -12,6 +12,9 @@ import java.util.Arrays;
 
 public class ClientController {
 
+    static final String LOGIN = "get";
+    static final String CREATE = "create";
+
     static final String GET = "get";
     static final String GET_SYNTAX = "Syntax: get";
     static final String SAVE = "save";
@@ -58,7 +61,7 @@ public class ClientController {
 		} catch (IOException e1) {
 			model.continuePrompt("There was an SSL error, contact your local library for help");
 		} catch (InvalidCredentialsException e1) {
-            model.restart();
+            model.restartLogin();
         } catch (ServerException e1) {
             model.continuePrompt("A server error occurred, please try again :)");
         }
@@ -204,6 +207,20 @@ public class ClientController {
                                  + "\nEnter help for list of commands, uses, and syntax");
         }
 	}
+
+    public void handleStart(String cmd) {
+        if(cmd.equals(CREATE)) {
+            
+        } else if(cmd.equals(LOGIN)) {
+
+        } else {
+            model.start(
+                    "Valid Commands:\n" +
+                    "LOGIN: log in with username and password\n\n" +
+                    "CREATE: create a new account"
+            );
+        }
+    }
 
     public void handleUserName(String userName) {
         if (model.setUsername(userName)) {

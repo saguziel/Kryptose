@@ -11,6 +11,7 @@ public class ViewCLI extends View {
     final static int CMD = 0;
     final static int USERNAME = 1;
     final static int PASSWORD = 2;
+    final static int START = 3;
 	
 	ClientController ctrl;
     Scanner in;
@@ -42,6 +43,11 @@ public class ViewCLI extends View {
     @Override
     void promptCmd() {
         awaitInput(CMD);
+    }
+
+    @Override
+    void promptStart() {
+        awaitInput(START);
     }
 
 	@Override
@@ -85,6 +91,8 @@ public class ViewCLI extends View {
                 ctrl.handleUserName(input);
             } else if (cmd == PASSWORD) {
                 ctrl.handlePassword(input);
+            } else if (cmd == START) {
+                ctrl.handleStart(input);
             }
 	    }
 

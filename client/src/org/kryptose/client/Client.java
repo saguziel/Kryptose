@@ -181,11 +181,20 @@ public class Client {
 //        return derivedFilePass;
 //    }
 
-    public void start() {
+    void promptUsername(){
         view.promptUserName();
     }
 
-    public void restart() {
+    public void start() {
+        view.promptStart();
+    }
+
+    public void start(String s) {
+        view.displayMessage(s);
+        view.promptStart();
+    }
+
+    public void restartLogin() {
         view.displayMessage("Invalid user name or password, please try again");
         view.promptUserName();
     }
