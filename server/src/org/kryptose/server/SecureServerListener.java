@@ -15,7 +15,7 @@ import org.kryptose.exceptions.InternalServerErrorException;
 import org.kryptose.requests.ResponseErrorReport;
 
 
-class SecureServerListener{
+public class SecureServerListener{
 	
 	private final int port;
 	private final Server server;
@@ -157,9 +157,7 @@ class SecureServerListener{
     
 	
 	/**
-	 * For test purposes
-	 * TODO: remove.
-	 * @param args
+	 * 
 	 */
 	 private static String printSocketInfo(Connection connection) {
 		 SSLSocket s = connection.getSocket();
@@ -229,24 +227,6 @@ class SecureServerListener{
 		   		System.out.println("Server is runningAA");
 		   		
 		   	}
-
-	   
-	    //TODO: remove afterwards. For testing only
-	    public SecureServerListener(int port) {
-	    	this.port = port;
-	    	this.server = null;
-	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
-	    	this.serverKeyStorePassword = "aaaaaa";
-		}
-
-
-	//TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
-    public SecureServerListener(Server server, int port) {
-    	this.port = port;
-    	this.server = server;
-    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
-    	this.serverKeyStorePassword = "aaaaaa";
-	}
 
 */
 	

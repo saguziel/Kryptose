@@ -41,7 +41,7 @@ public class Server {
 
     // INSTANCE METHODS
 
-    private Server() {
+    public Server() {
 
     }
 
