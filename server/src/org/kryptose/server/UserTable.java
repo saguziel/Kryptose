@@ -7,6 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -23,7 +27,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.User;
 
-public class UserTable {
+public class UserTable implements Serializable {
 	
 	private static final int DEFAULT_SALT_SIZE = 50;
 
@@ -33,7 +37,7 @@ public class UserTable {
 
 	public enum Result{USER_NOT_FOUND, USER_ALREADY_EXISTS, USER_ADDED, WRONG_CREDENTIALS, AUTHENTICATION_SUCCESS, AUTH_KEY_CHANGED};
 	
-	private class UserRecord {
+	private class UserRecord implements Serializable {
 		final String username;
 		byte[] salt;
 		byte[] auth_key_hash;
@@ -161,15 +165,14 @@ public class UserTable {
 
 	// INSTANCE VARIABLES
 	
-	private final Logger logger;
-	// TODO: sort of janky that you can't permanently move the file after the instance is created.
-	private final String fileName;
-	private final String tmpFileName;
+	private transient Logger logger;
+	private transient String fileName;
+	private transient String tmpFileName;
 	private final int salt_size;
 	private ConcurrentHashMap<String,UserRecord> users;
 	
-	private final Object persistLock = new Object();
-	private final Object ensurePersistMonitor = new Object();
+	private transient Object persistLock = new Object();
+	private transient Object ensurePersistMonitor = new Object();
 	private transient volatile boolean persistInProgress = false;
 	
 
@@ -189,6 +192,14 @@ public class UserTable {
 		this.salt_size = salt_size;
 		this.users = new ConcurrentHashMap<String,UserRecord>();
 //		Users.put("me", new UserRecord("me", "AAAAAAAAAAAAAAAA", "A"));
+	}
+	
+	private void initFromDeserialization(Logger logger, String fileName) {
+		this.logger = logger;
+		this.fileName = fileName;
+		this.tmpFileName = fileName + FILENAME_TEMP_SUFFIX;
+		this.persistLock = new Object();
+		this.ensurePersistMonitor = new Object();
 	}
 	
 	public boolean contains(String username){
@@ -241,9 +252,11 @@ public class UserTable {
 	}
 
 	public static UserTable loadFromFile(Logger logger, String fileName) throws IOException {
-		try (ObjectInputStream fw = new ObjectInputStream(
+		try (ObjectInputStream fr = new ObjectInputStream(
 				new FileInputStream(fileName))) {
-			return (UserTable) fw.readObject();
+			UserTable ut = (UserTable) fr.readObject();
+			ut.initFromDeserialization(logger, fileName);
+			return ut;
 		} catch (ClassNotFoundException e) {
 			String errorMsg = "UserTable file incorrectly formatted. Maybe outdated file version?";
 			logger.log(Level.SEVERE, errorMsg, e);
@@ -255,14 +268,17 @@ public class UserTable {
 		}
 	}
 	
-	public void saveToFile() throws IOException {
+	private void saveToFile() throws IOException {
 		try (ObjectOutputStream fw = new ObjectOutputStream(
 				new FileOutputStream(this.tmpFileName))) {
 			fw.writeObject(this);
+			fw.flush();
 		}
-		File finalFile = new File(this.fileName);
-		finalFile.delete();
-		new File(this.tmpFileName).renameTo(finalFile);
+		// TODO: This thing keeps throwing NoSuchFileExceptions and I don't know why T_T.
+		// Might be because of filesystem locks or something.
+		// Something to do with concurrency.
+		Files.move(Paths.get(this.tmpFileName), Paths.get(this.fileName),
+				StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	public Thread ensurePersistNewThread() {
