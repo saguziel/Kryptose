@@ -144,7 +144,9 @@ public class Client {
     }
 
     public void logout() {
-        view.logout();
+//        view.logout();
+        view.displayMessage("Logging out!");
+        this.start();
     }
 
     public boolean setUsername(String name) {
