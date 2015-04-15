@@ -162,6 +162,7 @@ public class UserTable {
 	// INSTANCE VARIABLES
 	
 	private final Logger logger;
+	// TODO: sort of janky that you can't permanently move the file after the instance is created.
 	private final String fileName;
 	private final String tmpFileName;
 	private final int salt_size;
@@ -169,11 +170,15 @@ public class UserTable {
 	
 	private final Object persistLock = new Object();
 	private final Object ensurePersistMonitor = new Object();
-	private volatile boolean persistInProgress = false;
+	private transient volatile boolean persistInProgress = false;
 	
 
 	public UserTable(Logger logger) {
 		this(logger, DEFAULT_FILENAME, DEFAULT_SALT_SIZE);
+	}
+	
+	public UserTable(Logger logger, String fileName) {
+		this(logger, fileName, DEFAULT_SALT_SIZE);
 	}
 	
 	// TODO: make this configurable from properties
@@ -260,13 +265,15 @@ public class UserTable {
 		new File(this.tmpFileName).renameTo(finalFile);
 	}
 	
-	public void ensurePersistNewThread() {
-		new Thread(new Runnable() {
+	public Thread ensurePersistNewThread() {
+		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				UserTable.this.ensurePersist();
 			}
-		}).start();
+		});
+		t.start();
+		return t;
 	}
 	
 	public void ensurePersist() {
