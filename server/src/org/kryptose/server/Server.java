@@ -2,7 +2,9 @@ package org.kryptose.server;
 
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.exceptions.InvalidCredentialsException;
 import org.kryptose.exceptions.StaleWriteException;
+import org.kryptose.exceptions.UsernameInUseException;
 import org.kryptose.requests.*;
 import org.kryptose.server.UserTable.Result;
 
@@ -75,19 +77,25 @@ public class Server {
 
     	synchronized (userLock) {
     		if (request instanceof RequestCreateAccount) {
-    			if (this.userTable.contains(request.getUser().getUsername())){
-    				// TODO return exception response
-    			}
+    			// Skip authentication
+    	    	return this.handleRequestWithLocksAcquired(request);
     		} else {
+    			// Authenticate user.
     			Result result = this.userTable.auth(request.getUser());
+    			// If authentication failed, respond with exception.
     			if (result == Result.WRONG_CREDENTIALS ||
     					result == Result.USER_NOT_FOUND) {
-    				// TODO return exception response
+    				InvalidCredentialsException ex = new InvalidCredentialsException();
+    				return new ResponseExceptionReport(ex);
     			}
+    			// Authentication succeeded; continue.
     			if (result == Result.AUTHENTICATION_SUCCESS) {
     	    		return this.handleRequestWithLocksAcquired(request);
     			}
-    			// TODO handle and log error
+    			// result check fell through, log error.
+    			String errorMsg = "Unexpected UserTable.Result in authentication.";
+    			this.getLogger().log(Level.SEVERE, errorMsg, result);
+    			return new ResponseExceptionReport(new InternalServerErrorException());
     		}
     	}
     }
@@ -132,6 +140,7 @@ public class Server {
         	// User has not yet stored a blob.
             response = new ResponseGet((Blob)null); // TODO userauditlog
             // TODO is this an exceptional response? Do we need to create an exception?
+            // ^ probably not.
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
