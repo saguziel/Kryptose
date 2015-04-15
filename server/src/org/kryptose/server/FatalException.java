@@ -6,6 +6,8 @@ package org.kryptose.server;
  */
 public class FatalException extends RuntimeException {
 
+	private static final long serialVersionUID = 6646718244134638801L;
+
 	public FatalException() {
 		super();
 	}

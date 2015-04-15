@@ -1,12 +1,13 @@
 package org.kryptose.server;
 
+import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
+import org.kryptose.requests.ResponseErrorReport;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 import java.net.Socket;
 import java.util.logging.Level;
 
@@ -30,7 +31,10 @@ class ClientHandler implements Runnable {
 		try {
 			// Listen for request.
 			Request request = listen();
-			if (request == null) return;
+			if (request == null) {
+				speak(new ResponseErrorReport(new MalformedRequestException()));
+				return;
+			}
 			request.setConnection(connection);
 
 			// Process request.
@@ -38,6 +42,7 @@ class ClientHandler implements Runnable {
 
 			// Send back the response.
 			if (resp != null) speak(resp);
+			// TODO: should resp ever be null?
 		}
 		finally {
 			try {
@@ -79,7 +84,7 @@ class ClientHandler implements Runnable {
 	 * Sends a response back to the client.
 	 * @param response The response to send.
 	 */
-	private void speak(Response response) {
+	void speak(Response response) {
 		try {
 			ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
 			out.writeObject(response);

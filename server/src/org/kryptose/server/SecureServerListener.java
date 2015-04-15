@@ -11,6 +11,9 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
+import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.requests.ResponseErrorReport;
+
 
 class SecureServerListener{
 	
@@ -74,7 +77,7 @@ class SecureServerListener{
 		this.server.getLogger().log(Level.CONFIG, printSocketInfo(connection));
 
 		// Handle connection.
-		Runnable job = new ClientHandler(server, clientSocket, connection);
+		ClientHandler job = new ClientHandler(server, clientSocket, connection);
 		Thread t = new Thread(job);
 		
     	// Set uncaught exception handler
@@ -83,6 +86,16 @@ class SecureServerListener{
 			public void uncaughtException(Thread t, Throwable e) {
 				String errorMsg = "Unexpected error in client-handling thread.";
 				server.getLogger().log(Level.SEVERE, errorMsg, e);
+				// Respond with error response.
+				try {
+					if (!clientSocket.isClosed()) {
+						job.speak(new ResponseErrorReport(new InternalServerErrorException()));
+						clientSocket.close();
+					}
+				} catch (Exception ex) {
+					String errorMsg2 = "Error cleaning up after unexpected error.";
+					server.getLogger().log(Level.SEVERE, errorMsg2, ex);
+				}
 			}
     	});
     	
