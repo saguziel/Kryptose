@@ -24,4 +24,6 @@ public abstract class View {
 
     abstract void createPass();
 
+    abstract void set();
+
 }

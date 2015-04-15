@@ -170,9 +170,10 @@ public class ClientController {
                 model.continuePrompt(SAVE_SYNTAX);
             }
         } else if (command.equals(SET)) {
-            if (args.length == 3) {
-                model.setVal(args[1], args[2]);
-                save();
+            if (args.length == 1) {
+//                model.setVal(args[1], args[2]);
+//                save();
+                model.set();
             } else {
                 model.continuePrompt(SET_SYNTAX);
             }
@@ -249,6 +250,10 @@ public class ClientController {
         } else {
             model.start();
         }
+    }
+
+    public void handleSet(String dom, String user, String pass) {
+        model.setVal(dom, user, pass);
     }
 
 	public void handlePassword(String pass) {
