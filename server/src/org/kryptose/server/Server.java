@@ -37,7 +37,7 @@ public class Server {
     private Map<User, Object> userLocks =
     		Collections.synchronizedMap(new WeakHashMap<User,Object>());
 
-    private UserTable userTable = new UserTable();
+    private UserTable userTable = null;
 
     // INSTANCE METHODS
 
@@ -241,14 +241,8 @@ public class Server {
         return properties;
     	
     }
-
-    // consumes thread.
-    public void start() {
-
-    	// Read properties.
-    	this.properties = this.readProperties();
-    	
-    	// Initialize logger.
+    
+    private void initLogger() {
 		this.logger.setLevel(Level.ALL);
 		
 		// TODO this log Handler is for debug purposes. remove or configure.
@@ -271,7 +265,9 @@ public class Server {
     		fileHandler.setLevel(Level.CONFIG);
     		this.logger.addHandler(fileHandler);
     	}
-    	
+    }
+    
+    private void initExceptionHandler() {
     	// Set uncaught exception handler
     	Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
@@ -280,6 +276,27 @@ public class Server {
 				Server.this.getLogger().log(Level.SEVERE, errorMsg, e);
 			}
     	});
+    }
+
+    /**
+     * Start running this server application. Consumes the thread.
+     */
+    public void start() {
+    	// Initialize logger.
+    	this.initLogger();
+
+    	// Set uncaught exception handler
+    	this.initExceptionHandler();
+
+    	// Read properties.
+    	this.properties = this.readProperties();
+    	
+    	// Read user table.
+    	try {
+			this.userTable = UserTable.loadFromFile(this.logger);
+		} catch (IOException e) {
+			throw new FatalException("Error reading user table from file.", e);
+		}
     	
         // TODO catch parsing errors and give informative feedback if properties file is invalid.
         int portNumber = Integer.parseInt(properties.getProperty("PORT_NUMBER"));

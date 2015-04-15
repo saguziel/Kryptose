@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,6 +13,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -166,6 +167,7 @@ public class UserTable {
 
 	// INSTANCE VARIABLES
 	
+	private final Logger logger;
 	private final int salt_size;
 	private ConcurrentHashMap<String,UserRecord> users;
 	private final Object persistLock = new Object();
@@ -173,11 +175,12 @@ public class UserTable {
 	private volatile boolean persistInProgress = false;
 	
 
-	public UserTable() {
-		this(DEFAULT_SALT_SIZE);
+	public UserTable(Logger logger) {
+		this(logger, DEFAULT_SALT_SIZE);
 	}
 	
-	public UserTable(int salt_size) {
+	public UserTable(Logger logger, int salt_size) {
+		this.logger = logger;
 		this.salt_size = salt_size;
 		this.users = new ConcurrentHashMap<String,UserRecord>();
 //		Users.put("me", new UserRecord("me", "AAAAAAAAAAAAAAAA", "A"));
@@ -193,6 +196,8 @@ public class UserTable {
 		
 		users.put(user.getUsername(),
 				new UserRecord(user.getUsername(), user.getPasskey()));
+
+		this.ensurePersistNewThread();
 		
 		return Result.USER_ADDED;
 	}
@@ -200,26 +205,44 @@ public class UserTable {
 	public Result auth(User user){
 		if (!this.contains(user.getUsername())) 
 			return Result.USER_NOT_FOUND;
-		else if(users.get(user.getUsername()).authenticate(user.getPasskey()))
-			return Result.AUTHENTICATION_SUCCESS;
-		else 
-			return Result.WRONG_CREDENTIALS;
+		else {
+			// Do auth.
+			boolean success = users.get(user.getUsername()).authenticate(user.getPasskey());
+			// Persist changes to disk.
+			this.ensurePersistNewThread();
+			// Return result.
+			if (success) return Result.AUTHENTICATION_SUCCESS;
+			else return Result.WRONG_CREDENTIALS;
+		}
 	}
 	
 	public Result changeAuthKey(String username, byte[] old_key, byte[] new_key){
 		if (!this.contains(username)) 
 			return Result.USER_NOT_FOUND;
-		else if (users.get(username).changeUserAuthKey(old_key,new_key))	
-			return Result.AUTH_KEY_CHANGED;
-		else 
-			return Result.WRONG_CREDENTIALS;
+		else {
+			// Do change.
+			boolean success = this.users.get(username).changeUserAuthKey(old_key,new_key);
+			// Persist changes to disk.
+			this.ensurePersistNewThread();
+			// Return result.
+			if (success) return Result.AUTH_KEY_CHANGED;
+			else return Result.WRONG_CREDENTIALS;
+		}
 
 	}
 
-	public static UserTable loadFromFile() throws FileNotFoundException, IOException {
+	public static UserTable loadFromFile(Logger logger) throws IOException {
 		try (ObjectInputStream fw = new ObjectInputStream(
 				new FileInputStream(USER_TABLE_FILE_NAME))) {
 			return (UserTable) fw.readObject();
+		} catch (ClassNotFoundException e) {
+			String errorMsg = "UserTable file incorrectly formatted. Maybe outdated file version?";
+			logger.log(Level.SEVERE, errorMsg, e);
+			throw new IOException(errorMsg, e);
+		} catch (FileNotFoundException e) {
+			String errorMsg = "No existing user table file found... reverting to no existing users.";
+			logger.log(Level.WARNING, errorMsg, e);
+			return new UserTable(logger);
 		}
 	}
 	
@@ -262,7 +285,12 @@ public class UserTable {
 		}
 		// Persist the UserTable.
 		synchronized (persistLock) {
-			this.saveToFile();
+			try {
+				this.saveToFile();
+			} catch (IOException e) {
+				String errorMsg = "Error saving user table file to disk.";
+				this.logger.log(Level.SEVERE, errorMsg, e);
+			}
 		}
 		// Notify other threads that persisting is done.
 		synchronized (ensurePersistMonitor) {
@@ -274,7 +302,7 @@ public class UserTable {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		UserTable u = new UserTable(50);
+		UserTable u = new UserTable(null, 50);
 		
 		byte[] good_pwd = "good".getBytes();
 		byte[] bad_pwd = "bad".getBytes();
