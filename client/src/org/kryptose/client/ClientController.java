@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class ClientController {
 
-    static final String LOGIN = "get";
+    static final String LOGIN = "login";
     static final String CREATE = "create";
 
     static final String GET = "get";
@@ -242,6 +242,7 @@ public class ClientController {
 	}
 
     public void handleStart(String cmd) {
+        cmd = cmd.trim().toLowerCase();
         if(cmd.equals(CREATE)) {
             model.startCreate();
         } else if(cmd.equals(LOGIN)) {
@@ -265,6 +266,7 @@ public class ClientController {
 
     public void handleSet(String dom, String user, String pass) {
         model.setVal(dom, user, pass);
+        save();
     }
 
 	public void handlePassword(String pass) {
