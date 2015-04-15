@@ -22,7 +22,7 @@ public class Client {
     LocalDateTime lastmod;
     private String masterpass = "0";
 //    private byte[] derivedFilePass;
-    private String username;
+    String username;
     ArrayList<Log> userlog;
 
     private Client() {
@@ -181,12 +181,20 @@ public class Client {
 //        return derivedFilePass;
 //    }
 
-    void promptUsername(){
+    void startLogin(){
         view.promptUserName();
     }
 
     public void start() {
         view.promptStart();
+    }
+
+    public void startCreate() {
+        view.createUsername();
+    }
+
+    public void startSetPass() {
+        view.createPass();
     }
 
     public void start(String s) {

@@ -82,7 +82,25 @@ public class ClientController {
         } catch (ServerException e1) {
             model.continuePrompt("A server error occurred, please try again :)");
         }
+    }
 
+
+    public void handleCreatepass(String pass) {
+        ResponseCreateAccount r;
+
+        model.setMasterpass(pass);
+
+        try {
+            r = (ResponseCreateAccount) model.reqHandler.send(new RequestCreateAccount(model.user));
+            model.continuePrompt("Account successfully created!");
+
+        } catch (UnknownHostException e1) {
+            model.continuePrompt("The host could not be found");
+        } catch (IOException e1) {
+            model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (ServerException e1) {
+            model.continuePrompt("A server error occurred, please try again :)");
+        }
     }
 
     public void save() {
@@ -210,9 +228,9 @@ public class ClientController {
 
     public void handleStart(String cmd) {
         if(cmd.equals(CREATE)) {
-            
+            model.startCreate();
         } else if(cmd.equals(LOGIN)) {
-
+            model.startLogin();
         } else {
             model.start(
                     "Valid Commands:\n" +
@@ -224,7 +242,6 @@ public class ClientController {
 
     public void handleUserName(String userName) {
         if (model.setUsername(userName)) {
-//            fetch();
             model.promptMasterpass();
         } else {
             model.start();
@@ -236,6 +253,16 @@ public class ClientController {
         fetch();
 		
 	}
+
+    public void handleCreateuser(String name) {
+        if (model.setUsername(name)) {
+            model.startSetPass();
+        } else {
+            model.startCreate();
+        }
+    }
+
+
 
 
 
