@@ -63,8 +63,6 @@ public class UserTable {
 		    	
 
 			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 				throw new CryptoPrimitiveNotSupportedException(e);
 			}
 		}
@@ -81,8 +79,6 @@ public class UserTable {
 				
 				return Arrays.equals(auth_key_hash, factory.generateSecret(spec).getEncoded());
 			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 				throw new CryptoPrimitiveNotSupportedException(e);
 			}
 
@@ -111,8 +107,6 @@ public class UserTable {
 		    	return true;
 
 			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 				throw new CryptoPrimitiveNotSupportedException(e);
 			}
 
@@ -301,7 +295,6 @@ public class UserTable {
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		UserTable u = new UserTable(null, 50);
 		
 		byte[] good_pwd = "good".getBytes();

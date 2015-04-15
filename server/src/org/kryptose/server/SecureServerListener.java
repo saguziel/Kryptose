@@ -54,8 +54,7 @@ class SecureServerListener{
         } catch (IOException ex) {
     		String errorMsg = "Error setting up socket to listen to incoming connections... exiting program.";
 			this.server.getLogger().log(Level.SEVERE, errorMsg, ex);
-			//throw new RuntimeException(); // TODO need a better way to do this.
-			System.exit(2); // TODO need a better way to do this?
+			throw new FatalError(ex);
         }
     	
     }

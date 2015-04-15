@@ -115,13 +115,34 @@ public class Server {
             return this.handleRequestTest((RequestTest) request);
         } else if (request instanceof RequestLog) {
             return this.handleRequestLog((RequestLog) request);
+        } else if (request instanceof RequestCreateAccount) {
+            return this.handleRequestCreateAccount((RequestCreateAccount) request);
         } else {
         	// TODO: make sure this is included on server logs.
             return new ResponseErrorReport(new MalformedRequestException());
         }
     }
 
-    private Response handleRequestGet(RequestGet request) {
+    private Response handleRequestCreateAccount(RequestCreateAccount request) {
+        Response response;
+        User u = request.getUser();
+
+        Result result = this.userTable.addUser(u);
+        if (result == Result.USER_ADDED) {
+        	response = new ResponseCreateAccount(); // TODO userauditlog
+        } else if (result == Result.USER_ALREADY_EXISTS) {
+        	response = new ResponseCreateAccount(new UsernameInUseException());
+        } else {
+        	response = new ResponseErrorReport(new InternalServerErrorException());
+        	String errorMsg = "Unexpected result from UserTable addUSer.";
+        	this.getLogger().log(Level.SEVERE, errorMsg, result);
+        }
+
+        this.dataStore.writeUserLog(u, new Log(u, request, response));
+        return response;
+	}
+
+	private Response handleRequestGet(RequestGet request) {
         Response response;
         User u = request.getUser();
 
@@ -295,7 +316,7 @@ public class Server {
     	try {
 			this.userTable = UserTable.loadFromFile(this.logger);
 		} catch (IOException e) {
-			throw new FatalException("Error reading user table from file.", e);
+			throw new FatalError("Error reading user table from file.", e);
 		}
     	
         // TODO catch parsing errors and give informative feedback if properties file is invalid.
