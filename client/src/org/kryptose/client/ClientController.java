@@ -115,7 +115,10 @@ public class ClientController {
             if (r instanceof ResponsePut) {
                 model.passfile.setOldDigest(req.getBlob().getDigest());
                 model.continuePrompt("Successfully saved to server");
-            } else if (r instanceof ResponseInternalServerError) {
+            }
+
+            /**
+            else if (r instanceof ResponseInternalServerError) {
                 model.continuePrompt("ERROR: Response not saved due to internal server error");
             } else if (r instanceof ResponseInvalidCredentials) {
                 model.continuePrompt("Credentials invalid: please logout and try again");
@@ -125,7 +128,7 @@ public class ClientController {
                 model.continuePrompt("ERROR: Response not saved. Please run GET again before using SET");
             } else {
                 model.continuePrompt("ERROR: Response may not have been saved. Server returned bad response.");
-            }
+            }*/
 
         } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
             model.badMasterPass();
