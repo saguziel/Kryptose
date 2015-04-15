@@ -32,7 +32,7 @@ public class UserTable implements Serializable {
 	private static final int DEFAULT_SALT_SIZE = 50;
 
 	// TODO: make configurable
-	private static final String DEFAULT_FILENAME = "usertable.bin";
+	private static final String DEFAULT_FILENAME = "datastore/usertable.bin";
 	private static final String FILENAME_TEMP_SUFFIX = ".tmp";
 
 	public enum Result{USER_NOT_FOUND, USER_ALREADY_EXISTS, USER_ADDED, WRONG_CREDENTIALS, AUTHENTICATION_SUCCESS, AUTH_KEY_CHANGED};
@@ -271,6 +271,7 @@ public class UserTable implements Serializable {
 	}
 	
 	private void saveToFile() throws IOException {
+		this.ensureDirectoryExists(new File(this.fileName));
 		try (ObjectOutputStream fw = new ObjectOutputStream(
 				new FileOutputStream(this.tmpFileName))) {
 			fw.writeObject(this);
@@ -351,5 +352,25 @@ public class UserTable implements Serializable {
 		
 		
 	}
+	
+
+    
+    /**
+     * Ensure that the file's parent directory exists.
+     * @param file The file to ensure has a parent directory.
+     */
+    private void ensureDirectoryExists(File file) {
+    	File parentFile = file.getParentFile();
+    	if (parentFile.exists()) {
+    		if (!parentFile.isDirectory()) {
+    			logger.severe("Could not create directory: " + parentFile);
+    		}
+    	} else {
+    		boolean success = parentFile.mkdirs();
+    		if (!success) {
+    			logger.severe("Could not create directory: " + parentFile);
+    		}
+    	}
+    }
 
 }
