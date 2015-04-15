@@ -83,6 +83,7 @@ public class Client {
     }
 
     public void setVal(String dom, String user, String pass) {
+        System.out.println(this.passfile);
         Boolean succ = this.passfile.setVal(dom, user, pass);
         System.out.println(dom);
         System.out.println(user);
