@@ -25,6 +25,7 @@ public class ClientController {
     static final String QUERY = "query";
     static final String QUERY_SYNTAX = "Syntax: query $username";
     static final String PRINT = "print";
+    static final String LIST = "list";
     static final String PRINT_SYNTAX = "Syntax: print";
     static final String LOGS = "logs";
     static final String LOGS_SYNTAX = "Syntax: logs";
@@ -207,7 +208,7 @@ public class ClientController {
             } else {
                 model.continuePrompt(LOGOUT_SYNTAX);
             }
-        } else if (command.equals(PRINT)) {
+        } else if (command.equals(PRINT) || command.equals(LIST)) {
             if (args.length == 1) {
                 model.printAll();
             } else {
