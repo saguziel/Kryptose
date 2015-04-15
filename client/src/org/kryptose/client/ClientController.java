@@ -19,7 +19,7 @@ public class ClientController {
     static final String SAVE = "save";
     static final String SAVE_SYNTAX = "Syntax: save";
     static final String SET = "set";
-    static final String SET_SYNTAX = "Syntax: set $domain $username $password";
+    static final String SET_SYNTAX = "Syntax: set"; // TODO: JS I changed this, getting rid of $domain $username $password. Jeff please approve.
     static final String DEL = "del";
     static final String DEL_SYNTAX = "Syntax: del $username";
     static final String QUERY = "query";
