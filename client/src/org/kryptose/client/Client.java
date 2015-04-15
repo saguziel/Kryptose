@@ -2,6 +2,7 @@ package org.kryptose.client;
 
 import org.kryptose.requests.Log;
 import org.kryptose.requests.User;
+import org.kryptose.exceptions.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,7 +21,8 @@ public class Client {
     PasswordFile passfile;
     LocalDateTime lastmod;
     private String masterpass = "0";
-    private String derivedFilePass = "TESTTESTTEST";
+//    private byte[] derivedFilePass;
+    private String username;
     ArrayList<Log> userlog;
 
     private Client() {
@@ -139,10 +141,16 @@ public class Client {
             view.displayMessage(User.VALID_USERNAME_DOC);
             return false;
         } else {
-            this.user = new User(name, new byte[48]); // TODO: set passkey
+            this.username = name;
             view.displayMessage("got username " + name);
             return true;
         }
+    }
+
+    public void setMasterpass(String pass) {
+        this.masterpass = pass;
+        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.user.getUsername(), this.masterpass.toCharArray());
+        this.user = new User(username, derived);
     }
 
     public void newPassFile() {
@@ -165,18 +173,30 @@ public class Client {
         return masterpass;
     }
 
-    void setMasterpass(String pass) {
-        this.masterpass = pass;
+    void promptMasterpass() {
+        view.promptPassword();
     }
 
-    String getFilepass() {
-        return derivedFilePass;
-    }
+//    byte[] getFilepass() {
+//        return derivedFilePass;
+//    }
 
-    public void start() {
+    void promptUsername(){
         view.promptUserName();
     }
 
+    public void start() {
+        view.promptStart();
+    }
 
+    public void start(String s) {
+        view.displayMessage(s);
+        view.promptStart();
+    }
+
+    public void restartLogin() {
+        view.displayMessage("Invalid user name or password, please try again");
+        view.promptUserName();
+    }
 
 }

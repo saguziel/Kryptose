@@ -4,6 +4,7 @@ import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.exceptions.InternalServerErrorException;
 import org.kryptose.exceptions.StaleWriteException;
 import org.kryptose.requests.*;
+import org.kryptose.server.UserTable.Result;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -23,8 +24,9 @@ public class Server {
     private static final int LOG_FILE_COUNT = 20;
     private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
     private static final String LOG_FILE_NAME = "datastore/kryptose.%g.%u.log";
+    
     // INSTANCE FIELDS
-    Properties properties;
+    private Properties properties;
     private SecureServerListener listener;
  
     // An object for each user, to lock on, to make sure each user only has one
@@ -32,6 +34,7 @@ public class Server {
     private Map<User, Object> userLocks =
     		Collections.synchronizedMap(new WeakHashMap<User,Object>());
 
+    private UserTable userTable = new UserTable();
 
     // INSTANCE METHODS
 
@@ -71,8 +74,21 @@ public class Server {
     	}
 
     	synchronized (userLock) {
-    		// TODO: user authentication.
-    		return this.handleRequestWithLocksAcquired(request);
+    		if (request instanceof RequestCreateAccount) {
+    			if (this.userTable.contains(request.getUser().getUsername())){
+    				// TODO return exception response
+    			}
+    		} else {
+    			Result result = this.userTable.auth(request.getUser());
+    			if (result == Result.WRONG_CREDENTIALS ||
+    					result == Result.USER_NOT_FOUND) {
+    				// TODO return exception response
+    			}
+    			if (result == Result.AUTHENTICATION_SUCCESS) {
+    	    		return this.handleRequestWithLocksAcquired(request);
+    			}
+    			// TODO handle and log error
+    		}
     	}
     }
     

@@ -23,11 +23,6 @@ public final class ResponsePut extends Response {
     }
 
     public byte[] getDigest() throws ServerException {
-    	// Is this an exception response? Throw exception if so.
-    	if (this.getException() != null) {
-    		throw this.getException();
-    	}
-    	// Return digest.
         return digest;
     }
 

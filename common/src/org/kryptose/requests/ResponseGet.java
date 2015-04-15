@@ -20,11 +20,6 @@ public final class ResponseGet extends Response {
     }
 
     public Blob getBlob() throws ServerException {
-    	// Is this an exception response? Throw exception if so.
-    	if (this.getException() != null) {
-    		throw this.getException();
-    	}
-    	// Return blob.
         return blob;
     }
 
