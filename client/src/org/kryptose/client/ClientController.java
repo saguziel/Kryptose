@@ -19,11 +19,11 @@ public class ClientController {
     static final String SAVE = "save";
     static final String SAVE_SYNTAX = "Syntax: save";
     static final String SET = "set";
-    static final String SET_SYNTAX = "Syntax: set"; // TODO: JS I changed this, getting rid of $domain $username $password. Jeff please approve.
+    static final String SET_SYNTAX = "Syntax: set"; // TODO: JS I changed this, getting rid of $domain $username $password. Jeff please approve. Jeff: I approve
     static final String DEL = "del";
-    static final String DEL_SYNTAX = "Syntax: del $username";
+    static final String DEL_SYNTAX = "Syntax: del $domain $username";
     static final String QUERY = "query";
-    static final String QUERY_SYNTAX = "Syntax: query $username";
+    static final String QUERY_SYNTAX = "Syntax: query $domain $username";
     static final String PRINT = "print";
     static final String LIST = "list";
     static final String PRINT_SYNTAX = "Syntax: print";
@@ -54,7 +54,7 @@ public class ClientController {
                     model.setPassfile(new PasswordFile(model.user.getUsername(), r.getBlob(), model.getMasterpass()));
                     model.passfile.setOldDigest(r.getBlob().getDigest());
                 } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
-                    model.badMasterPass();
+                    model.start("Invalid login credentials");
                 }
             }
 		} catch (UnknownHostException e1) {
@@ -171,8 +171,8 @@ public class ClientController {
                 model.continuePrompt(GET_SYNTAX);
             }
         } else if (command.equals(QUERY)) {
-            if (args.length == 2) {
-                model.getCredential(args[1]);
+            if (args.length == 3) {
+                model.getCredential(args[1], args[2]);
             } else {
                 model.continuePrompt(QUERY_SYNTAX);
             }
@@ -191,8 +191,8 @@ public class ClientController {
                 model.continuePrompt(SET_SYNTAX);
             }
         } else if (command.equals(DEL)) {
-            if (args.length == 2) {
-                model.delVal(args[1]);
+            if (args.length == 3) {
+                model.delVal(args[1], args[2]);
                 save();
             } else {
                 model.continuePrompt(DEL_SYNTAX);

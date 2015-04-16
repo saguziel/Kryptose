@@ -109,9 +109,9 @@ public class PasswordFile {
         }
     }
 
-    public String getVal(String key){
+    public String getVal(String dom, String user){
         for(Credential c : credentials){
-            if(c.getDomain().equals(key)){
+            if(c.getDomain().equals(dom) && c.getUsername().equals(user)){
                 return c.getPassword();
             }
         }
@@ -131,10 +131,10 @@ public class PasswordFile {
     }
 
     // returns true iff value associated w/ dom successfully deleted
-    public Boolean delVal(String dom){
+    public Boolean delVal(String dom, String user){
         int toRem = -1;
         for(int i = 0; i<credentials.size(); i++){
-            if(credentials.get(i).getDomain().equals(dom)){
+            if(credentials.get(i).getDomain().equals(dom) && credentials.get(i).getUsername().equals(user)){
                 toRem = i;
                 break;
             }
