@@ -55,7 +55,8 @@ public class RequestHandler {
 	
 	Response send(Request req) throws UnknownHostException, IOException, MalformedRequestException, InvalidCredentialsException, InternalServerErrorException {
         try {
-    	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
+
+        	sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
 
     	    sock.setEnabledProtocols(new String[] {"TLSv1.2"});
 
@@ -86,18 +87,20 @@ public class RequestHandler {
 			//TODO: remove later (testing only).
 			System.out.println("Response received: " + resp.toString());
       
+	        sock.close();
             return resp;
             
         } catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-            sock.close();
+        	//e.printStackTrace();
+			sock.close();
+			throw new IOException(e);
+		}catch(MalformedRequestException| InvalidCredentialsException| InternalServerErrorException e){
+			sock.close();
+			throw e;
 		}
-        
-        //TODO: Remove after meaningful Error Handling has been done.
-		return null;
-		
+               
+        		
 	}
 	
 /*
