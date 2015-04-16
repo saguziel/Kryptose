@@ -2,9 +2,9 @@ package org.kryptose.client;
 
 import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
+import org.kryptose.exceptions.InvalidCredentialsException;
 import org.kryptose.exceptions.ServerException;
 import org.kryptose.requests.*;
-import org.kryptose.exceptions.*;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -32,21 +32,21 @@ public class ClientController {
     static final String LOGOUT = "logout";
     static final String LOGOUT_SYNTAX = "Syntax: logout";
     static final String HELP = "help";
-    static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, LOGS, LOGOUT, HELP};
+    static final String[] KEYWORDS = new String[]{GET, SAVE, SET, DEL, QUERY, PRINT, LOGS, LOGOUT, HELP};
     static final String HELP_SYNTAX = "Syntax: help";
     Client model;
-	
-	public ClientController(Client c) {
-		this.model = c;
-	}
 
-	public void fetch() {
+    public ClientController(Client c) {
+        this.model = c;
+    }
+
+    public void fetch() {
 
         ResponseGet r;
 
-		try {
-			r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
-            if(r.getBlob() == null){
+        try {
+            r = (ResponseGet) model.reqHandler.send(new RequestGet(model.user));
+            if (r.getBlob() == null) {
                 model.newPassFile();
             } else {
                 try {
@@ -56,11 +56,11 @@ public class ClientController {
                     model.badMasterPass();
                 }
             }
-		} catch (UnknownHostException e1) {
-			model.continuePrompt("The host could not be found");
-		} catch (IOException e1) {
-			model.continuePrompt("There was an SSL error, contact your local library for help");
-		} catch (InvalidCredentialsException e1) {
+        } catch (UnknownHostException e1) {
+            model.continuePrompt("The host could not be found");
+        } catch (IOException e1) {
+            model.continuePrompt("There was an SSL error, contact your local library for help");
+        } catch (InvalidCredentialsException e1) {
             model.restartLogin();
         } catch (ServerException e1) {
             model.continuePrompt("A server error occurred, please try again :)");
@@ -97,14 +97,18 @@ public class ClientController {
             if (r instanceof ResponsePut) {
                 model.passfile.setOldDigest(req.getBlob().getDigest());
                 model.continuePrompt("Successfully saved to server");
+            /*
             } else if (r instanceof ResponseInternalServerError) {
                 model.continuePrompt("ERROR: Response not saved due to internal server error");
             } else if (r instanceof ResponseInvalidCredentials) {
                 model.continuePrompt("Credentials invalid: please logout and try again");
+            */
             } else if (r instanceof ResponseGet) {
                 model.continuePrompt("ERROR: Response may have not been saved. Server returned bad response");
+            /*
             } else if (r instanceof ResponseStaleWrite) {
                 model.continuePrompt("ERROR: Response not saved. Please run GET again before using SET");
+            */
             } else {
                 model.continuePrompt("ERROR: Response may not have been saved. Server returned bad response.");
             }
@@ -121,9 +125,9 @@ public class ClientController {
 
     }
 
-	public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
+    public void handleRequest(String request) throws CryptoErrorException, BadBlobException {
 
-		String[] args = request.trim().split("\\s+");
+        String[] args = request.trim().split("\\s+");
         if (args.length == 0) {
             model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(ClientController.KEYWORDS));
             return;
@@ -183,41 +187,41 @@ public class ClientController {
         } else if (command.equals(HELP)) {
             model.continuePrompt(
                     "Valid Commands:\n" +
-                    "GET: Sets local password file to remote password file\n" +
-                    GET_SYNTAX + "\n\n" +
-                    "QUERY: Shows the password for $username based on the current local password file\n" +
-                    QUERY_SYNTAX + "\n\n" +
-                    "SAVE: Saves local password file to remote server\n" +
-                    SAVE_SYNTAX + "\n\n" +
-                    "SET: Sets password to $password for $username and attempts to push to remote\n" +
-                    SET_SYNTAX + "\n\n" +
-                    "DEL: Deletes the username password pair for $username\n" +
-                    DEL_SYNTAX + "\n\n" +
-                    "LOGOUT: Logs out of current account\n" +
-                    LOGOUT_SYNTAX + "\n\n" +
-                    "LOGS: Displays log of all current user interactions with server\n" +
-                    LOGS_SYNTAX + "\n\n" +
-                    "PRINT: Prints all usernames and password pairs\n" +
-                    PRINT_SYNTAX + "\n\n" +
-                    "HELP: Prints commands, their uses, and their syntax\n" +
-                    HELP_SYNTAX
+                            "GET: Sets local password file to remote password file\n" +
+                            GET_SYNTAX + "\n\n" +
+                            "QUERY: Shows the password for $username based on the current local password file\n" +
+                            QUERY_SYNTAX + "\n\n" +
+                            "SAVE: Saves local password file to remote server\n" +
+                            SAVE_SYNTAX + "\n\n" +
+                            "SET: Sets password to $password for $username and attempts to push to remote\n" +
+                            SET_SYNTAX + "\n\n" +
+                            "DEL: Deletes the username password pair for $username\n" +
+                            DEL_SYNTAX + "\n\n" +
+                            "LOGOUT: Logs out of current account\n" +
+                            LOGOUT_SYNTAX + "\n\n" +
+                            "LOGS: Displays log of all current user interactions with server\n" +
+                            LOGS_SYNTAX + "\n\n" +
+                            "PRINT: Prints all usernames and password pairs\n" +
+                            PRINT_SYNTAX + "\n\n" +
+                            "HELP: Prints commands, their uses, and their syntax\n" +
+                            HELP_SYNTAX
             );
         } else {
             model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(ClientController.KEYWORDS)
-                                 + "\nEnter help for list of commands, uses, and syntax");
+                    + "\nEnter help for list of commands, uses, and syntax");
         }
-	}
+    }
 
     public void handleStart(String cmd) {
-        if(cmd.equals(CREATE)) {
-            
-        } else if(cmd.equals(LOGIN)) {
+        if (cmd.equals(CREATE)) {
+
+        } else if (cmd.equals(LOGIN)) {
 
         } else {
             model.start(
                     "Valid Commands:\n" +
-                    "LOGIN: log in with username and password\n\n" +
-                    "CREATE: create a new account"
+                            "LOGIN: log in with username and password\n\n" +
+                            "CREATE: create a new account"
             );
         }
     }
@@ -231,13 +235,11 @@ public class ClientController {
         }
     }
 
-	public void handlePassword(String pass) {
+    public void handlePassword(String pass) {
         model.setMasterpass(pass);
         fetch();
-		
-	}
+
+    }
 
 
-
-	
 }

@@ -1,11 +1,17 @@
 package org.kryptose.server;
 
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
@@ -27,41 +33,44 @@ public class LogFormatter extends Formatter {
         StringBuffer sb = new StringBuffer();
         try {
             //create mk
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.update("encrypt".getBytes(Charset.forName("UTF-8")));
             md.update(this.auth_key);
-            byte[] mk = md.digest();
+            byte[] mk = Arrays.copyOfRange(md.digest(), 0, 128 / 8);
 
+            Base64.Encoder encoder = Base64.getEncoder();
             //encrypt entry with mk
             SecretKeySpec sks = new SecretKeySpec(mk, "AES");
             Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
             c.init(Cipher.ENCRYPT_MODE, sks);
-            c.update(s.getBytes(Charset.forName("UTF-8")));
-            byte[] output = c.doFinal();
+            byte[] output = c.doFinal(s.getBytes("UTF-8"));
+            Cipher c2 = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            byte[] IV = c.getIV();
+            IvParameterSpec iv_spec = new IvParameterSpec(IV);
+            c2.init(Cipher.DECRYPT_MODE, sks, iv_spec);
+            c2.doFinal(output);
 
             //create tag with ak
             SecretKeySpec mac_key = new SecretKeySpec(this.auth_key, "AES");
-            Mac m = Mac.getInstance("HmacSHA256");
+            Mac m = Mac.getInstance("HmacSHA1");
             m.init(mac_key);
-            m.update(output);
-            byte[] tag = m.doFinal();
-
+            byte[] tag = m.doFinal(output);
             //put results into sb
-            sb.append(c.getIV());
+            sb.append(DatatypeConverter.printHexBinary(IV));
             sb.append("\n");
-            sb.append(output);
+            sb.append(DatatypeConverter.printHexBinary(output));
             sb.append("\n");
-            sb.append(tag);
+            sb.append(DatatypeConverter.printHexBinary(tag));
             sb.append("\n");
-
             //iterate ak
             md.reset();
             md.update("iterate".getBytes(Charset.forName("UTF-8")));
             md.update(this.auth_key);
             this.auth_key = md.digest();
+            this.auth_key = Arrays.copyOfRange(this.auth_key, 0, 128 / 8);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
-                IllegalBlockSizeException | BadPaddingException e) {
-            System.out.println("shit");
+                IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException e) {
+            System.out.println(e.getMessage());
         }
         return sb.toString();
     }
