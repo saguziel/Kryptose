@@ -31,7 +31,7 @@ public class LogFormatter extends Formatter {
 
     public LogFormatter(Formatter f, byte[] auth_key) {
         this.f = f;
-        this.auth_key = auth_key;
+        this.auth_key = auth_key.clone();
         authfile = null;
     }
 
@@ -43,7 +43,8 @@ public class LogFormatter extends Formatter {
             auth_key = decoder.decode(Files.readAllBytes(authfile));
         } catch (IOException e) {
             System.out.println("File may not exist, please use LogReader to create a password for logs");
-            System.exit(1);
+            // TODO: log error
+            throw new FatalError(e);
         }
     }
 
@@ -92,7 +93,8 @@ public class LogFormatter extends Formatter {
                     Files.write(authfile, encoder.encode(this.auth_key), StandardOpenOption.TRUNCATE_EXISTING);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
-                System.exit(1);
+                // TODO: log error
+                throw new FatalError(e);
             }
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
                 IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException e) {

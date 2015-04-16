@@ -220,7 +220,7 @@ public class PasswordFile {
         return credentials;
     }
 
-    public class BadBlobException extends Exception {
+    public static class BadBlobException extends Exception {
         public BadBlobException(String message) {
             super(message);
         }

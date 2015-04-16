@@ -32,8 +32,8 @@ public class LogReader {
 
 
     public LogReader(byte[] auth_key) {
-        this.auth_key = auth_key;
-        this.current_key = auth_key;
+        this.auth_key = auth_key.clone();
+        this.current_key = auth_key.clone();
         this.key_iteration = 0;
     }
 
@@ -217,6 +217,7 @@ public class LogReader {
     }
 
     public void destroy() {
+    	// TODO: should probably clear the arrays.
         auth_key = null;
         current_key = null;
         key_iteration = -1;

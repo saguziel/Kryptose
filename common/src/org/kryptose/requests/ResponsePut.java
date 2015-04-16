@@ -28,7 +28,7 @@ public final class ResponsePut extends Response {
     	if (this.swex != null) {
     		throw this.swex;
     	}
-        return digest;
+        return digest.clone();
     }
 
     public String logEntry() {

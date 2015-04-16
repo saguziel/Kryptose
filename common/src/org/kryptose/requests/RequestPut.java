@@ -24,7 +24,7 @@ public final class RequestPut extends Request {
     public RequestPut(User user, Blob blob, byte[] oldDigest) {
         super(user);
         this.blob = blob;
-        this.oldDigest = oldDigest;
+        this.oldDigest = oldDigest.clone();
         this.validateInstance();
     }
 
@@ -41,7 +41,7 @@ public final class RequestPut extends Request {
      * @see Blob#getDigest()
      */
     public byte[] getOldDigest() {
-        return oldDigest;
+        return oldDigest.clone();
     }
 
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
