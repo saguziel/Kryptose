@@ -60,7 +60,7 @@ public class ClientController {
 		} catch (UnknownHostException e1) {
 			model.continuePrompt("The host could not be found");
 		} catch (IOException e1) {
-			model.continuePrompt("There was an SSL error, contact your local library for help");
+			model.start("There was an SSL error, contact your local library for help");
 		} catch (InvalidCredentialsException e1) {
             model.start("Invalid login credentials, please try again");
         } catch (MalformedRequestException | InternalServerErrorException e1) {
@@ -80,7 +80,7 @@ public class ClientController {
         } catch (UnknownHostException e1) {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
-            model.continuePrompt("There was an SSL error, contact your local library for help");
+            model.start("There was an SSL error, contact your local library for help");
         } catch (MalformedRequestException | InternalServerErrorException e1) {
             model.continuePrompt("An error occurred, please try again");
         } catch (InvalidCredentialsException e1) {
@@ -104,7 +104,7 @@ public class ClientController {
         } catch (UnknownHostException e1) {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
-            model.continuePrompt("There was an SSL error, contact your local library for help");
+            model.start("There was an SSL error, contact your local library for help");
         } catch (MalformedRequestException | InternalServerErrorException e1) {
             model.continuePrompt("An error occurred, please try again");
         } catch (InvalidCredentialsException e1) {
@@ -146,7 +146,7 @@ public class ClientController {
         } catch (UnknownHostException e1) {
             model.continuePrompt("The host could not be found");
         } catch (IOException e1) {
-            model.continuePrompt("There was an SSL error, contact your local library for help");
+            model.start("There was an SSL error, contact your local library for help");
         } catch (MalformedRequestException | InternalServerErrorException e1) {
             model.continuePrompt("An error occurred, please try again");
         } catch (InvalidCredentialsException e1) {
