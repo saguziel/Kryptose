@@ -32,7 +32,7 @@ public class ClientController {
     static final String LOGOUT = "logout";
     static final String LOGOUT_SYNTAX = "Syntax: logout";
     static final String HELP = "help";
-    static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, LOGS, LOGOUT, HELP};
+    static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, /*LOGS,*/ LOGOUT, HELP};
     static final String HELP_SYNTAX = "Syntax: help";
     Client model;
 	
@@ -199,13 +199,15 @@ public class ClientController {
             } else {
                 model.continuePrompt(DEL_SYNTAX);
             }
-        } else if (command.equals(LOGS)) {
-            if (args.length == 1) {
-                fetchLogs();
-            } else {
-                model.continuePrompt(LOGS_SYNTAX);
-            }
-        } else if (command.equals(LOGOUT)) {
+        }
+//        else if (command.equals(LOGS)) {
+//            if (args.length == 1) {
+//                fetchLogs();
+//            } else {
+//                model.continuePrompt(LOGS_SYNTAX);
+//            }
+//        }
+        else if (command.equals(LOGOUT)) {
             if (args.length == 1) {
                 model.logout();
             } else {
@@ -232,8 +234,8 @@ public class ClientController {
                     DEL_SYNTAX + "\n\n" +
                     "LOGOUT: Logs out of current account\n" +
                     LOGOUT_SYNTAX + "\n\n" +
-                    "LOGS: Displays log of all current user interactions with server\n" +
-                    LOGS_SYNTAX + "\n\n" +
+//                    "LOGS: Displays log of all current user interactions with server\n" +
+//                    LOGS_SYNTAX + "\n\n" +
                     "PRINT: Prints all usernames and password pairs\n" +
                     PRINT_SYNTAX + "\n\n" +
                     "HELP: Prints commands, their uses, and their syntax\n" +
