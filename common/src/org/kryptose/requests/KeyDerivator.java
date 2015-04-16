@@ -1,27 +1,20 @@
-package org.kryptose.client;
+package org.kryptose.requests;
 
+import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.xml.bind.DatatypeConverter;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-
-import org.junit.internal.ArrayComparisonFailure;
-import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
-
 public class KeyDerivator {
-	
-	static byte[] appSalt;
-	
+
+    static final char[] appName = "Kryptose:".toCharArray();
+    static byte[] appSalt;
 	static int usernameMaxLength;
-	
-	static final char[] appName = "Kryptose:".toCharArray();
-	
 	
 	public static void setParams(String enc_app_salt, int username_max_length){
 		appSalt =  DatatypeConverter.parseHexBinary(enc_app_salt);

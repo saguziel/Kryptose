@@ -1,14 +1,9 @@
 package org.kryptose.client;
+
 import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.Blob;
-
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import org.kryptose.requests.KeyDerivator;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -16,12 +11,13 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
  * Created by jeff on 3/15/15.
@@ -45,23 +41,80 @@ public class PasswordFile {
         this.credentials = new ArrayList<Credential>();
     }
 
-    public byte[] getOldDigest(){
-    	if (oldDigest == null) return null;
+    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        Blob b;
+
+        try {
+            Cipher c;
+            c = Cipher.getInstance("AES/GCM/NoPadding");
+            final int blockSize = c.getBlockSize();
+
+            final byte[] ivData = new byte[blockSize];
+            final SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
+            rnd.nextBytes(ivData);
+
+            GCMParameterSpec params = new GCMParameterSpec(blockSize * Byte.SIZE, ivData);
+
+            SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
+            c.init(Cipher.ENCRYPT_MODE, sks, params);
+
+            //byte[] head = "Head".getBytes();
+            //c.updateAAD(head);
+
+            b = new Blob(c.doFinal(raw_data), ivData);
+
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new CryptoPrimitiveNotSupportedException(e);
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            throw new CryptoErrorException(e);
+        }
+
+        return b;
+    }
+
+    private static byte[] rawBlobDecrypt(Blob b, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException {
+
+        try {
+            Cipher c;
+            c = Cipher.getInstance("AES/GCM/NoPadding");
+            final int blockSize = c.getBlockSize();
+
+            GCMParameterSpec params = new GCMParameterSpec(blockSize * Byte.SIZE, b.getIv());
+
+
+            SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
+            c.init(Cipher.DECRYPT_MODE, sks, params);
+
+            //byte[] head = "Head".getBytes();
+            //c.updateAAD(head);
+
+            return c.doFinal(b.getEncBytes());
+
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new CryptoPrimitiveNotSupportedException(e);
+        } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            //Note: this can be due to a tampered blob or malicious attack
+            throw new CryptoErrorException(e);
+        }
+    }
+
+    public byte[] getOldDigest() {
+        if (oldDigest == null) return null;
         return oldDigest.clone();
     }
 
     public void setOldDigest(byte[] digest){
-    	if (digest == null) {
-    		this.oldDigest = null;
-    	} else {
-    		this.oldDigest = digest.clone();
-    	}
+        if (digest == null) {
+            this.oldDigest = null;
+        } else {
+            this.oldDigest = digest.clone();
+        }
     }
 
     public void decryptBlob(Blob b, String username, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
-        
-    	
+        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
+
+
         byte[] decrypted = rawBlobDecrypt(b, raw_key);
         try {
             ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
@@ -75,9 +128,9 @@ public class PasswordFile {
 
     //TODO: use correct timestamp and iv
     public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        
+
     	/*
-    	byte[] salt = new byte[64];
+        byte[] salt = new byte[64];
     	SecureRandom rnd;
 		try {
 			rnd = SecureRandom.getInstance("SHA1PRNG");
@@ -89,8 +142,8 @@ public class PasswordFile {
 		}
     	*/
 
-    	
-    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
+
+        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
 
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -109,17 +162,17 @@ public class PasswordFile {
         }
     }
 
-    public Credential getVal(int index){
-        if(0 <= index && index < credentials.size()){
+    public Credential getVal(int index) {
+        if (0 <= index && index < credentials.size()) {
             Credential c = credentials.get(index);
             return c;
         }
         return null;
     }
 
-    public String getVal(String dom, String user){
-        for(Credential c : credentials){
-            if(c.getDomain().equals(dom) && c.getUsername().equals(user)){
+    public String getVal(String dom, String user) {
+        for (Credential c : credentials) {
+            if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
                 return c.getPassword();
             }
         }
@@ -127,8 +180,8 @@ public class PasswordFile {
     }
 
     // returns true if value overwritten, false if new val inserted
-    public Boolean setVal(String dom, String user, String pass){
-        for(Credential c : credentials) {
+    public Boolean setVal(String dom, String user, String pass) {
+        for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
                 c.setPassword(pass);
                 return true;
@@ -138,8 +191,8 @@ public class PasswordFile {
         return false;
     }
 
-    public Credential delVal(int index){
-        if(0 <= index && index < credentials.size()){
+    public Credential delVal(int index) {
+        if (0 <= index && index < credentials.size()) {
             Credential c = credentials.get(index);
             credentials.remove(index);
             return c;
@@ -148,22 +201,22 @@ public class PasswordFile {
     }
 
     // returns true iff value associated w/ dom successfully deleted
-    public Boolean delVal(String dom, String user){
+    public Boolean delVal(String dom, String user) {
         int toRem = -1;
-        for(int i = 0; i<credentials.size(); i++){
-            if(credentials.get(i).getDomain().equals(dom) && credentials.get(i).getUsername().equals(user)){
+        for (int i = 0; i < credentials.size(); i++) {
+            if (credentials.get(i).getDomain().equals(dom) && credentials.get(i).getUsername().equals(user)) {
                 toRem = i;
                 break;
             }
         }
-        if(toRem >= 0){
+        if (toRem >= 0) {
             credentials.remove(toRem);
             return true;
         }
         return false;
     }
 
-    public ArrayList<Credential> toList(){
+    public ArrayList<Credential> toList() {
         return credentials;
     }
 
@@ -171,63 +224,6 @@ public class PasswordFile {
         public BadBlobException(String message) {
             super(message);
         }
-    }
-    
-    private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
-    	Blob b;
-    	
-		try {
-	    	Cipher c;
-			c = Cipher.getInstance("AES/GCM/NoPadding");
-	    	final int blockSize = c.getBlockSize();
-	    	
-	    	final byte[] ivData = new byte[blockSize];
-	    	final SecureRandom rnd = SecureRandom.getInstance("SHA1PRNG");
-	    	rnd.nextBytes(ivData);
-	    	
-	    	GCMParameterSpec params = new GCMParameterSpec(blockSize * Byte.SIZE, ivData);
-	    	
-	    	SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
-	    	c.init(Cipher.ENCRYPT_MODE, sks, params);
-
-	    	//byte[] head = "Head".getBytes();
-	    	//c.updateAAD(head);
-	    	
-	    	b = new Blob(c.doFinal(raw_data),ivData);		
-		
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			throw new CryptoPrimitiveNotSupportedException(e);
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-			throw new CryptoErrorException(e);
-		}
-    	
-    	return b;
-    }
-    
-    private static byte[] rawBlobDecrypt(Blob b, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException{
-
-		try {
-	    	Cipher c;
-			c = Cipher.getInstance("AES/GCM/NoPadding");
-	    	final int blockSize = c.getBlockSize();
-	    	
-	    	GCMParameterSpec params = new GCMParameterSpec(blockSize * Byte.SIZE, b.getIv());
-	    	
-	    	
-	    	SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
-	    	c.init(Cipher.DECRYPT_MODE, sks, params);
-
-	    	//byte[] head = "Head".getBytes();
-	    	//c.updateAAD(head);
-	    	
-	    	return c.doFinal(b.getEncBytes());		
-
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
-			throw new CryptoPrimitiveNotSupportedException(e);
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-			//Note: this can be due to a tampered blob or malicious attack
-			throw new CryptoErrorException(e);
-		}
     }
     
 

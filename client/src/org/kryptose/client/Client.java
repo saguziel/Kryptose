@@ -1,8 +1,8 @@
 package org.kryptose.client;
 
+import org.kryptose.requests.KeyDerivator;
 import org.kryptose.requests.Log;
 import org.kryptose.requests.User;
-import org.kryptose.exceptions.*;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,10 +20,10 @@ public class Client {
     RequestHandler reqHandler;
     PasswordFile passfile;
     LocalDateTime lastmod;
-    private String masterpass = "0";
 //    private byte[] derivedFilePass;
     String username;
     ArrayList<Log> userlog;
+    private String masterpass = "0";
 
     private Client() {
     	
@@ -196,24 +196,18 @@ public class Client {
         }
     }
 
-    public void setMasterpass(String pass) {
-        this.masterpass = pass;
-        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.username, pass.toCharArray());
-        this.user = new User(username, derived);
-    }
-
     public void newPassFile() {
         this.passfile = new PasswordFile(this.user.getUsername());
         view.promptCmd("New password file created");
     }
 
-    void setLogs(ArrayList<Log> a){
+    void setLogs(ArrayList<Log> a) {
         userlog = a;
         System.out.println(userlog);
     }
 
     void displayLogs() {
-        for(Log l : userlog){
+        for (Log l : userlog) {
             view.displayMessage(l.toString());
         }
         view.promptCmd();
@@ -221,6 +215,12 @@ public class Client {
 
     String getMasterpass() {
         return masterpass;
+    }
+
+    public void setMasterpass(String pass) {
+        this.masterpass = pass;
+        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.username, pass.toCharArray());
+        this.user = new User(username, derived);
     }
 
     void promptMasterpass() {

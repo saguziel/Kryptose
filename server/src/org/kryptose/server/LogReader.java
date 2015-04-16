@@ -1,10 +1,16 @@
 package org.kryptose.server;
 
+import org.kryptose.requests.KeyDerivator;
+
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -25,6 +31,26 @@ public class LogReader {
         this.auth_key = auth_key;
         this.current_key = auth_key;
         this.key_iteration = 0;
+    }
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Enter CREATE to create password file or READ to read logs");
+        String choice = in.readLine();
+        switch (choice) {
+            case "CREATE":
+                System.out.println("Enter password");
+                KeyDerivator.setParams("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 0);
+                byte[] authkey = Arrays.copyOf(KeyDerivator.getAuthenticationKeyBytes("", password.toCharArray()), 128);
+                Path p = FileSystems.getDefault().getPath("", "logPassfile")
+        }
+        String password = in.readLine();
+
+        KeyDerivator.setParams("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 0);
+        byte[] authkey = Arrays.copyOf(KeyDerivator.getAuthenticationKeyBytes("", password.toCharArray()), 128);
+
+
+
     }
 
     public String[] decrypt(String[] entries) {

@@ -38,7 +38,6 @@ public class LogFormatter extends Formatter {
     public LogFormatter(Formatter f) {
         this.f = f;
         authfile = FileSystems.getDefault().getPath("", "logPassfile");
-        System.out.println(authfile.toAbsolutePath());
         Base64.Decoder decoder = Base64.getDecoder();
         try {
             auth_key = decoder.decode(Files.readAllBytes(authfile));
