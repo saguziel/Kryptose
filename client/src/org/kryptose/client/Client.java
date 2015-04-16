@@ -22,7 +22,7 @@ public class Client {
     LocalDateTime lastmod;
     private String masterpass = "0";
 //    private byte[] derivedFilePass;
-    private String username;
+    String username;
     ArrayList<Log> userlog;
 
     private Client() {
@@ -82,14 +82,21 @@ public class Client {
         view.promptCmd("Password file successfully fetched");
     }
 
-    public void setVal(String dom, String newVal) {
-        Boolean succ = this.passfile.setVal(dom, newVal);
+    public void setVal(String dom, String user, String pass) {
+        System.out.println(this.passfile);
+        Boolean succ = this.passfile.setVal(dom, user, pass);
+        System.out.println(dom);
+        System.out.println(user);
+        System.out.println(pass);
         lastmod = LocalDateTime.now();
         if(succ){
-            view.displayMessage("password for key: " + dom + " successfully set");
+            view.displayMessage("password for domain: " + dom + ", user: " + user + " successfully set");
         } else {
-            view.displayMessage("password for key: " + dom + " successfully created");
+            view.displayMessage("password for domain: " + dom + ", user: " + user + " successfully created");
         }
+    }
+    public void set() {
+        view.set();
     }
 
     public void delVal(String dom) {
@@ -110,8 +117,13 @@ public class Client {
     }
 
     public void printAll() {
+        int i = 0;
         for (Credential c : passfile.credentials) {
-            System.out.println("Domain: " + c.getDomain() + " Password: " + c.getPassword());
+            System.out.println(
+                    ++i + ": Domain: " + c.getDomain() +
+                    " Username: " + c.getUsername() +
+                    " Password: " + c.getPassword() +
+                    " Lastmod: " + c.getMod().toString());
         }
         view.promptCmd();
     }
@@ -133,7 +145,9 @@ public class Client {
     }
 
     public void logout() {
-        view.logout();
+//        view.logout();
+        view.displayMessage("Logging out!");
+        this.start();
     }
 
     public boolean setUsername(String name) {
@@ -149,7 +163,7 @@ public class Client {
 
     public void setMasterpass(String pass) {
         this.masterpass = pass;
-        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.user.getUsername(), this.masterpass.toCharArray());
+        byte[] derived = KeyDerivator.getAuthenticationKeyBytes(this.username, pass.toCharArray());
         this.user = new User(username, derived);
     }
 
@@ -160,6 +174,7 @@ public class Client {
 
     void setLogs(ArrayList<Log> a){
         userlog = a;
+        System.out.println(userlog);
     }
 
     void displayLogs() {
@@ -181,12 +196,20 @@ public class Client {
 //        return derivedFilePass;
 //    }
 
-    void promptUsername(){
+    void startLogin(){
         view.promptUserName();
     }
 
     public void start() {
         view.promptStart();
+    }
+
+    public void startCreate() {
+        view.createUsername();
+    }
+
+    public void startSetPass() {
+        view.createPass();
     }
 
     public void start(String s) {

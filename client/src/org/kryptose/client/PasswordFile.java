@@ -119,14 +119,14 @@ public class PasswordFile {
     }
 
     // returns true if value overwritten, false if new val inserted
-    public Boolean setVal(String dom, String newVal){
+    public Boolean setVal(String dom, String user, String pass){
         for(Credential c : credentials) {
-            if (c.getDomain().equals(dom)) {
-                c.setPassword(newVal);
+            if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
+                c.setPassword(pass);
                 return true;
             }
         }
-        credentials.add(new Credential(username, newVal, dom));
+        credentials.add(new Credential(user, pass, dom));
         return false;
     }
 

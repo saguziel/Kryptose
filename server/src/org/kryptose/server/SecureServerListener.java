@@ -11,8 +11,11 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
+import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.requests.ResponseErrorReport;
 
-class SecureServerListener{
+
+public class SecureServerListener{
 	
 	private final int port;
 	private final Server server;
@@ -51,14 +54,13 @@ class SecureServerListener{
         } catch (IOException ex) {
     		String errorMsg = "Error setting up socket to listen to incoming connections... exiting program.";
 			this.server.getLogger().log(Level.SEVERE, errorMsg, ex);
-			//throw new RuntimeException(); // TODO need a better way to do this.
-			System.exit(2); // TODO need a better way to do this?
+			throw new FatalError(ex);
         }
     	
     }
     
     private void listenForClient() {
-    	SSLSocket clientSocket;
+    	final SSLSocket clientSocket;
     	
     	// Wait for and accept connection.
     	try {
@@ -74,7 +76,7 @@ class SecureServerListener{
 		this.server.getLogger().log(Level.CONFIG, printSocketInfo(connection));
 
 		// Handle connection.
-		Runnable job = new ClientHandler(server, clientSocket, connection);
+		final ClientHandler job = new ClientHandler(server, clientSocket, connection);
 		Thread t = new Thread(job);
 		
     	// Set uncaught exception handler
@@ -83,6 +85,16 @@ class SecureServerListener{
 			public void uncaughtException(Thread t, Throwable e) {
 				String errorMsg = "Unexpected error in client-handling thread.";
 				server.getLogger().log(Level.SEVERE, errorMsg, e);
+				// Respond with error response.
+				try {
+					if (!clientSocket.isClosed()) {
+						job.speak(new ResponseErrorReport(new InternalServerErrorException()));
+						clientSocket.close();
+					}
+				} catch (Exception ex) {
+					String errorMsg2 = "Error cleaning up after unexpected error.";
+					server.getLogger().log(Level.SEVERE, errorMsg2, ex);
+				}
 			}
     	});
     	
@@ -145,9 +157,7 @@ class SecureServerListener{
     
 	
 	/**
-	 * For test purposes
-	 * TODO: remove.
-	 * @param args
+	 * 
 	 */
 	 private static String printSocketInfo(Connection connection) {
 		 SSLSocket s = connection.getSocket();
@@ -217,24 +227,6 @@ class SecureServerListener{
 		   		System.out.println("Server is runningAA");
 		   		
 		   	}
-
-	   
-	    //TODO: remove afterwards. For testing only
-	    public SecureServerListener(int port) {
-	    	this.port = port;
-	    	this.server = null;
-	    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
-	    	this.serverKeyStorePassword = "aaaaaa";
-		}
-
-
-	//TODO: remove this constructor once we are using the other one (which explicitly sets the serverKeyStore)
-    public SecureServerListener(Server server, int port) {
-    	this.port = port;
-    	this.server = server;
-    	this.serverKeyStore = "src/org/kryptose/certificates/ServerKeyStore.jks";
-    	this.serverKeyStorePassword = "aaaaaa";
-	}
 
 */
 	

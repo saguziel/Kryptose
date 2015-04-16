@@ -2,7 +2,9 @@ package org.kryptose.requests;
 
 import java.io.Serializable;
 
-import org.kryptose.exceptions.ServerException;
+import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.exceptions.InvalidCredentialsException;
+import org.kryptose.exceptions.MalformedRequestException;
 
 
 /**
@@ -13,26 +15,15 @@ import org.kryptose.exceptions.ServerException;
  */
 public abstract class Response implements Serializable {
 	
-	private final ServerException exception;
-	
 	public Response() {
-		this.exception = null;
 	}
-	
-	public Response(ServerException exception) {
-		this.exception = exception;
-	}
-	
-    public abstract String logEntry();
+
+
+	public abstract String logEntry();
     
-    public ServerException getException() {
-    	return this.exception;
-    }
-    
-    public void checkException() throws ServerException {
-    	if (this.getException() != null) {
-    		throw this.getException();
-    	}
+    public void checkException() throws InternalServerErrorException,
+    									MalformedRequestException,
+    									InvalidCredentialsException {
     }
 
 }

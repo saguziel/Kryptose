@@ -81,7 +81,7 @@ public class FileSystemDataStore implements DataStore {
     	// Actually do the write.
     	File file = getUserBlobFile(user);
 
-    	//TODO: Is this necessary? I think FileOutputStream creates the file if it doesn't exists.
+    	// Necessary to make sure directory exists.
 		ensureExists(file);
 
     	try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));) {

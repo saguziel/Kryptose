@@ -1,10 +1,10 @@
 package org.kryptose.client;
 
-import org.kryptose.exceptions.ServerException;
+import org.kryptose.exceptions.InternalServerErrorException;
+import org.kryptose.exceptions.InvalidCredentialsException;
+import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.requests.Request;
 import org.kryptose.requests.Response;
-import org.kryptose.requests.RequestTest;
-import org.kryptose.requests.ResponseTest;
 
 import java.io.*;
 import java.net.UnknownHostException;
@@ -13,13 +13,12 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 
-// TODO: rename this class.
 public class RequestHandler {
 
-	static String serverHostname;
-	static int serverPort;
-	static String clientTrustStore; 
-	static String clientTrustStorePassword;
+	String serverHostname;
+	int serverPort;
+	String clientTrustStore; 
+	String clientTrustStorePassword;
 	
     SSLSocketFactory sslsocketfactory; 
     SSLSocket sock; 
@@ -54,9 +53,10 @@ public class RequestHandler {
 	}
 
 	
-	Response send(Request req) throws UnknownHostException, IOException, ServerException {
+	Response send(Request req) throws UnknownHostException, IOException, MalformedRequestException, InvalidCredentialsException, InternalServerErrorException {
         try {
-    	    sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
+
+        	sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
 
     	    sock.setEnabledProtocols(new String[] {"TLSv1.2"});
 
@@ -73,30 +73,34 @@ public class RequestHandler {
             
             out.writeObject(req);
             
-            System.out.println("Request sent: " + req.toString());
+            //System.out.println("Request sent: " + req.toString());
            
             in = new ObjectInputStream(sock.getInputStream());
 
             Response resp;
 			resp = (Response) in.readObject();
+            // TODO: catch ClassCastException and handle it.
+			
 			// See if Response was an Exception response, throw if so.
 			resp.checkException();
 
 			//TODO: remove later (testing only).
-			System.out.println("Response received: " + resp.toString());
+			//System.out.println("Response received: " + resp.toString());
       
+	        sock.close();
             return resp;
             
         } catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-            sock.close();
+        	//e.printStackTrace();
+			sock.close();
+			throw new IOException(e);
+		}catch(MalformedRequestException| InvalidCredentialsException| InternalServerErrorException e){
+			sock.close();
+			throw e;
 		}
-        
-        //TODO: Remove after meaningful Error Handling has been done.
-		return null;
-		
+               
+        		
 	}
 	
 /*

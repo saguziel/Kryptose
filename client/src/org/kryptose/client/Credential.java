@@ -1,6 +1,9 @@
 package org.kryptose.client;
 
+import org.kryptose.requests.Log;
+
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * A set of credentials.
@@ -11,26 +14,49 @@ public class Credential implements Serializable {
 	private String username;
 	private String password;
 	private String domain;
-	
+	private LocalDateTime lastmod;
 	
 	public Credential(String username, String password, String domain) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.domain = domain;
+        recordTime();
 	}
+
+    private void recordTime(){
+        lastmod = LocalDateTime.now();
+    }
 	
 	public String getUsername() {
 		return username;
 	}
+
 	public String getPassword() {
 		return password;
 	}
-	public String getDomain() {
+
+    public LocalDateTime getMod() {
+        return this.lastmod;
+    }
+
+    public String getDomain() {
 		return domain;
 	}
+
     void setPassword(String p) {
         this.password = p;
+        recordTime();
+    }
+
+    void setUsername(String u){
+        this.username = u;
+        recordTime();
+    }
+
+    void setDomain(String d){
+        this.domain = d;
+        recordTime();
     }
 	
 	
