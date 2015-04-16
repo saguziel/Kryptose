@@ -73,7 +73,7 @@ public class RequestHandler {
             
             out.writeObject(req);
             
-            System.out.println("Request sent: " + req.toString());
+            //System.out.println("Request sent: " + req.toString());
            
             in = new ObjectInputStream(sock.getInputStream());
 
@@ -85,7 +85,7 @@ public class RequestHandler {
 			resp.checkException();
 
 			//TODO: remove later (testing only).
-			System.out.println("Response received: " + resp.toString());
+			//System.out.println("Response received: " + resp.toString());
       
 	        sock.close();
             return resp;
