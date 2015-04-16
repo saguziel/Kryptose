@@ -4,6 +4,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Base64;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -55,5 +60,12 @@ public class LogFormatterTest {
         for (int i = 0; i < formatted.length; i++) {
             assertEquals(decrypted[i], simpleFormatted);
         }
+    }
+
+    @Test
+    public void writeBytes() throws Exception {
+        Path p = FileSystems.getDefault().getPath("server/", "logPassfile");
+        Base64.Encoder encoder = Base64.getEncoder();
+        Files.write(p, encoder.encode(auth_key), StandardOpenOption.CREATE);
     }
 }

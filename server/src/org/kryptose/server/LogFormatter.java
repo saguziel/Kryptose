@@ -4,8 +4,13 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -22,10 +27,25 @@ public class LogFormatter extends Formatter {
 
     private Formatter f;
     private byte[] auth_key;
+    private Path authfile;
 
     public LogFormatter(Formatter f, byte[] auth_key) {
         this.f = f;
         this.auth_key = auth_key;
+        authfile = null;
+    }
+
+    public LogFormatter(Formatter f) {
+        this.f = f;
+        authfile = FileSystems.getDefault().getPath("", "logPassfile");
+        System.out.println(authfile.toAbsolutePath());
+        Base64.Decoder decoder = Base64.getDecoder();
+        try {
+            auth_key = decoder.decode(Files.readAllBytes(authfile));
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
     }
 
     public String format(LogRecord lr) {
@@ -38,7 +58,6 @@ public class LogFormatter extends Formatter {
             md.update(this.auth_key);
             byte[] mk = Arrays.copyOfRange(md.digest(), 0, 128 / 8);
 
-            Base64.Encoder encoder = Base64.getEncoder();
             //encrypt entry with mk
             SecretKeySpec sks = new SecretKeySpec(mk, "AES");
             Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -68,6 +87,14 @@ public class LogFormatter extends Formatter {
             md.update(this.auth_key);
             this.auth_key = md.digest();
             this.auth_key = Arrays.copyOfRange(this.auth_key, 0, 128 / 8);
+            Base64.Encoder encoder = Base64.getEncoder();
+            try {
+                if (authfile != null)
+                    Files.write(authfile, encoder.encode(this.auth_key), StandardOpenOption.TRUNCATE_EXISTING);
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                System.exit(1);
+            }
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
                 IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException e) {
             System.out.println(e.getMessage());

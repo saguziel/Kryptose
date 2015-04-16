@@ -1,11 +1,6 @@
 package org.kryptose.server;
 
-import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
-import org.kryptose.exceptions.InternalServerErrorException;
-import org.kryptose.exceptions.InvalidCredentialsException;
-import org.kryptose.exceptions.MalformedRequestException;
-import org.kryptose.exceptions.StaleWriteException;
-import org.kryptose.exceptions.UsernameInUseException;
+import org.kryptose.exceptions.*;
 import org.kryptose.requests.*;
 import org.kryptose.server.UserTable.Result;
 
@@ -14,7 +9,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.*;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Server {
 
@@ -284,7 +282,8 @@ public class Server {
 		}
     	if (fileHandler != null) {
     		fileHandler.setLevel(Level.CONFIG);
-    		this.logger.addHandler(fileHandler);
+            fileHandler.setFormatter(new LogFormatter(fileHandler.getFormatter()));
+            this.logger.addHandler(fileHandler);
     	}
     }
     
