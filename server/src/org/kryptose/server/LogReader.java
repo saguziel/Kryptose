@@ -40,9 +40,10 @@ public class LogReader {
         switch (choice) {
             case "CREATE":
                 System.out.println("Enter password");
+                String password = in.readLine();
                 KeyDerivator.setParams("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", 0);
                 byte[] authkey = Arrays.copyOf(KeyDerivator.getAuthenticationKeyBytes("", password.toCharArray()), 128);
-                Path p = FileSystems.getDefault().getPath("", "logPassfile")
+                Path p = FileSystems.getDefault().getPath("", "logPassfile");
         }
         String password = in.readLine();
 
