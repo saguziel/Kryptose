@@ -109,6 +109,14 @@ public class PasswordFile {
         }
     }
 
+    public Credential getVal(int index){
+        if(0 <= index && index < credentials.size()){
+            Credential c = credentials.get(index);
+            return c;
+        }
+        return null;
+    }
+
     public String getVal(String dom, String user){
         for(Credential c : credentials){
             if(c.getDomain().equals(dom) && c.getUsername().equals(user)){
@@ -128,6 +136,15 @@ public class PasswordFile {
         }
         credentials.add(new Credential(user, pass, dom));
         return false;
+    }
+
+    public Credential delVal(int index){
+        if(0 <= index && index < credentials.size()){
+            Credential c = credentials.get(index);
+            credentials.remove(index);
+            return c;
+        }
+        return null;
     }
 
     // returns true iff value associated w/ dom successfully deleted
