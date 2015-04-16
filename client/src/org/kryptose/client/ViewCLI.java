@@ -108,7 +108,9 @@ public class ViewCLI extends View {
         }
 
 	    public void run() {
-	        System.out.print("I'm awaiting input\n> ");
+//	        System.out.print("I'm awaiting input\n> ");
+	    	System.out.print("> ");
+	    	
 	        String input = in.nextLine();
 
             if (cmd == CMD) {
