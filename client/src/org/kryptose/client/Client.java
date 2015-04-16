@@ -99,12 +99,12 @@ public class Client {
         view.set();
     }
 
-    public void delVal(String dom) {
-        Boolean succ = this.passfile.delVal(dom);
+    public void delVal(String dom, String user) {
+        Boolean succ = this.passfile.delVal(dom, user);
         if (succ) {
-            view.displayMessage("password for key: " + dom + " successfully set");
+            view.displayMessage("password for domain: " + dom + ", username: " + user + " successfully deleted");
         } else {
-            view.displayMessage("there is no password associated with key: " + dom);
+            view.displayMessage("there is no password associated with domain: " + dom + ", username :" + user);
         }
     }
 
@@ -122,18 +122,18 @@ public class Client {
             System.out.println(
                     ++i + ": Domain: " + c.getDomain() +
                     " Username: " + c.getUsername() +
-                    " Password: " + c.getPassword() +
+//                    " Password: " + c.getPassword() +
                     " Lastmod: " + c.getMod().toString());
         }
         view.promptCmd();
     }
 
-    public void getCredential(String key) {
-        String password = passfile.getVal(key);
+    public void getCredential(String dom, String user) {
+        String password = passfile.getVal(dom, user);
         if (password == null)
-            view.promptCmd("No password associated with key: " + key);
+            view.promptCmd("No password associated with domain: " + dom + ", username :" + user);
         else
-            view.promptCmd("Password for domain " + key + " is: " + password);
+            view.promptCmd("Password for domain: " + dom + ", username :" + user + " is: " + password);
     }
 
     public LocalDateTime getLastMod() {
@@ -201,6 +201,7 @@ public class Client {
     }
 
     public void start() {
+        view.displayMessage("Welcome to Kryptose BETA VERSION. Type LOGIN or CREATE to create a new account");
         view.promptStart();
     }
 
