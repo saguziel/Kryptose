@@ -168,12 +168,16 @@ public class UserTable implements Serializable {
 	private transient Logger logger;
 	private transient String fileName;
 	private transient String tmpFileName;
+	
 	private final int salt_size;
 	private ConcurrentHashMap<String,UserRecord> users;
 	
 	private transient Object persistLock = new Object();
 	private transient Object ensurePersistMonitor = new Object();
 	private transient volatile boolean persistInProgress = false;
+	private transient volatile boolean persistNextThreadTurn = false;
+	private transient volatile Thread persistNextThread = null;
+	
 	
 
 	public UserTable(Logger logger) {
@@ -300,18 +304,21 @@ public class UserTable implements Serializable {
 		synchronized (ensurePersistMonitor) {
 			if (persistInProgress) {
 				// Queue this thread up as responsible for ensuring a persist.
+				persistNextThread = Thread.currentThread();
 				ensurePersistMonitor.notifyAll(); // relieve other threads of responsibility.
-				boolean interrupted = false;
+				// Wait for chance to persist or for responsibility relieved.
 				try {
+				while (persistNextThread == Thread.currentThread() && persistInProgress) {
 					ensurePersistMonitor.wait();
-				}
-				catch (InterruptedException ex) { interrupted = true; }
-				// If woken while persist in progress, means this thread
-				// no longer responsible for ensuring a persist.
-				if (!interrupted && persistInProgress) return;
+				}}
+				catch (InterruptedException ex) { }
+				// If woken while not persistNextThread, duty has been relieved
+				if (persistNextThread != Thread.currentThread()) return;
 			}
 			// This thread about to start a persist.
+			// Clear out any other thread that's already waiting for a persist to happen.
 			persistInProgress = true;
+			persistNextThread = null;
 		}
 		// Persist the UserTable.
 		synchronized (persistLock) {
@@ -326,7 +333,7 @@ public class UserTable implements Serializable {
 		synchronized (ensurePersistMonitor) {
 			persistInProgress = false;
 			// Notify a thread that's responsible for a future persist.
-			ensurePersistMonitor.notify();
+			ensurePersistMonitor.notifyAll();
 		}
 	}
 
@@ -361,6 +368,7 @@ public class UserTable implements Serializable {
      */
     private void ensureDirectoryExists(File file) {
     	File parentFile = file.getParentFile();
+    	if (parentFile == null) return;
     	if (parentFile.exists()) {
     		if (!parentFile.isDirectory()) {
     			logger.severe("Could not create directory: " + parentFile);

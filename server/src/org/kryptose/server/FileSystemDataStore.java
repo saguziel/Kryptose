@@ -164,11 +164,11 @@ public class FileSystemDataStore implements DataStore {
      */
     private void ensureExists(File file) {
     	File parentFile = file.getParentFile();
-    	if (parentFile.exists()) {
+    	if (parentFile != null && parentFile.exists()) {
     		if (!parentFile.isDirectory()) {
     			logger.severe("Could not create directory: " + parentFile);
     		}
-    	} else {
+    	} else if (parentFile != null) {
     		boolean success = parentFile.mkdirs();
     		if (!success) {
     			logger.severe("Could not create directory: " + parentFile);
