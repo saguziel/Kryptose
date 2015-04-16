@@ -99,7 +99,7 @@ public class LogReader {
                 clearArray(authkey);
                 clearArray(password);
 
-                Path p = FileSystems.getDefault().getPath("server/", "logPassfile");
+                Path p = FileSystems.getDefault().getPath("", "logPassfile");
                 if (p.getParent() != null) Files.createDirectories(p.getParent());
                 Files.write(p, encodedAuthKey, StandardOpenOption.CREATE_NEW);
 
@@ -123,7 +123,7 @@ public class LogReader {
                     if (logName.equalsIgnoreCase("BREAK")) {
                         break;
                     }
-                    BufferedReader br = new BufferedReader(new FileReader("server/datastore/" + logName));
+                    BufferedReader br = new BufferedReader(new FileReader("datastore/" + logName));
                     while (true) {
                         if (i < 3) {
                             entries[i] = br.readLine();
