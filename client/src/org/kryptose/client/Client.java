@@ -99,6 +99,39 @@ public class Client {
         view.set();
     }
 
+    public void getCredentialNum(String num) {
+        int index = -1;
+        try{
+            index = Integer.parseInt(num);
+        } catch (NumberFormatException e) {
+            view.promptCmd(num + " is not valid index");
+            return;
+        }
+        index--;
+        Credential succ = this.passfile.getVal(index);
+        if (succ == null)
+            view.promptCmd("No password associated with index: " + num);
+        else
+            view.promptCmd("Password for domain: " + succ.getDomain() + ", username :" + succ.getUsername() + " is: " + succ.getPassword());
+    }
+
+    public void delValNum(String num) {
+        int index = -1;
+        try{
+            index = Integer.parseInt(num);
+        } catch (NumberFormatException e) {
+            view.displayMessage(num + " is not valid index");
+            return;
+        }
+        index--;
+        Credential succ = this.passfile.delVal(index);
+        if (succ != null) {
+            view.displayMessage("password for domain: " + succ.getDomain() + ", username: " + succ.getUsername() + " successfully deleted");
+        } else {
+            view.displayMessage("No password associated with index: " + num);
+        }
+    }
+
     public void delVal(String dom, String user) {
         Boolean succ = this.passfile.delVal(dom, user);
         if (succ) {
@@ -127,6 +160,8 @@ public class Client {
         }
         view.promptCmd();
     }
+
+
 
     public void getCredential(String dom, String user) {
         String password = passfile.getVal(dom, user);

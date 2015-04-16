@@ -171,8 +171,9 @@ public class ClientController {
                 model.continuePrompt(GET_SYNTAX);
             }
         } else if (command.equals(QUERY)) {
-            if (args.length == 3) {
-                model.getCredential(args[1], args[2]);
+            if (args.length == 2) {
+//                model.getCredential(args[1], args[2]);
+                model.getCredentialNum(args[1]);
             } else {
                 model.continuePrompt(QUERY_SYNTAX);
             }
@@ -191,8 +192,9 @@ public class ClientController {
                 model.continuePrompt(SET_SYNTAX);
             }
         } else if (command.equals(DEL)) {
-            if (args.length == 3) {
-                model.delVal(args[1], args[2]);
+            if (args.length == 2) {
+//                model.delVal(args[1], args[2]);
+                model.delValNum(args[1]);
                 save();
             } else {
                 model.continuePrompt(DEL_SYNTAX);
