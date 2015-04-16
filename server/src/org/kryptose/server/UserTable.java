@@ -299,6 +299,11 @@ public class UserTable implements Serializable {
 		return t;
 	}
 	
+	// Persist to file on each modification
+	// Exception: if persisting is already being done by another thread, wait for
+	// that thread to finish
+	// Other exception: if there's already a thread waiting for a persist to finish,
+	// kick that thread out and take its place.
 	public void ensurePersist() {
 		// Check to see if another thread is already doing a persist.
 		synchronized (ensurePersistMonitor) {
