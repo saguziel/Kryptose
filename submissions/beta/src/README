@@ -1,12 +1,25 @@
 Use the Makefile in this directory.
 
-make run-client
+  make run-client
 
-make run-server
+  make run-server
+
 
 
 If you want to compile without running:
 
-make compile
+  make compile
 
-make jar
+  make jar
+
+
+
+To run the server tamperproof-log-reader (A default logPassfile is provided, with initial password set to 'password1'. In order to create a new log password file, the current one must be deleted.):
+
+  make run-log
+
+
+
+To run tests (be prepared for a lot of output):
+
+  make run-test

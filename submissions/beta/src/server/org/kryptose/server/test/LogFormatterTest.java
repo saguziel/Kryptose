@@ -1,8 +1,10 @@
-package org.kryptose.server;
+package org.kryptose.server.test;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kryptose.server.LogFormatter;
+import org.kryptose.server.LogReader;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
