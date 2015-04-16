@@ -39,8 +39,12 @@ public class ViewCLI extends View {
     @Override
     void createPass() {
         System.out.println("Enter new account password");
-//        String s = new String(console.readPassword());
-        String s = in.nextLine();
+        String s;
+        if (console != null) {
+        	s = new String(console.readPassword());
+        } else {
+        	s = in.nextLine();
+        }
         ctrl.handleCreatepass(s);
 
     }
