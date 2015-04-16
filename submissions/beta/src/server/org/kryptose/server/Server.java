@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -24,7 +26,8 @@ public class Server {
     // TODO make configurable?
     private static final int LOG_FILE_COUNT = 20;
     private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
-    private static final String LOG_FILE_NAME = "datastore/kryptose.%g.%u.log";
+    private static final String LOG_FILE_DIR = "datastore/";
+    private static final String LOG_FILE_NAME = LOG_FILE_DIR + "kryptose.%g.%u.log";
     
     // INSTANCE FIELDS
     private Properties properties;
@@ -272,6 +275,9 @@ public class Server {
 		// Handler to write logs to file.
 		Handler fileHandler = null;
     	try {
+    		if (Paths.get(LOG_FILE_DIR) != null) {
+    			Files.createDirectories(Paths.get(LOG_FILE_DIR));
+    		}
 			fileHandler = new FileHandler(LOG_FILE_NAME, LOG_FILE_SIZE, LOG_FILE_COUNT);
     	} catch (SecurityException e) {
     		String msg = "Insuffient permissions to write to log files: " + LOG_FILE_NAME;
