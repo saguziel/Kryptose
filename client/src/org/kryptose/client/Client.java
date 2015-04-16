@@ -83,7 +83,6 @@ public class Client {
     }
 
     public void setVal(String dom, String user, String pass) {
-        System.out.println(this.passfile);
         Boolean succ = this.passfile.setVal(dom, user, pass);
         System.out.println(dom);
         System.out.println(user);
@@ -112,7 +111,7 @@ public class Client {
         if (succ == null)
             view.promptCmd("No password associated with index: " + num);
         else
-            view.promptCmd("Password for domain: " + succ.getDomain() + ", username :" + succ.getUsername() + " is: " + succ.getPassword());
+            view.promptCmd("Password for domain:" + succ.getDomain() + ", username:" + succ.getUsername() + " is: " + succ.getPassword());
     }
 
     public void delValNum(String num) {

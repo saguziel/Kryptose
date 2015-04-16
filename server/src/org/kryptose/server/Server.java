@@ -323,6 +323,10 @@ public class Server {
         String keyStoreFile = properties.getProperty("SERVER_KEY_STORE_FILE");
         String keyStorePass = properties.getProperty("SERVER_KEY_STORE_PASSWORD");
         
+        String msg = "Kryptose server starting on port " + portNumber + "...";
+        System.out.println(msg); // TODO: don't hardcode system.out?
+        this.logger.log(Level.INFO, msg);
+        
         // Start incoming connection listener.
         this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();

@@ -15,7 +15,7 @@ public final class ResponsePut extends Response {
 
     public ResponsePut(byte[] digest) {
     	super();
-        this.digest = digest.clone();
+        this.digest = digest == null ? null : digest.clone();
     }
 
     public ResponsePut(StaleWriteException exception) {
@@ -28,7 +28,7 @@ public final class ResponsePut extends Response {
     	if (this.swex != null) {
     		throw this.swex;
     	}
-        return digest.clone();
+        return digest == null ? null : digest.clone();
     }
 
     public String logEntry() {

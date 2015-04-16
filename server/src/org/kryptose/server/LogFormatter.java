@@ -42,7 +42,7 @@ public class LogFormatter extends Formatter {
         try {
             auth_key = decoder.decode(Files.readAllBytes(authfile));
         } catch (IOException e) {
-            System.out.println("File may not exist, please use LogReader to create a password for logs");
+            System.out.println("Log file may not exist, please use LogReader to create a password for logs");
             // TODO: log error
             throw new FatalError(e);
         }

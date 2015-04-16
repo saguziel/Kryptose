@@ -59,7 +59,7 @@ public class LogReader {
             System.exit(1);
         }
         while (pos <= limit) {
-            if (buffer[pos] == '\n') {
+            if (buffer[pos] == '\n' || buffer[pos] == '\r') {
                 break;
             }
             pos++;
@@ -100,6 +100,7 @@ public class LogReader {
                 clearArray(password);
 
                 Path p = FileSystems.getDefault().getPath("server/", "logPassfile");
+                if (p.getParent() != null) Files.createDirectories(p.getParent());
                 Files.write(p, encodedAuthKey, StandardOpenOption.CREATE_NEW);
 
                 break;

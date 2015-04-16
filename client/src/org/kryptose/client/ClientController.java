@@ -21,9 +21,9 @@ public class ClientController {
     static final String SET = "set";
     static final String SET_SYNTAX = "Syntax: set"; // TODO: JS I changed this, getting rid of $domain $username $password. Jeff please approve. Jeff: I approve
     static final String DEL = "del";
-    static final String DEL_SYNTAX = "Syntax: del $domain $username";
+    static final String DEL_SYNTAX = "Syntax: del $n";
     static final String QUERY = "query";
-    static final String QUERY_SYNTAX = "Syntax: query $domain $username";
+    static final String QUERY_SYNTAX = "Syntax: query $n";
     static final String PRINT = "print";
     static final String LIST = "list";
     static final String PRINT_SYNTAX = "Syntax: print";
@@ -194,6 +194,11 @@ public class ClientController {
         } else if (command.equals(DEL)) {
             if (args.length == 2) {
 //                model.delVal(args[1], args[2]);
+            	try {Integer.parseInt(args[1]);}
+            	catch (NumberFormatException e) {
+            		model.continuePrompt(DEL_SYNTAX);
+            		return;
+            	}
                 model.delValNum(args[1]);
                 save();
             } else {
@@ -224,19 +229,19 @@ public class ClientController {
                     "Valid Commands:\n" +
                     "GET: Sets local password file to remote password file\n" +
                     GET_SYNTAX + "\n\n" +
-                    "QUERY: Shows the password for $username based on the current local password file\n" +
+                    "QUERY: Shows the password for credential set $n based on the current local password file\n" +
                     QUERY_SYNTAX + "\n\n" +
                     "SAVE: Saves local password file to remote server\n" +
                     SAVE_SYNTAX + "\n\n" +
                     "SET: Sets password to $password for $username and attempts to push to remote\n" +
                     SET_SYNTAX + "\n\n" +
-                    "DEL: Deletes the username password pair for $username\n" +
+                    "DEL: Deletes the credential set at index $n \n" +
                     DEL_SYNTAX + "\n\n" +
                     "LOGOUT: Logs out of current account\n" +
                     LOGOUT_SYNTAX + "\n\n" +
 //                    "LOGS: Displays log of all current user interactions with server\n" +
 //                    LOGS_SYNTAX + "\n\n" +
-                    "PRINT: Prints all usernames and password pairs\n" +
+                    "PRINT: Prints the domain and username pairs of all credential sets \n" +
                     PRINT_SYNTAX + "\n\n" +
                     "HELP: Prints commands, their uses, and their syntax\n" +
                     HELP_SYNTAX

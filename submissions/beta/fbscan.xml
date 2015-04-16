@@ -1,0 +1,1334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="http://findbugs.sourceforge.net/xsl/default.xsl"?>
+
+<BugCollection version="3.0.1-rc2-jre6" sequence="0" timestamp="1429168123848" analysisTimestamp="1429168118490" release="">
+  <Project projectName="Kryptose">
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/Client.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/ClientController.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/Credential.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/PasswordFile$BadBlobException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/PasswordFile.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/RequestHandler.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/test/KeyDerivatorTest.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/test/PasswordFileTest.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/test/TestKeyDerivatorDoesNotCrash.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/View.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/ViewCLI$InputThread.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/client/bin/org/kryptose/client/ViewCLI.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/CryptoErrorException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/CryptoPrimitiveNotSupportedException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/InternalServerErrorException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/InvalidCredentialsException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/MalformedRequestException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/RecoverableException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/StaleWriteException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/exceptions/UsernameInUseException.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/Blob.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/KeyDerivator.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/Log.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/Request.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/RequestCreateAccount.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/RequestGet.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/RequestLog.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/RequestPut.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/RequestTest.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/Response.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/ResponseCreateAccount.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/ResponseErrorReport.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/ResponseGet.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/ResponseLog.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/ResponsePut.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/ResponseTest.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/User.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/requests/UserAuditLog.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/common/bin/org/kryptose/server/Connection.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/ClientHandler.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/DataStore$WriteResult.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/DataStore.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/FatalError.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/FileSystemDataStore.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/LogFormatter.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/LogFormatterTest.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/LogReader.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/SecureServerListener$1.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/SecureServerListener.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/Server$1.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/Server$2.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/Server.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/test/DataStoreMock.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/test/ServerMock.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/test/UserTableTest.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/UserTable$1.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/UserTable$Result.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/UserTable$UserRecord.class</Jar>
+    <Jar>/Users/alexguziel/workspace/Kryptose/server/bin/org/kryptose/server/UserTable.class</Jar>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/lib/ant-javafx.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/lib/dt.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/lib/javafx-mx.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/lib/jconsole.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/lib/packager.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/lib/sa-jdi.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/lib/tools.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/charsets.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/deploy.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/javaws.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/jce.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/jfr.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/jfxswt.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/jsse.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/management-agent.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/plugin.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/resources.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/rt.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/cldrdata.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/dnsns.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/jfxrt.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/localedata.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/nashorn.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/sunec.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Library/Java/JavaVirtualMachines/jdk1.8.0_40.jdk/Contents/Home/jre/lib/ext/zipfs.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/Applications/IntelliJ IDEA 13 CE.app/lib/junit-4.11.jar</AuxClasspathEntry>
+    <SrcDir>/Users/alexguziel/workspace/Kryptose/client/src</SrcDir>
+    <SrcDir>/Users/alexguziel/workspace/Kryptose/common/src</SrcDir>
+    <SrcDir>/Users/alexguziel/workspace/Kryptose/server/src</SrcDir>
+    <Plugin id="edu.umd.cs.findbugs.plugins.core" enabled="true"/>
+  </Project>
+  <BugInstance type="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" priority="2" rank="20" abbrev="OBL" category="EXPERIMENTAL" instanceHash="df1bc0775101d121d0e883c0b20d59fe" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Method may fail to clean up stream or resource on checked exception</ShortMessage>
+    <LongMessage>new org.kryptose.client.Client() may fail to clean up java.io.InputStream on checked exception</LongMessage>
+    <Class classname="org.kryptose.client.Client" primary="true">
+      <SourceLine classname="org.kryptose.client.Client" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java">
+        <Message>In Client.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.Client</Message>
+    </Class>
+    <Method classname="org.kryptose.client.Client" name="&lt;init&gt;" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.Client" start="28" end="67" startBytecode="0" endBytecode="483" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java"/>
+      <Message>In method new org.kryptose.client.Client()</Message>
+    </Method>
+    <Class classname="java.io.InputStream" role="CLASS_REFTYPE">
+      <SourceLine classname="java.io.InputStream" sourcefile="InputStream.java" sourcepath="java/io/InputStream.java">
+        <Message>In InputStream.java</Message>
+      </SourceLine>
+      <Message>Reference type java.io.InputStream</Message>
+    </Class>
+    <Int value="1" role="INT_OBLIGATIONS_REMAINING">
+      <Message>1 instances of obligation remaining</Message>
+    </Int>
+    <SourceLine classname="org.kryptose.client.Client" primary="true" start="43" end="43" startBytecode="99" endBytecode="99" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_OBLIGATION_CREATED">
+      <Message>Obligation to clean up resource created at Client.java:[line 43] is not discharged</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="44" end="44" startBytecode="103" endBytecode="103" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 44]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="45" end="45" startBytecode="111" endBytecode="111" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 45]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="48" end="48" startBytecode="131" endBytecode="131" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 48]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="52" end="52" startBytecode="132" endBytecode="132" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 52]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="53" end="53" startBytecode="142" endBytecode="142" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 53]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="55" end="55" startBytecode="159" endBytecode="159" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 55]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="58" end="58" startBytecode="160" endBytecode="160" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 58]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="63" end="63" startBytecode="164" endBytecode="164" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 63]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="66" end="66" startBytecode="188" endBytecode="188" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 66]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="67" end="67" startBytecode="238" endBytecode="238" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 67]</Message>
+    </SourceLine>
+    <String value="{InputStream x 1,OutputStream x 1}" role="STRING_REMAINING_OBLIGATIONS">
+      <Message>Remaining obligations: {InputStream x 1,OutputStream x 1}</Message>
+    </String>
+  </BugInstance>
+  <BugInstance type="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" priority="2" rank="20" abbrev="OBL" category="EXPERIMENTAL" instanceHash="300066b6b434cc2231987baff2530e66" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Method may fail to clean up stream or resource on checked exception</ShortMessage>
+    <LongMessage>new org.kryptose.client.Client() may fail to clean up java.io.OutputStream on checked exception</LongMessage>
+    <Class classname="org.kryptose.client.Client" primary="true">
+      <SourceLine classname="org.kryptose.client.Client" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java">
+        <Message>In Client.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.Client</Message>
+    </Class>
+    <Method classname="org.kryptose.client.Client" name="&lt;init&gt;" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.Client" start="28" end="67" startBytecode="0" endBytecode="483" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java"/>
+      <Message>In method new org.kryptose.client.Client()</Message>
+    </Method>
+    <Class classname="java.io.OutputStream" role="CLASS_REFTYPE">
+      <SourceLine classname="java.io.OutputStream" sourcefile="OutputStream.java" sourcepath="java/io/OutputStream.java">
+        <Message>In OutputStream.java</Message>
+      </SourceLine>
+      <Message>Reference type java.io.OutputStream</Message>
+    </Class>
+    <Int value="1" role="INT_OBLIGATIONS_REMAINING">
+      <Message>1 instances of obligation remaining</Message>
+    </Int>
+    <SourceLine classname="org.kryptose.client.Client" primary="true" start="52" end="52" startBytecode="138" endBytecode="138" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_OBLIGATION_CREATED">
+      <Message>Obligation to clean up resource created at Client.java:[line 52] is not discharged</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="53" end="53" startBytecode="142" endBytecode="142" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 53]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="55" end="55" startBytecode="159" endBytecode="159" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 55]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="58" end="58" startBytecode="160" endBytecode="160" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 58]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="63" end="63" startBytecode="164" endBytecode="164" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 63]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="66" end="66" startBytecode="188" endBytecode="188" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 66]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.Client" start="67" end="67" startBytecode="238" endBytecode="238" sourcefile="Client.java" sourcepath="org/kryptose/client/Client.java" relSourcepath="client/src/org/kryptose/client/Client.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Client.java:[line 67]</Message>
+    </SourceLine>
+    <String value="{InputStream x 1,OutputStream x 1}" role="STRING_REMAINING_OBLIGATIONS">
+      <Message>Remaining obligations: {InputStream x 1,OutputStream x 1}</Message>
+    </String>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" rank="18" abbrev="UrF" category="PERFORMANCE" instanceHash="ce5d8f757c4971ca533596925d6db4d" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: org.kryptose.client.PasswordFile.timestamp</LongMessage>
+    <Class classname="org.kryptose.client.PasswordFile" primary="true">
+      <SourceLine classname="org.kryptose.client.PasswordFile" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java" relSourcepath="client/src/org/kryptose/client/PasswordFile.java">
+        <Message>In PasswordFile.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.PasswordFile</Message>
+    </Class>
+    <Field classname="org.kryptose.client.PasswordFile" name="timestamp" signature="Ljava/time/LocalDateTime;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.PasswordFile" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java" relSourcepath="client/src/org/kryptose/client/PasswordFile.java">
+        <Message>In PasswordFile.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.client.PasswordFile.timestamp</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.client.PasswordFile" primary="true" start="40" end="40" startBytecode="13" endBytecode="13" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java" relSourcepath="client/src/org/kryptose/client/PasswordFile.java">
+      <Message>At PasswordFile.java:[line 40]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" rank="18" abbrev="UrF" category="PERFORMANCE" instanceHash="f27edb3a82dfa565dea322c27670b5f5" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: org.kryptose.client.PasswordFile.username</LongMessage>
+    <Class classname="org.kryptose.client.PasswordFile" primary="true">
+      <SourceLine classname="org.kryptose.client.PasswordFile" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java" relSourcepath="client/src/org/kryptose/client/PasswordFile.java">
+        <Message>In PasswordFile.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.PasswordFile</Message>
+    </Class>
+    <Field classname="org.kryptose.client.PasswordFile" name="username" signature="Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.PasswordFile" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java" relSourcepath="client/src/org/kryptose/client/PasswordFile.java">
+        <Message>In PasswordFile.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.client.PasswordFile.username</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.client.PasswordFile" primary="true" start="35" end="35" startBytecode="13" endBytecode="13" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java" relSourcepath="client/src/org/kryptose/client/PasswordFile.java">
+      <Message>At PasswordFile.java:[line 35]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" rank="18" abbrev="UrF" category="PERFORMANCE" instanceHash="7da94acb48ba6155c3a3e10ce483abc7" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: org.kryptose.client.RequestHandler.clientTrustStore</LongMessage>
+    <Class classname="org.kryptose.client.RequestHandler" primary="true">
+      <SourceLine classname="org.kryptose.client.RequestHandler" sourcefile="RequestHandler.java" sourcepath="org/kryptose/client/RequestHandler.java" relSourcepath="client/src/org/kryptose/client/RequestHandler.java">
+        <Message>In RequestHandler.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.RequestHandler</Message>
+    </Class>
+    <Field classname="org.kryptose.client.RequestHandler" name="clientTrustStore" signature="Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.RequestHandler" sourcefile="RequestHandler.java" sourcepath="org/kryptose/client/RequestHandler.java" relSourcepath="client/src/org/kryptose/client/RequestHandler.java">
+        <Message>In RequestHandler.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.client.RequestHandler.clientTrustStore</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.client.RequestHandler" primary="true" start="46" end="46" startBytecode="16" endBytecode="16" sourcefile="RequestHandler.java" sourcepath="org/kryptose/client/RequestHandler.java" relSourcepath="client/src/org/kryptose/client/RequestHandler.java">
+      <Message>At RequestHandler.java:[line 46]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" rank="18" abbrev="UrF" category="PERFORMANCE" instanceHash="3fa16b7cff57d73d45d785775231dde9" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: org.kryptose.client.RequestHandler.clientTrustStorePassword</LongMessage>
+    <Class classname="org.kryptose.client.RequestHandler" primary="true">
+      <SourceLine classname="org.kryptose.client.RequestHandler" sourcefile="RequestHandler.java" sourcepath="org/kryptose/client/RequestHandler.java" relSourcepath="client/src/org/kryptose/client/RequestHandler.java">
+        <Message>In RequestHandler.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.RequestHandler</Message>
+    </Class>
+    <Field classname="org.kryptose.client.RequestHandler" name="clientTrustStorePassword" signature="Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.RequestHandler" sourcefile="RequestHandler.java" sourcepath="org/kryptose/client/RequestHandler.java" relSourcepath="client/src/org/kryptose/client/RequestHandler.java">
+        <Message>In RequestHandler.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.client.RequestHandler.clientTrustStorePassword</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.client.RequestHandler" primary="true" start="47" end="47" startBytecode="22" endBytecode="22" sourcefile="RequestHandler.java" sourcepath="org/kryptose/client/RequestHandler.java" relSourcepath="client/src/org/kryptose/client/RequestHandler.java">
+      <Message>At RequestHandler.java:[line 47]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" instanceHash="fb9afd6eb6a7ea7fafd15113fd9eae9e" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Reliance on default encoding</ShortMessage>
+    <LongMessage>Found reliance on default encoding in new org.kryptose.client.ViewCLI(ClientController): new java.util.Scanner(InputStream)</LongMessage>
+    <Class classname="org.kryptose.client.ViewCLI" primary="true">
+      <SourceLine classname="org.kryptose.client.ViewCLI" sourcefile="ViewCLI.java" sourcepath="org/kryptose/client/ViewCLI.java" relSourcepath="client/src/org/kryptose/client/ViewCLI.java">
+        <Message>In ViewCLI.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.ViewCLI</Message>
+    </Class>
+    <Method classname="org.kryptose.client.ViewCLI" name="&lt;init&gt;" signature="(Lorg/kryptose/client/ClientController;)V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.ViewCLI" start="23" end="26" startBytecode="0" endBytecode="98" sourcefile="ViewCLI.java" sourcepath="org/kryptose/client/ViewCLI.java" relSourcepath="client/src/org/kryptose/client/ViewCLI.java"/>
+      <Message>In method new org.kryptose.client.ViewCLI(ClientController)</Message>
+    </Method>
+    <Method classname="java.util.Scanner" name="&lt;init&gt;" signature="(Ljava/io/InputStream;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.util.Scanner" start="563" end="564" startBytecode="0" endBytecode="43" sourcefile="Scanner.java" sourcepath="java/util/Scanner.java"/>
+      <Message>Called method new java.util.Scanner(InputStream)</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.client.ViewCLI" primary="true" start="25" end="25" startBytecode="24" endBytecode="24" sourcefile="ViewCLI.java" sourcepath="org/kryptose/client/ViewCLI.java" relSourcepath="client/src/org/kryptose/client/ViewCLI.java">
+      <Message>At ViewCLI.java:[line 25]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.ViewCLI" primary="true" start="25" end="25" startBytecode="24" endBytecode="24" sourcefile="ViewCLI.java" sourcepath="org/kryptose/client/ViewCLI.java" relSourcepath="client/src/org/kryptose/client/ViewCLI.java">
+      <Message>At ViewCLI.java:[line 25]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE" instanceHash="2e7250acb855bc2f3ee902974deb75a8" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to p2 in org.kryptose.client.test.PasswordFileTest.blobEncryptionBadBlobTest1()</LongMessage>
+    <Class classname="org.kryptose.client.test.PasswordFileTest" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+        <Message>In PasswordFileTest.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.test.PasswordFileTest</Message>
+    </Class>
+    <Method classname="org.kryptose.client.test.PasswordFileTest" name="blobEncryptionBadBlobTest1" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" start="84" end="99" startBytecode="0" endBytecode="44" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java"/>
+      <Message>In method org.kryptose.client.test.PasswordFileTest.blobEncryptionBadBlobTest1()</Message>
+    </Method>
+    <LocalVariable name="p2" register="5" pc="86" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named p2</Message>
+    </LocalVariable>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="98" end="98" startBytecode="84" endBytecode="84" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 98]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="98" end="98" startBytecode="84" endBytecode="84" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 98]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="p2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE" instanceHash="51d04ec8068e8eb47332881fd62312f3" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to p2 in org.kryptose.client.test.PasswordFileTest.blobEncryptionBadBlobTest2()</LongMessage>
+    <Class classname="org.kryptose.client.test.PasswordFileTest" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+        <Message>In PasswordFileTest.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.test.PasswordFileTest</Message>
+    </Class>
+    <Method classname="org.kryptose.client.test.PasswordFileTest" name="blobEncryptionBadBlobTest2" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" start="104" end="118" startBytecode="0" endBytecode="44" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java"/>
+      <Message>In method org.kryptose.client.test.PasswordFileTest.blobEncryptionBadBlobTest2()</Message>
+    </Method>
+    <LocalVariable name="p2" register="5" pc="86" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named p2</Message>
+    </LocalVariable>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="117" end="117" startBytecode="84" endBytecode="84" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 117]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="117" end="117" startBytecode="84" endBytecode="84" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 117]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="p2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE" instanceHash="3ef41c4111ff215c905633cc5771c275" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to p2 in org.kryptose.client.test.PasswordFileTest.blobEncryptionBadParametersTest()</LongMessage>
+    <Class classname="org.kryptose.client.test.PasswordFileTest" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+        <Message>In PasswordFileTest.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.test.PasswordFileTest</Message>
+    </Class>
+    <Method classname="org.kryptose.client.test.PasswordFileTest" name="blobEncryptionBadParametersTest" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" start="59" end="66" startBytecode="0" endBytecode="24" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java"/>
+      <Message>In method org.kryptose.client.test.PasswordFileTest.blobEncryptionBadParametersTest()</Message>
+    </Method>
+    <LocalVariable name="p2" register="3" pc="46" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named p2</Message>
+    </LocalVariable>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="65" end="65" startBytecode="45" endBytecode="45" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 65]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="65" end="65" startBytecode="45" endBytecode="45" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 65]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="p2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE" instanceHash="22f135827ad5e129c0e724cbb5b393fb" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to p2 in org.kryptose.client.test.PasswordFileTest.blobEncryptionBadParametersTest1()</LongMessage>
+    <Class classname="org.kryptose.client.test.PasswordFileTest" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+        <Message>In PasswordFileTest.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.test.PasswordFileTest</Message>
+    </Class>
+    <Method classname="org.kryptose.client.test.PasswordFileTest" name="blobEncryptionBadParametersTest1" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" start="71" end="78" startBytecode="0" endBytecode="24" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java"/>
+      <Message>In method org.kryptose.client.test.PasswordFileTest.blobEncryptionBadParametersTest1()</Message>
+    </Method>
+    <LocalVariable name="p2" register="3" pc="46" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named p2</Message>
+    </LocalVariable>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="77" end="77" startBytecode="45" endBytecode="45" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 77]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="77" end="77" startBytecode="45" endBytecode="45" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 77]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="p2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE" instanceHash="7d645a3bcb6d114210c8543f40b6f788" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to p2 in org.kryptose.client.test.PasswordFileTest.blobEncryptionTest()</LongMessage>
+    <Class classname="org.kryptose.client.test.PasswordFileTest" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+        <Message>In PasswordFileTest.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.client.test.PasswordFileTest</Message>
+    </Class>
+    <Method classname="org.kryptose.client.test.PasswordFileTest" name="blobEncryptionTest" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.client.test.PasswordFileTest" start="45" end="54" startBytecode="0" endBytecode="24" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java"/>
+      <Message>In method org.kryptose.client.test.PasswordFileTest.blobEncryptionTest()</Message>
+    </Method>
+    <LocalVariable name="p2" register="3" pc="46" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named p2</Message>
+    </LocalVariable>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="50" end="50" startBytecode="45" endBytecode="45" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 50]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.client.test.PasswordFileTest" primary="true" start="50" end="50" startBytecode="45" endBytecode="45" sourcefile="PasswordFileTest.java" sourcepath="org/kryptose/client/test/PasswordFileTest.java" relSourcepath="client/src/org/kryptose/client/test/PasswordFileTest.java">
+      <Message>At PasswordFileTest.java:[line 50]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="p2"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+  </BugInstance>
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" rank="20" abbrev="FS" category="BAD_PRACTICE" instanceHash="7448de662c18c62a7eb74886b6a4988a" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Format string should use %n rather than \n</ShortMessage>
+    <LongMessage>Format string should use %n rather than \n in new org.kryptose.requests.Log(User, Request, Response)</LongMessage>
+    <Class classname="org.kryptose.requests.Log" primary="true">
+      <SourceLine classname="org.kryptose.requests.Log" sourcefile="Log.java" sourcepath="org/kryptose/requests/Log.java" relSourcepath="common/src/org/kryptose/requests/Log.java">
+        <Message>In Log.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.requests.Log</Message>
+    </Class>
+    <Method classname="org.kryptose.requests.Log" name="&lt;init&gt;" signature="(Lorg/kryptose/requests/User;Lorg/kryptose/requests/Request;Lorg/kryptose/requests/Response;)V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.requests.Log" start="18" end="28" startBytecode="0" endBytecode="248" sourcefile="Log.java" sourcepath="org/kryptose/requests/Log.java" relSourcepath="common/src/org/kryptose/requests/Log.java"/>
+      <Message>In method new org.kryptose.requests.Log(User, Request, Response)</Message>
+    </Method>
+    <Method classname="java.lang.String" name="format" signature="(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;" isStatic="true" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.String" start="2928" end="2928" startBytecode="0" endBytecode="39" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+      <Message>Called method String.format(String, Object[])</Message>
+    </Method>
+    <String value="%s\nUsername: %s\nConnection ID:%s\n%s%s\n" role="STRING_FORMAT_STRING">
+      <Message>Format string &quot;%s\nUsername: %s\nConnection ID:%s\n%s%s\n&quot;</Message>
+    </String>
+    <SourceLine classname="org.kryptose.requests.Log" primary="true" start="26" end="26" startBytecode="103" endBytecode="103" sourcefile="Log.java" sourcepath="org/kryptose/requests/Log.java" relSourcepath="common/src/org/kryptose/requests/Log.java">
+      <Message>At Log.java:[line 26]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" rank="20" abbrev="FS" category="BAD_PRACTICE" instanceHash="70fd5f364804abe8c29df3b21d45ef0" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Format string should use %n rather than \n</ShortMessage>
+    <LongMessage>Format string should use %n rather than \n in org.kryptose.requests.RequestCreateAccount.logEntry()</LongMessage>
+    <Class classname="org.kryptose.requests.RequestCreateAccount" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestCreateAccount" sourcefile="RequestCreateAccount.java" sourcepath="org/kryptose/requests/RequestCreateAccount.java" relSourcepath="common/src/org/kryptose/requests/RequestCreateAccount.java">
+        <Message>In RequestCreateAccount.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.requests.RequestCreateAccount</Message>
+    </Class>
+    <Method classname="org.kryptose.requests.RequestCreateAccount" name="logEntry" signature="()Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestCreateAccount" start="32" end="32" startBytecode="0" endBytecode="61" sourcefile="RequestCreateAccount.java" sourcepath="org/kryptose/requests/RequestCreateAccount.java" relSourcepath="common/src/org/kryptose/requests/RequestCreateAccount.java"/>
+      <Message>In method org.kryptose.requests.RequestCreateAccount.logEntry()</Message>
+    </Method>
+    <Method classname="java.lang.String" name="format" signature="(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;" isStatic="true" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.String" start="2928" end="2928" startBytecode="0" endBytecode="39" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+      <Message>Called method String.format(String, Object[])</Message>
+    </Method>
+    <String value="REQUEST: Get from %s\n" role="STRING_FORMAT_STRING">
+      <Message>Format string &quot;REQUEST: Get from %s\n&quot;</Message>
+    </String>
+    <SourceLine classname="org.kryptose.requests.RequestCreateAccount" primary="true" start="32" end="32" startBytecode="16" endBytecode="16" sourcefile="RequestCreateAccount.java" sourcepath="org/kryptose/requests/RequestCreateAccount.java" relSourcepath="common/src/org/kryptose/requests/RequestCreateAccount.java">
+      <Message>At RequestCreateAccount.java:[line 32]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" rank="20" abbrev="FS" category="BAD_PRACTICE" instanceHash="375f84fd83020d9e3e5339d4410f2921" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Format string should use %n rather than \n</ShortMessage>
+    <LongMessage>Format string should use %n rather than \n in org.kryptose.requests.RequestGet.logEntry()</LongMessage>
+    <Class classname="org.kryptose.requests.RequestGet" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestGet" sourcefile="RequestGet.java" sourcepath="org/kryptose/requests/RequestGet.java" relSourcepath="common/src/org/kryptose/requests/RequestGet.java">
+        <Message>In RequestGet.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.requests.RequestGet</Message>
+    </Class>
+    <Method classname="org.kryptose.requests.RequestGet" name="logEntry" signature="()Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestGet" start="32" end="32" startBytecode="0" endBytecode="61" sourcefile="RequestGet.java" sourcepath="org/kryptose/requests/RequestGet.java" relSourcepath="common/src/org/kryptose/requests/RequestGet.java"/>
+      <Message>In method org.kryptose.requests.RequestGet.logEntry()</Message>
+    </Method>
+    <Method classname="java.lang.String" name="format" signature="(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;" isStatic="true" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.String" start="2928" end="2928" startBytecode="0" endBytecode="39" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+      <Message>Called method String.format(String, Object[])</Message>
+    </Method>
+    <String value="REQUEST: Get from %s\n" role="STRING_FORMAT_STRING">
+      <Message>Format string &quot;REQUEST: Get from %s\n&quot;</Message>
+    </String>
+    <SourceLine classname="org.kryptose.requests.RequestGet" primary="true" start="32" end="32" startBytecode="16" endBytecode="16" sourcefile="RequestGet.java" sourcepath="org/kryptose/requests/RequestGet.java" relSourcepath="common/src/org/kryptose/requests/RequestGet.java">
+      <Message>At RequestGet.java:[line 32]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" rank="20" abbrev="FS" category="BAD_PRACTICE" instanceHash="adfd47fa67fc65094aeb7951493b660d" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Format string should use %n rather than \n</ShortMessage>
+    <LongMessage>Format string should use %n rather than \n in org.kryptose.requests.RequestLog.logEntry()</LongMessage>
+    <Class classname="org.kryptose.requests.RequestLog" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestLog" sourcefile="RequestLog.java" sourcepath="org/kryptose/requests/RequestLog.java" relSourcepath="common/src/org/kryptose/requests/RequestLog.java">
+        <Message>In RequestLog.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.requests.RequestLog</Message>
+    </Class>
+    <Method classname="org.kryptose.requests.RequestLog" name="logEntry" signature="()Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestLog" start="32" end="32" startBytecode="0" endBytecode="61" sourcefile="RequestLog.java" sourcepath="org/kryptose/requests/RequestLog.java" relSourcepath="common/src/org/kryptose/requests/RequestLog.java"/>
+      <Message>In method org.kryptose.requests.RequestLog.logEntry()</Message>
+    </Method>
+    <Method classname="java.lang.String" name="format" signature="(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;" isStatic="true" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.String" start="2928" end="2928" startBytecode="0" endBytecode="39" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+      <Message>Called method String.format(String, Object[])</Message>
+    </Method>
+    <String value="REQUEST: Log from %s\n" role="STRING_FORMAT_STRING">
+      <Message>Format string &quot;REQUEST: Log from %s\n&quot;</Message>
+    </String>
+    <SourceLine classname="org.kryptose.requests.RequestLog" primary="true" start="32" end="32" startBytecode="16" endBytecode="16" sourcefile="RequestLog.java" sourcepath="org/kryptose/requests/RequestLog.java" relSourcepath="common/src/org/kryptose/requests/RequestLog.java">
+      <Message>At RequestLog.java:[line 32]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="VA_FORMAT_STRING_USES_NEWLINE" priority="2" rank="20" abbrev="FS" category="BAD_PRACTICE" instanceHash="ce712cc511f0efd9923e4e364c42ca0b" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Format string should use %n rather than \n</ShortMessage>
+    <LongMessage>Format string should use %n rather than \n in org.kryptose.requests.RequestPut.logEntry()</LongMessage>
+    <Class classname="org.kryptose.requests.RequestPut" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestPut" sourcefile="RequestPut.java" sourcepath="org/kryptose/requests/RequestPut.java" relSourcepath="common/src/org/kryptose/requests/RequestPut.java">
+        <Message>In RequestPut.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.requests.RequestPut</Message>
+    </Class>
+    <Method classname="org.kryptose.requests.RequestPut" name="logEntry" signature="()Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.requests.RequestPut" start="65" end="65" startBytecode="0" endBytecode="61" sourcefile="RequestPut.java" sourcepath="org/kryptose/requests/RequestPut.java" relSourcepath="common/src/org/kryptose/requests/RequestPut.java"/>
+      <Message>In method org.kryptose.requests.RequestPut.logEntry()</Message>
+    </Method>
+    <Method classname="java.lang.String" name="format" signature="(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;" isStatic="true" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.String" start="2928" end="2928" startBytecode="0" endBytecode="39" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+      <Message>Called method String.format(String, Object[])</Message>
+    </Method>
+    <String value="REQUEST: Put from %s\n" role="STRING_FORMAT_STRING">
+      <Message>Format string &quot;REQUEST: Put from %s\n&quot;</Message>
+    </String>
+    <SourceLine classname="org.kryptose.requests.RequestPut" primary="true" start="65" end="65" startBytecode="16" endBytecode="16" sourcefile="RequestPut.java" sourcepath="org/kryptose/requests/RequestPut.java" relSourcepath="common/src/org/kryptose/requests/RequestPut.java">
+      <Message>At RequestPut.java:[line 65]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" instanceHash="a00c6561066a3d8c34b33cf5481f8a80" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Reliance on default encoding</ShortMessage>
+    <LongMessage>Found reliance on default encoding in org.kryptose.server.FileSystemDataStore.writeSystemLog(Log): new java.io.FileWriter(File, boolean)</LongMessage>
+    <Class classname="org.kryptose.server.FileSystemDataStore" primary="true">
+      <SourceLine classname="org.kryptose.server.FileSystemDataStore" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java">
+        <Message>In FileSystemDataStore.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.FileSystemDataStore</Message>
+    </Class>
+    <Method classname="org.kryptose.server.FileSystemDataStore" name="writeSystemLog" signature="(Lorg/kryptose/requests/Log;)Lorg/kryptose/server/DataStore$WriteResult;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.FileSystemDataStore" start="143" end="158" startBytecode="0" endBytecode="512" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java"/>
+      <Message>In method org.kryptose.server.FileSystemDataStore.writeSystemLog(Log)</Message>
+    </Method>
+    <Method classname="java.io.FileWriter" name="&lt;init&gt;" signature="(Ljava/io/File;Z)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.FileWriter" start="107" end="108" startBytecode="0" endBytecode="41" sourcefile="FileWriter.java" sourcepath="java/io/FileWriter.java"/>
+      <Message>Called method new java.io.FileWriter(File, boolean)</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.FileSystemDataStore" primary="true" start="149" end="149" startBytecode="21" endBytecode="21" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java">
+      <Message>At FileSystemDataStore.java:[line 149]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.FileSystemDataStore" primary="true" start="149" end="149" startBytecode="21" endBytecode="21" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java">
+      <Message>At FileSystemDataStore.java:[line 149]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" instanceHash="fc5b9fb4778571cb6d9e316cfe92bed6" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Reliance on default encoding</ShortMessage>
+    <LongMessage>Found reliance on default encoding in org.kryptose.server.FileSystemDataStore.writeUserLog(User, Log): new java.io.FileWriter(File, boolean)</LongMessage>
+    <Class classname="org.kryptose.server.FileSystemDataStore" primary="true">
+      <SourceLine classname="org.kryptose.server.FileSystemDataStore" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java">
+        <Message>In FileSystemDataStore.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.FileSystemDataStore</Message>
+    </Class>
+    <Method classname="org.kryptose.server.FileSystemDataStore" name="writeUserLog" signature="(Lorg/kryptose/requests/User;Lorg/kryptose/requests/Log;)Lorg/kryptose/server/DataStore$WriteResult;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.FileSystemDataStore" start="119" end="132" startBytecode="0" endBytecode="451" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java"/>
+      <Message>In method org.kryptose.server.FileSystemDataStore.writeUserLog(User, Log)</Message>
+    </Method>
+    <Method classname="java.io.FileWriter" name="&lt;init&gt;" signature="(Ljava/io/File;Z)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.FileWriter" start="107" end="108" startBytecode="0" endBytecode="41" sourcefile="FileWriter.java" sourcepath="java/io/FileWriter.java"/>
+      <Message>Called method new java.io.FileWriter(File, boolean)</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.FileSystemDataStore" primary="true" start="124" end="124" startBytecode="16" endBytecode="16" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java">
+      <Message>At FileSystemDataStore.java:[line 124]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.FileSystemDataStore" primary="true" start="124" end="124" startBytecode="16" endBytecode="16" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java" relSourcepath="server/src/org/kryptose/server/FileSystemDataStore.java">
+      <Message>At FileSystemDataStore.java:[line 124]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE" instanceHash="3e2596c8b4b709ccbee1d4b9a4199616" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to decoder in org.kryptose.server.LogReader.decrypt(String[])</LongMessage>
+    <Class classname="org.kryptose.server.LogReader" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.LogReader</Message>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="decrypt" signature="([Ljava/lang/String;)[Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="155" end="216" startBytecode="0" endBytecode="169" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java"/>
+      <Message>In method org.kryptose.server.LogReader.decrypt(String[])</Message>
+    </Method>
+    <LocalVariable name="decoder" register="5" pc="19" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named decoder</Message>
+    </LocalVariable>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="164" end="164" startBytecode="17" endBytecode="17" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 164]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="164" end="164" startBytecode="17" endBytecode="17" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 164]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="decoder"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" instanceHash="22e52011917ff126cc7acc730fd1a874" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Reliance on default encoding</ShortMessage>
+    <LongMessage>Found reliance on default encoding in org.kryptose.server.LogReader.main(String[]): new java.io.FileReader(String)</LongMessage>
+    <Class classname="org.kryptose.server.LogReader" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.LogReader</Message>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="main" signature="([Ljava/lang/String;)V" isStatic="true" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="85" end="151" startBytecode="0" endBytecode="975" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java"/>
+      <Message>In method org.kryptose.server.LogReader.main(String[])</Message>
+    </Method>
+    <Method classname="java.io.FileReader" name="&lt;init&gt;" signature="(Ljava/lang/String;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.FileReader" start="58" end="59" startBytecode="0" endBytecode="40" sourcefile="FileReader.java" sourcepath="java/io/FileReader.java"/>
+      <Message>Called method new java.io.FileReader(String)</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="125" end="125" startBytecode="336" endBytecode="336" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 125]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="125" end="125" startBytecode="336" endBytecode="336" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 125]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" instanceHash="473960ac32c19265891163f9d0ef1795" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Reliance on default encoding</ShortMessage>
+    <LongMessage>Found reliance on default encoding in org.kryptose.server.LogReader.main(String[]): new java.io.InputStreamReader(InputStream)</LongMessage>
+    <Class classname="org.kryptose.server.LogReader" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.LogReader</Message>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="main" signature="([Ljava/lang/String;)V" isStatic="true" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="85" end="151" startBytecode="0" endBytecode="975" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java"/>
+      <Message>In method org.kryptose.server.LogReader.main(String[])</Message>
+    </Method>
+    <Method classname="java.io.InputStreamReader" name="&lt;init&gt;" signature="(Ljava/io/InputStream;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.InputStreamReader" start="72" end="79" startBytecode="0" endBytecode="108" sourcefile="InputStreamReader.java" sourcepath="java/io/InputStreamReader.java"/>
+      <Message>Called method new java.io.InputStreamReader(InputStream)</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="85" end="85" startBytecode="7" endBytecode="7" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 85]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="85" end="85" startBytecode="7" endBytecode="7" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 85]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="RR_NOT_CHECKED" priority="2" rank="16" abbrev="RR" category="BAD_PRACTICE" instanceHash="591462a78f449d8ff98230f747f1071b" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Method ignores results of InputStream.read()</ShortMessage>
+    <LongMessage>org.kryptose.server.LogReader.readToNewline(InputStreamReader, int) ignores result of java.io.InputStreamReader.read(char[], int, int)</LongMessage>
+    <Class classname="org.kryptose.server.LogReader" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.LogReader</Message>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="readToNewline" signature="(Ljava/io/InputStreamReader;I)[C" isStatic="true" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="53" end="73" startBytecode="0" endBytecode="283" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java"/>
+      <Message>In method org.kryptose.server.LogReader.readToNewline(InputStreamReader, int)</Message>
+    </Method>
+    <Method classname="java.io.InputStreamReader" name="read" signature="([CII)I" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.InputStreamReader" start="184" end="184" startBytecode="0" endBytecode="34" sourcefile="InputStreamReader.java" sourcepath="java/io/InputStreamReader.java"/>
+      <Message>Called method java.io.InputStreamReader.read(char[], int, int)</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="56" end="56" startBytecode="14" endBytecode="14" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 56]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="56" end="56" startBytecode="14" endBytecode="14" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 56]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" rank="18" abbrev="UrF" category="PERFORMANCE" instanceHash="8f646a3c808a950fe929b09ec97f8692" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: org.kryptose.server.LogReader.current_key</LongMessage>
+    <Class classname="org.kryptose.server.LogReader" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.LogReader</Message>
+    </Class>
+    <Field classname="org.kryptose.server.LogReader" name="current_key" signature="[B" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.server.LogReader.current_key</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="36" end="36" startBytecode="23" endBytecode="23" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 36]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" rank="18" abbrev="UrF" category="PERFORMANCE" instanceHash="5e6e34029945944d5a82534dd5e20b6d" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unread field</ShortMessage>
+    <LongMessage>Unread field: org.kryptose.server.LogReader.key_iteration</LongMessage>
+    <Class classname="org.kryptose.server.LogReader" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.LogReader</Message>
+    </Class>
+    <Field classname="org.kryptose.server.LogReader" name="key_iteration" signature="I" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+        <Message>In LogReader.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.server.LogReader.key_iteration</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.server.LogReader" primary="true" start="37" end="37" startBytecode="28" endBytecode="28" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" relSourcepath="server/src/org/kryptose/server/LogReader.java">
+      <Message>At LogReader.java:[line 37]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" priority="2" rank="20" abbrev="OBL" category="EXPERIMENTAL" instanceHash="3ae3fdc5781bbb038e9f6711dec42697" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Method may fail to clean up stream or resource on checked exception</ShortMessage>
+    <LongMessage>org.kryptose.server.Server.readProperties() may fail to clean up java.io.OutputStream on checked exception</LongMessage>
+    <Class classname="org.kryptose.server.Server" primary="true">
+      <SourceLine classname="org.kryptose.server.Server" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java">
+        <Message>In Server.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.Server</Message>
+    </Class>
+    <Method classname="org.kryptose.server.Server" name="readProperties" signature="()Ljava/util/Properties;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.Server" start="231" end="260" startBytecode="0" endBytecode="599" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java"/>
+      <Message>In method org.kryptose.server.Server.readProperties()</Message>
+    </Method>
+    <Class classname="java.io.OutputStream" role="CLASS_REFTYPE">
+      <SourceLine classname="java.io.OutputStream" sourcefile="OutputStream.java" sourcepath="java/io/OutputStream.java">
+        <Message>In OutputStream.java</Message>
+      </SourceLine>
+      <Message>Reference type java.io.OutputStream</Message>
+    </Class>
+    <Int value="1" role="INT_OBLIGATIONS_REMAINING">
+      <Message>1 instances of obligation remaining</Message>
+    </Int>
+    <SourceLine classname="org.kryptose.server.Server" primary="true" start="251" end="251" startBytecode="178" endBytecode="178" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java" role="SOURCE_LINE_OBLIGATION_CREATED">
+      <Message>Obligation to clean up resource created at Server.java:[line 251] is not discharged</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.Server" start="252" end="252" startBytecode="183" endBytecode="183" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Server.java:[line 252]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.Server" start="254" end="254" startBytecode="199" endBytecode="199" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Server.java:[line 254]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.Server" start="255" end="255" startBytecode="201" endBytecode="201" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Server.java:[line 255]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.Server" start="256" end="256" startBytecode="205" endBytecode="205" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Server.java:[line 256]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.Server" start="260" end="260" startBytecode="219" endBytecode="219" sourcefile="Server.java" sourcepath="org/kryptose/server/Server.java" relSourcepath="server/src/org/kryptose/server/Server.java" role="SOURCE_LINE_PATH_CONTINUES">
+      <Message>Path continues at Server.java:[line 260]</Message>
+    </SourceLine>
+    <String value="{OutputStream x 1}" role="STRING_REMAINING_OBLIGATIONS">
+      <Message>Remaining obligations: {OutputStream x 1}</Message>
+    </String>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" instanceHash="bfe7f50a3f4d58b4635a9d546464978c" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Reliance on default encoding</ShortMessage>
+    <LongMessage>Found reliance on default encoding in org.kryptose.server.UserTable.main(String[]): String.getBytes()</LongMessage>
+    <Class classname="org.kryptose.server.UserTable" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.UserTable</Message>
+    </Class>
+    <Method classname="org.kryptose.server.UserTable" name="main" signature="([Ljava/lang/String;)V" isStatic="true" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" start="346" end="366" startBytecode="0" endBytecode="189" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java"/>
+      <Message>In method org.kryptose.server.UserTable.main(String[])</Message>
+    </Method>
+    <Method classname="java.lang.String" name="getBytes" signature="()[B" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.lang.String" start="946" end="946" startBytecode="0" endBytecode="37" sourcefile="String.java" sourcepath="java/lang/String.java"/>
+      <Message>Called method String.getBytes()</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.UserTable" primary="true" start="348" end="348" startBytecode="11" endBytecode="11" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+      <Message>At UserTable.java:[line 348]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.UserTable" primary="true" start="348" end="348" startBytecode="11" endBytecode="11" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+      <Message>At UserTable.java:[line 348]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SE_NO_SERIALVERSIONID" priority="2" rank="16" abbrev="SnVI" category="BAD_PRACTICE" instanceHash="970530804e531b40edc286d5531a8c56" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is Serializable, but doesn&apos;t define serialVersionUID</ShortMessage>
+    <LongMessage>org.kryptose.server.UserTable is Serializable; consider declaring a serialVersionUID</LongMessage>
+    <Class classname="org.kryptose.server.UserTable" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" start="30" end="387" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>At UserTable.java:[lines 30-387]</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.UserTable</Message>
+    </Class>
+    <SourceLine classname="org.kryptose.server.UserTable" start="30" end="387" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java" synthetic="true">
+      <Message>At UserTable.java:[lines 30-387]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SE_TRANSIENT_FIELD_NOT_RESTORED" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="d1548d2e7f7f82cd5c5b494f1b675ece" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Transient field that isn&apos;t set by deserialization. </ShortMessage>
+    <LongMessage>The field org.kryptose.server.UserTable.ensurePersistMonitor is transient but isn&apos;t set by deserialization</LongMessage>
+    <Class classname="org.kryptose.server.UserTable" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.UserTable</Message>
+    </Class>
+    <Field classname="org.kryptose.server.UserTable" name="ensurePersistMonitor" signature="Ljava/lang/Object;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.server.UserTable.ensurePersistMonitor</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java" synthetic="true">
+      <Message>In UserTable.java</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SE_TRANSIENT_FIELD_NOT_RESTORED" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="dc2a35037b4ecfbfb9a9783121cd3197" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Transient field that isn&apos;t set by deserialization. </ShortMessage>
+    <LongMessage>The field org.kryptose.server.UserTable.fileName is transient but isn&apos;t set by deserialization</LongMessage>
+    <Class classname="org.kryptose.server.UserTable" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.UserTable</Message>
+    </Class>
+    <Field classname="org.kryptose.server.UserTable" name="fileName" signature="Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.server.UserTable.fileName</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java" synthetic="true">
+      <Message>In UserTable.java</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SE_TRANSIENT_FIELD_NOT_RESTORED" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="f14719c121fb45294037cb33ba9078b0" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Transient field that isn&apos;t set by deserialization. </ShortMessage>
+    <LongMessage>The field org.kryptose.server.UserTable.persistLock is transient but isn&apos;t set by deserialization</LongMessage>
+    <Class classname="org.kryptose.server.UserTable" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.UserTable</Message>
+    </Class>
+    <Field classname="org.kryptose.server.UserTable" name="persistLock" signature="Ljava/lang/Object;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.server.UserTable.persistLock</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java" synthetic="true">
+      <Message>In UserTable.java</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SE_TRANSIENT_FIELD_NOT_RESTORED" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="20239aed98f95c4a7cec65b00abc782c" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Transient field that isn&apos;t set by deserialization. </ShortMessage>
+    <LongMessage>The field org.kryptose.server.UserTable.tmpFileName is transient but isn&apos;t set by deserialization</LongMessage>
+    <Class classname="org.kryptose.server.UserTable" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.UserTable</Message>
+    </Class>
+    <Field classname="org.kryptose.server.UserTable" name="tmpFileName" signature="Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>In UserTable.java</Message>
+      </SourceLine>
+      <Message>Field org.kryptose.server.UserTable.tmpFileName</Message>
+    </Field>
+    <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java" synthetic="true">
+      <Message>In UserTable.java</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SE_INNER_CLASS" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" instanceHash="cb2beb0ed51ad8a23baf40eb85a0695" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Serializable inner class</ShortMessage>
+    <LongMessage>org.kryptose.server.UserTable$UserRecord is serializable and an inner class</LongMessage>
+    <Class classname="org.kryptose.server.UserTable$UserRecord" primary="true">
+      <SourceLine classname="org.kryptose.server.UserTable$UserRecord" start="48" end="159" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java">
+        <Message>At UserTable.java:[lines 48-159]</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.UserTable$UserRecord</Message>
+    </Class>
+    <SourceLine classname="org.kryptose.server.UserTable$UserRecord" start="48" end="159" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java" synthetic="true">
+      <Message>At UserTable.java:[lines 48-159]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" priority="2" rank="16" abbrev="RV" category="BAD_PRACTICE" instanceHash="ba7674c64a2a8a499d710e47baa011ef" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="253">
+    <ShortMessage>Method ignores exceptional return value</ShortMessage>
+    <LongMessage>Exceptional return value of java.io.File.delete() ignored in org.kryptose.server.test.UserTableTest.tearDown()</LongMessage>
+    <Class classname="org.kryptose.server.test.UserTableTest" primary="true">
+      <SourceLine classname="org.kryptose.server.test.UserTableTest" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java">
+        <Message>In UserTableTest.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.test.UserTableTest</Message>
+    </Class>
+    <Method classname="org.kryptose.server.test.UserTableTest" name="tearDown" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.test.UserTableTest" start="56" end="60" startBytecode="0" endBytecode="137" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java"/>
+      <Message>In method org.kryptose.server.test.UserTableTest.tearDown()</Message>
+    </Method>
+    <Method classname="java.io.File" name="delete" signature="()Z" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.File" start="1034" end="1041" startBytecode="0" endBytecode="91" sourcefile="File.java" sourcepath="java/io/File.java"/>
+      <Message>Called method java.io.File.delete()</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.test.UserTableTest" primary="true" start="58" end="58" startBytecode="21" endBytecode="21" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java">
+      <Message>At UserTableTest.java:[line 58]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.test.UserTableTest" primary="true" start="58" end="58" startBytecode="21" endBytecode="21" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java">
+      <Message>At UserTableTest.java:[line 58]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" priority="2" rank="17" abbrev="RV" category="STYLE" instanceHash="b7d54a4938f61b54b6e60b60c4eeee62" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
+    <ShortMessage>Return value of method without side effect is ignored</ShortMessage>
+    <LongMessage>Return value of new org.kryptose.server.UserTable(Logger, String) ignored, but method has no side effect</LongMessage>
+    <Class classname="org.kryptose.server.test.UserTableTest" primary="true">
+      <SourceLine classname="org.kryptose.server.test.UserTableTest" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java">
+        <Message>In UserTableTest.java</Message>
+      </SourceLine>
+      <Message>In class org.kryptose.server.test.UserTableTest</Message>
+    </Class>
+    <Method classname="org.kryptose.server.test.UserTableTest" name="testConstructor" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="org.kryptose.server.test.UserTableTest" start="64" end="65" startBytecode="0" endBytecode="61" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java"/>
+      <Message>In method org.kryptose.server.test.UserTableTest.testConstructor()</Message>
+    </Method>
+    <Method classname="org.kryptose.server.UserTable" name="&lt;init&gt;" signature="(Ljava/util/logging/Logger;Ljava/lang/String;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="org.kryptose.server.UserTable" start="188" end="189" startBytecode="0" endBytecode="74" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java" relSourcepath="server/src/org/kryptose/server/UserTable.java"/>
+      <Message>Called method new org.kryptose.server.UserTable(Logger, String)</Message>
+    </Method>
+    <SourceLine classname="org.kryptose.server.test.UserTableTest" primary="true" start="64" end="64" startBytecode="11" endBytecode="11" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java">
+      <Message>At UserTableTest.java:[line 64]</Message>
+    </SourceLine>
+    <SourceLine classname="org.kryptose.server.test.UserTableTest" primary="true" start="64" end="64" startBytecode="11" endBytecode="11" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/test/UserTableTest.java" relSourcepath="server/src/org/kryptose/server/test/UserTableTest.java">
+      <Message>At UserTableTest.java:[line 64]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugCategory category="STYLE">
+    <Description>Dodgy code</Description>
+  </BugCategory>
+  <BugCategory category="BAD_PRACTICE">
+    <Description>Bad practice</Description>
+  </BugCategory>
+  <BugCategory category="I18N">
+    <Description>Internationalization</Description>
+  </BugCategory>
+  <BugCategory category="PERFORMANCE">
+    <Description>Performance</Description>
+  </BugCategory>
+  <BugCategory category="EXPERIMENTAL">
+    <Description>Experimental</Description>
+  </BugCategory>
+  <BugPattern type="DM_DEFAULT_ENCODING" abbrev="Dm" category="I18N">
+    <ShortDescription>Reliance on default encoding</ShortDescription>
+    <Details><![CDATA[
+
+<p> Found a call to a method which will perform a byte to String (or String to byte) conversion, and will assume that the default platform encoding is suitable. This will cause the application behaviour to vary between platforms. Use an alternative API and specify a charset name or Charset object explicitly.  </p>
+
+      ]]></Details>
+  </BugPattern>
+  <BugPattern type="OBL_UNSATISFIED_OBLIGATION_EXCEPTION_EDGE" abbrev="OBL" category="EXPERIMENTAL">
+    <ShortDescription>Method may fail to clean up stream or resource on checked exception</ShortDescription>
+    <Details><![CDATA[
+          
+          <p>
+          This method may fail to clean up (close, dispose of) a stream,
+          database object, or other
+          resource requiring an explicit cleanup operation.
+          </p>
+
+          <p>
+          In general, if a method opens a stream or other resource,
+          the method should use a try/finally block to ensure that
+          the stream or resource is cleaned up before the method
+          returns.
+          </p>
+
+          <p>
+          This bug pattern is essentially the same as the
+          OS_OPEN_STREAM and ODR_OPEN_DATABASE_RESOURCE
+          bug patterns, but is based on a different
+          (and hopefully better) static analysis technique.
+          We are interested is getting feedback about the
+          usefulness of this bug pattern.
+          To send feedback, either:
+          </p>
+          <ul>
+            <li>send email to findbugs@cs.umd.edu</li>
+            <li>file a bug report: <a href="http://findbugs.sourceforge.net/reportingBugs.html">http://findbugs.sourceforge.net/reportingBugs.html</a></li>
+          </ul>
+
+          <p>
+          In particular,
+          the false-positive suppression heuristics for this
+          bug pattern have not been extensively tuned, so
+          reports about false positives are helpful to us.
+          </p>
+
+          <p>
+          See Weimer and Necula, <i>Finding and Preventing Run-Time Error Handling Mistakes</i>, for
+          a description of the analysis technique.
+          </p>
+          
+      ]]></Details>
+  </BugPattern>
+  <BugPattern type="URF_UNREAD_FIELD" abbrev="UrF" category="PERFORMANCE">
+    <ShortDescription>Unread field</ShortDescription>
+    <Details><![CDATA[
+
+  <p> This field is never read.&nbsp; Consider removing it from the class.</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="SE_INNER_CLASS" abbrev="Se" category="BAD_PRACTICE">
+    <ShortDescription>Serializable inner class</ShortDescription>
+    <Details><![CDATA[
+
+<p> This Serializable class is an inner class.  Any attempt to serialize
+it will also serialize the associated outer instance. The outer instance is serializable,
+so this won't fail, but it might serialize a lot more data than intended.
+If possible, making the inner class a static inner class (also known as a nested class) should solve the
+problem.
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="RR_NOT_CHECKED" abbrev="RR" category="BAD_PRACTICE">
+    <ShortDescription>Method ignores results of InputStream.read()</ShortDescription>
+    <Details><![CDATA[
+
+  <p> This method ignores the return value of one of the variants of
+  <code>java.io.InputStream.read()</code> which can return multiple bytes.&nbsp;
+  If the return value is not checked, the caller will not be able to correctly
+  handle the case where fewer bytes were read than the caller requested.&nbsp;
+  This is a particularly insidious kind of bug, because in many programs,
+  reads from input streams usually do read the full amount of data requested,
+  causing the program to fail only sporadically.</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="VA_FORMAT_STRING_USES_NEWLINE" abbrev="FS" category="BAD_PRACTICE">
+    <ShortDescription>Format string should use %n rather than \n</ShortDescription>
+    <Details><![CDATA[
+
+<p>
+This format string include a newline character (\n). In format strings, it is generally
+ preferable better to use %n, which will produce the platform-specific line separator.
+</p>
+
+     ]]></Details>
+  </BugPattern>
+  <BugPattern type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" abbrev="RV" category="STYLE">
+    <ShortDescription>Return value of method without side effect is ignored</ShortDescription>
+    <Details><![CDATA[
+
+<p>This code calls a method and ignores the return value. However our analysis shows that
+the method (including its implementations in subclasses if any) does not produce any effect 
+other than return value. Thus this call can be removed.
+</p>
+<p>We are trying to reduce the false positives as much as possible, but in some cases this warning might be wrong.
+Common false-positive cases include:</p>
+<p>- The method is designed to be overridden and produce a side effect in other projects which are out of the scope of the analysis.</p>
+<p>- The method is called to trigger the class loading which may have a side effect.</p>
+<p>- The method is called just to get some exception.</p>
+<p>If you feel that our assumption is incorrect, you can use a @CheckReturnValue annotation
+to instruct FindBugs that ignoring the return value of this method is acceptable.
+</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE" abbrev="RV" category="BAD_PRACTICE" cweid="253">
+    <ShortDescription>Method ignores exceptional return value</ShortDescription>
+    <Details><![CDATA[
+
+   <p> This method returns a value that is not checked. The return value should be checked
+since it can indicate an unusual or unexpected function execution. For
+example, the <code>File.delete()</code> method returns false
+if the file could not be successfully deleted (rather than
+throwing an Exception).
+If you don't check the result, you won't notice if the method invocation
+signals unexpected behavior by returning an atypical return value.
+</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="SE_NO_SERIALVERSIONID" abbrev="SnVI" category="BAD_PRACTICE">
+    <ShortDescription>Class is Serializable, but doesn&apos;t define serialVersionUID</ShortDescription>
+    <Details><![CDATA[
+
+  <p> This class implements the <code>Serializable</code> interface, but does
+  not define a <code>serialVersionUID</code> field.&nbsp;
+  A change as simple as adding a reference to a .class object
+    will add synthetic fields to the class,
+   which will unfortunately change the implicit
+   serialVersionUID (e.g., adding a reference to <code>String.class</code>
+   will generate a static field <code>class$java$lang$String</code>).
+   Also, different source code to bytecode compilers may use different
+   naming conventions for synthetic variables generated for
+   references to class objects or inner classes.
+   To ensure interoperability of Serializable across versions,
+   consider adding an explicit serialVersionUID.</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="DLS_DEAD_LOCAL_STORE" abbrev="DLS" category="STYLE">
+    <ShortDescription>Dead store to local variable</ShortDescription>
+    <Details><![CDATA[
+
+<p>
+This instruction assigns a value to a local variable,
+but the value is not read or used in any subsequent instruction.
+Often, this indicates an error, because the value computed is never
+used.
+</p>
+<p>
+Note that Sun's javac compiler often generates dead stores for
+final local variables.  Because FindBugs is a bytecode-based tool,
+there is no easy way to eliminate these false positives.
+</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugPattern type="SE_TRANSIENT_FIELD_NOT_RESTORED" abbrev="Se" category="BAD_PRACTICE">
+    <ShortDescription>Transient field that isn&apos;t set by deserialization. </ShortDescription>
+    <Details><![CDATA[
+
+  <p> This class contains a field that is updated at multiple places in the class, thus it seems to be part of the state of the class. However, since the field is marked as transient and not set in readObject or readResolve, it will contain the default value in any
+deserialized instance of the class.
+</p>
+
+    ]]></Details>
+  </BugPattern>
+  <BugCode abbrev="RR">
+    <Description>Method ignores results of InputStream.read()</Description>
+  </BugCode>
+  <BugCode abbrev="FS">
+    <Description>Format string problem</Description>
+  </BugCode>
+  <BugCode abbrev="Se">
+    <Description>Incorrect definition of Serializable class</Description>
+  </BugCode>
+  <BugCode abbrev="Dm">
+    <Description>Dubious method used</Description>
+  </BugCode>
+  <BugCode abbrev="RV" cweid="440">
+    <Description>Bad use of return value from method</Description>
+  </BugCode>
+  <BugCode abbrev="UrF">
+    <Description>Unread field</Description>
+  </BugCode>
+  <BugCode abbrev="DLS" cweid="563">
+    <Description>Dead local store</Description>
+  </BugCode>
+  <BugCode abbrev="OBL">
+    <Description>Unsatisfied obligation to clean up stream or resource</Description>
+  </BugCode>
+  <BugCode abbrev="SnVI">
+    <Description>Serializable class with no Version ID</Description>
+  </BugCode>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Thu, 16 Apr 2015 03:08:14 -0400" total_classes="59" referenced_classes="227" total_bugs="35" total_size="2322" num_packages="6" java_version="1.6.0_65" vm_version="20.65-b04-462" cpu_seconds="28.43" clock_seconds="50.24" peak_mbytes="314.90" alloc_mbytes="741.69" gc_seconds="0.45" priority_2="24" priority_1="11">
+    <FileStats path="org/kryptose/client/Client.java" bugCount="2" size="176" bugHash="ae42765ebeb23619773e993c941497dc"/>
+    <FileStats path="org/kryptose/client/ClientController.java" bugCount="0" size="165"/>
+    <FileStats path="org/kryptose/client/Credential.java" bugCount="0" size="68"/>
+    <FileStats path="org/kryptose/client/PasswordFile.java" bugCount="2" size="116" bugHash="19cc14b5a7b7eaa6e7e51e6096ca78d6"/>
+    <FileStats path="org/kryptose/client/RequestHandler.java" bugCount="2" size="36" bugHash="11ee53026894d8ce9a79cbb0310e448e"/>
+    <FileStats path="org/kryptose/client/View.java" bugCount="0" size="13"/>
+    <FileStats path="org/kryptose/client/ViewCLI.java" bugCount="1" size="88" bugHash="64fd5416937e16f803cdcc7760087ac4"/>
+    <FileStats path="org/kryptose/client/test/KeyDerivatorTest.java" bugCount="0" size="9"/>
+    <FileStats path="org/kryptose/client/test/PasswordFileTest.java" bugCount="5" size="50" bugHash="5ab9500594a3e97b422ef49647f634c5"/>
+    <FileStats path="org/kryptose/client/test/TestKeyDerivatorDoesNotCrash.java" bugCount="0" size="23"/>
+    <FileStats path="org/kryptose/exceptions/CryptoErrorException.java" bugCount="0" size="16"/>
+    <FileStats path="org/kryptose/exceptions/CryptoPrimitiveNotSupportedException.java" bugCount="0" size="16"/>
+    <FileStats path="org/kryptose/exceptions/InternalServerErrorException.java" bugCount="0" size="7"/>
+    <FileStats path="org/kryptose/exceptions/InvalidCredentialsException.java" bugCount="0" size="7"/>
+    <FileStats path="org/kryptose/exceptions/MalformedRequestException.java" bugCount="0" size="7"/>
+    <FileStats path="org/kryptose/exceptions/RecoverableException.java" bugCount="0" size="7"/>
+    <FileStats path="org/kryptose/exceptions/StaleWriteException.java" bugCount="0" size="7"/>
+    <FileStats path="org/kryptose/exceptions/UsernameInUseException.java" bugCount="0" size="7"/>
+    <FileStats path="org/kryptose/requests/Blob.java" bugCount="0" size="31"/>
+    <FileStats path="org/kryptose/requests/KeyDerivator.java" bugCount="0" size="28"/>
+    <FileStats path="org/kryptose/requests/Log.java" bugCount="1" size="20" bugHash="11032bd6aeef3d7364195b05db1aa96b"/>
+    <FileStats path="org/kryptose/requests/Request.java" bugCount="0" size="19"/>
+    <FileStats path="org/kryptose/requests/RequestCreateAccount.java" bugCount="1" size="14" bugHash="522dce425cb72059d60eb1cb87d73cef"/>
+    <FileStats path="org/kryptose/requests/RequestGet.java" bugCount="1" size="14" bugHash="fbd54c496d431829e1c1bfcd59742b0e"/>
+    <FileStats path="org/kryptose/requests/RequestLog.java" bugCount="1" size="14" bugHash="f96631b44296be27a226ae7586ebe9e2"/>
+    <FileStats path="org/kryptose/requests/RequestPut.java" bugCount="1" size="26" bugHash="f427dd3be34dd4502218b3ffdbf09e14"/>
+    <FileStats path="org/kryptose/requests/RequestTest.java" bugCount="0" size="24"/>
+    <FileStats path="org/kryptose/requests/Response.java" bugCount="0" size="7"/>
+    <FileStats path="org/kryptose/requests/ResponseCreateAccount.java" bugCount="0" size="17"/>
+    <FileStats path="org/kryptose/requests/ResponseErrorReport.java" bugCount="0" size="37"/>
+    <FileStats path="org/kryptose/requests/ResponseGet.java" bugCount="0" size="10"/>
+    <FileStats path="org/kryptose/requests/ResponseLog.java" bugCount="0" size="10"/>
+    <FileStats path="org/kryptose/requests/ResponsePut.java" bugCount="0" size="25"/>
+    <FileStats path="org/kryptose/requests/ResponseTest.java" bugCount="0" size="10"/>
+    <FileStats path="org/kryptose/requests/User.java" bugCount="0" size="44"/>
+    <FileStats path="org/kryptose/requests/UserAuditLog.java" bugCount="0" size="3"/>
+    <FileStats path="org/kryptose/server/ClientHandler.java" bugCount="0" size="49"/>
+    <FileStats path="org/kryptose/server/Connection.java" bugCount="0" size="19"/>
+    <FileStats path="org/kryptose/server/DataStore.java" bugCount="0" size="22"/>
+    <FileStats path="org/kryptose/server/FatalError.java" bugCount="0" size="17"/>
+    <FileStats path="org/kryptose/server/FileSystemDataStore.java" bugCount="2" size="95" bugHash="3f7d0c63a22afded9fbf1fa8695ee7ce"/>
+    <FileStats path="org/kryptose/server/LogFormatter.java" bugCount="0" size="63"/>
+    <FileStats path="org/kryptose/server/LogFormatterTest.java" bugCount="0" size="38"/>
+    <FileStats path="org/kryptose/server/LogReader.java" bugCount="6" size="130" bugHash="d9c5ffe9c0306988806edc4e4e928e6f"/>
+    <FileStats path="org/kryptose/server/SecureServerListener.java" bugCount="0" size="133"/>
+    <FileStats path="org/kryptose/server/Server.java" bugCount="1" size="183" bugHash="af2d0dc8b09887b4722172ffc5a9e218"/>
+    <FileStats path="org/kryptose/server/UserTable.java" bugCount="7" size="229" bugHash="9887177eeebb198e719084d793016903"/>
+    <FileStats path="org/kryptose/server/test/DataStoreMock.java" bugCount="0" size="15"/>
+    <FileStats path="org/kryptose/server/test/ServerMock.java" bugCount="0" size="16"/>
+    <FileStats path="org/kryptose/server/test/UserTableTest.java" bugCount="2" size="142" bugHash="3101f8e243ec6485310f11e8b2b6bf3e"/>
+    <PackageStats package="org.kryptose.client" total_bugs="7" total_types="9" total_size="662" priority_2="6" priority_1="1">
+      <ClassStats class="org.kryptose.client.Client" sourceFile="Client.java" interface="false" size="176" bugs="2" priority_2="2"/>
+      <ClassStats class="org.kryptose.client.ClientController" sourceFile="ClientController.java" interface="false" size="165" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Credential" sourceFile="Credential.java" interface="false" size="68" bugs="0"/>
+      <ClassStats class="org.kryptose.client.PasswordFile" sourceFile="PasswordFile.java" interface="false" size="112" bugs="2" priority_2="2"/>
+      <ClassStats class="org.kryptose.client.PasswordFile$BadBlobException" sourceFile="PasswordFile.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="org.kryptose.client.RequestHandler" sourceFile="RequestHandler.java" interface="false" size="36" bugs="2" priority_2="2"/>
+      <ClassStats class="org.kryptose.client.View" sourceFile="View.java" interface="false" size="13" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewCLI" sourceFile="ViewCLI.java" interface="false" size="64" bugs="1" priority_1="1"/>
+      <ClassStats class="org.kryptose.client.ViewCLI$InputThread" sourceFile="ViewCLI.java" interface="false" size="24" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.client.test" total_bugs="5" total_types="3" total_size="82" priority_1="5">
+      <ClassStats class="org.kryptose.client.test.KeyDerivatorTest" sourceFile="KeyDerivatorTest.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="org.kryptose.client.test.PasswordFileTest" sourceFile="PasswordFileTest.java" interface="false" size="50" bugs="5" priority_1="5"/>
+      <ClassStats class="org.kryptose.client.test.TestKeyDerivatorDoesNotCrash" sourceFile="TestKeyDerivatorDoesNotCrash.java" interface="false" size="23" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.exceptions" total_bugs="0" total_types="8" total_size="74">
+      <ClassStats class="org.kryptose.exceptions.CryptoErrorException" sourceFile="CryptoErrorException.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.CryptoPrimitiveNotSupportedException" sourceFile="CryptoPrimitiveNotSupportedException.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.InternalServerErrorException" sourceFile="InternalServerErrorException.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.InvalidCredentialsException" sourceFile="InvalidCredentialsException.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.MalformedRequestException" sourceFile="MalformedRequestException.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.RecoverableException" sourceFile="RecoverableException.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.StaleWriteException" sourceFile="StaleWriteException.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.UsernameInUseException" sourceFile="UsernameInUseException.java" interface="false" size="7" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.requests" total_bugs="5" total_types="18" total_size="353" priority_2="5">
+      <ClassStats class="org.kryptose.requests.Blob" sourceFile="Blob.java" interface="false" size="31" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.KeyDerivator" sourceFile="KeyDerivator.java" interface="false" size="28" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.Log" sourceFile="Log.java" interface="false" size="20" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.requests.Request" sourceFile="Request.java" interface="false" size="19" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.RequestCreateAccount" sourceFile="RequestCreateAccount.java" interface="false" size="14" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.requests.RequestGet" sourceFile="RequestGet.java" interface="false" size="14" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.requests.RequestLog" sourceFile="RequestLog.java" interface="false" size="14" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.requests.RequestPut" sourceFile="RequestPut.java" interface="false" size="26" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.requests.RequestTest" sourceFile="RequestTest.java" interface="false" size="24" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.Response" sourceFile="Response.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseCreateAccount" sourceFile="ResponseCreateAccount.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseErrorReport" sourceFile="ResponseErrorReport.java" interface="false" size="37" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseGet" sourceFile="ResponseGet.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseLog" sourceFile="ResponseLog.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponsePut" sourceFile="ResponsePut.java" interface="false" size="25" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseTest" sourceFile="ResponseTest.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.User" sourceFile="User.java" interface="false" size="44" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.UserAuditLog" sourceFile="UserAuditLog.java" interface="false" size="3" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.server" total_bugs="16" total_types="18" total_size="978" priority_2="11" priority_1="5">
+      <ClassStats class="org.kryptose.server.ClientHandler" sourceFile="ClientHandler.java" interface="false" size="49" bugs="0"/>
+      <ClassStats class="org.kryptose.server.Connection" sourceFile="Connection.java" interface="false" size="19" bugs="0"/>
+      <ClassStats class="org.kryptose.server.DataStore" sourceFile="DataStore.java" interface="true" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.server.DataStore$WriteResult" sourceFile="DataStore.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="org.kryptose.server.FatalError" sourceFile="FatalError.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.server.FileSystemDataStore" sourceFile="FileSystemDataStore.java" interface="false" size="95" bugs="2" priority_1="2"/>
+      <ClassStats class="org.kryptose.server.LogFormatter" sourceFile="LogFormatter.java" interface="false" size="63" bugs="0"/>
+      <ClassStats class="org.kryptose.server.LogFormatterTest" sourceFile="LogFormatterTest.java" interface="false" size="38" bugs="0"/>
+      <ClassStats class="org.kryptose.server.LogReader" sourceFile="LogReader.java" interface="false" size="130" bugs="6" priority_2="4" priority_1="2"/>
+      <ClassStats class="org.kryptose.server.SecureServerListener" sourceFile="SecureServerListener.java" interface="false" size="116" bugs="0"/>
+      <ClassStats class="org.kryptose.server.SecureServerListener$1" sourceFile="SecureServerListener.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.server.Server" sourceFile="Server.java" interface="false" size="171" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.server.Server$1" sourceFile="Server.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.server.Server$2" sourceFile="Server.java" interface="false" size="4" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable" sourceFile="UserTable.java" interface="false" size="136" bugs="6" priority_2="5" priority_1="1"/>
+      <ClassStats class="org.kryptose.server.UserTable$1" sourceFile="UserTable.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable$Result" sourceFile="UserTable.java" interface="false" size="13" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable$UserRecord" sourceFile="UserTable.java" interface="false" size="73" bugs="1" priority_2="1"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.server.test" total_bugs="2" total_types="3" total_size="173" priority_2="2">
+      <ClassStats class="org.kryptose.server.test.DataStoreMock" sourceFile="DataStoreMock.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="org.kryptose.server.test.ServerMock" sourceFile="ServerMock.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="org.kryptose.server.test.UserTableTest" sourceFile="UserTableTest.java" interface="false" size="142" bugs="2" priority_2="2"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="700" invocations="1118" avgMicrosecondsPerInvocation="626" maxMicrosecondsPerInvocation="35670" standardDeviationMircosecondsPerInvocation="2516"/>
+      <ClassProfile name="edu.umd.cs.findbugs.FindBugs2" totalMilliseconds="535" invocations="2" avgMicrosecondsPerInvocation="267980" maxMicrosecondsPerInvocation="385554" standardDeviationMircosecondsPerInvocation="117574"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="239" invocations="344" avgMicrosecondsPerInvocation="695" maxMicrosecondsPerInvocation="20590" standardDeviationMircosecondsPerInvocation="2057"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="237" invocations="227" avgMicrosecondsPerInvocation="1047" maxMicrosecondsPerInvocation="17087" standardDeviationMircosecondsPerInvocation="2416"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="233" invocations="227" avgMicrosecondsPerInvocation="1030" maxMicrosecondsPerInvocation="33879" standardDeviationMircosecondsPerInvocation="2857"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="226" invocations="345" avgMicrosecondsPerInvocation="657" maxMicrosecondsPerInvocation="22802" standardDeviationMircosecondsPerInvocation="1854"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="188" invocations="827" avgMicrosecondsPerInvocation="228" maxMicrosecondsPerInvocation="13491" standardDeviationMircosecondsPerInvocation="710"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="186" invocations="386" avgMicrosecondsPerInvocation="481" maxMicrosecondsPerInvocation="7966" standardDeviationMircosecondsPerInvocation="930"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="167" invocations="1123" avgMicrosecondsPerInvocation="148" maxMicrosecondsPerInvocation="13793" standardDeviationMircosecondsPerInvocation="720"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="167" invocations="389" avgMicrosecondsPerInvocation="429" maxMicrosecondsPerInvocation="7203" standardDeviationMircosecondsPerInvocation="866"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="144" invocations="345" avgMicrosecondsPerInvocation="418" maxMicrosecondsPerInvocation="16878" standardDeviationMircosecondsPerInvocation="1437"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="118" invocations="345" avgMicrosecondsPerInvocation="342" maxMicrosecondsPerInvocation="10109" standardDeviationMircosecondsPerInvocation="742"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="108" invocations="287" avgMicrosecondsPerInvocation="377" maxMicrosecondsPerInvocation="6980" standardDeviationMircosecondsPerInvocation="885"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="83" invocations="296" avgMicrosecondsPerInvocation="282" maxMicrosecondsPerInvocation="22923" standardDeviationMircosecondsPerInvocation="1438"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="71" invocations="59" avgMicrosecondsPerInvocation="1206" maxMicrosecondsPerInvocation="23919" standardDeviationMircosecondsPerInvocation="3229"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="66" invocations="1064" avgMicrosecondsPerInvocation="62" maxMicrosecondsPerInvocation="7040" standardDeviationMircosecondsPerInvocation="278"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="59" invocations="227" avgMicrosecondsPerInvocation="260" maxMicrosecondsPerInvocation="7629" standardDeviationMircosecondsPerInvocation="627"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="53" invocations="227" avgMicrosecondsPerInvocation="234" maxMicrosecondsPerInvocation="17816" standardDeviationMircosecondsPerInvocation="1202"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="45" invocations="227" avgMicrosecondsPerInvocation="202" maxMicrosecondsPerInvocation="7625" standardDeviationMircosecondsPerInvocation="576"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="45" invocations="227" avgMicrosecondsPerInvocation="200" maxMicrosecondsPerInvocation="10054" standardDeviationMircosecondsPerInvocation="831"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="44" invocations="227" avgMicrosecondsPerInvocation="196" maxMicrosecondsPerInvocation="23052" standardDeviationMircosecondsPerInvocation="1529"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="41" invocations="70" avgMicrosecondsPerInvocation="599" maxMicrosecondsPerInvocation="7608" standardDeviationMircosecondsPerInvocation="1061"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="38" invocations="227" avgMicrosecondsPerInvocation="170" maxMicrosecondsPerInvocation="3951" standardDeviationMircosecondsPerInvocation="408"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.obl.ObligationAnalysis" totalMilliseconds="38" invocations="111" avgMicrosecondsPerInvocation="346" maxMicrosecondsPerInvocation="2657" standardDeviationMircosecondsPerInvocation="452"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="37" invocations="227" avgMicrosecondsPerInvocation="166" maxMicrosecondsPerInvocation="2084" standardDeviationMircosecondsPerInvocation="321"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BadSyntaxForRegularExpression" totalMilliseconds="37" invocations="59" avgMicrosecondsPerInvocation="632" maxMicrosecondsPerInvocation="21537" standardDeviationMircosecondsPerInvocation="2854"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="37" invocations="59" avgMicrosecondsPerInvocation="628" maxMicrosecondsPerInvocation="3456" standardDeviationMircosecondsPerInvocation="846"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadForLoop" totalMilliseconds="36" invocations="59" avgMicrosecondsPerInvocation="611" maxMicrosecondsPerInvocation="25380" standardDeviationMircosecondsPerInvocation="3263"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNonShortCircuit" totalMilliseconds="35" invocations="59" avgMicrosecondsPerInvocation="603" maxMicrosecondsPerInvocation="25038" standardDeviationMircosecondsPerInvocation="3218"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History></History>
+</BugCollection>
