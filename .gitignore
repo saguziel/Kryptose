@@ -29,3 +29,7 @@ common/.gitignore
 server/bin/*
 client/bin/*
 common/bin/*
+
+# meta
+.idea/*
+.metadata/*
