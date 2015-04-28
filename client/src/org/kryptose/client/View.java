@@ -10,13 +10,13 @@ import java.util.ArrayList;
  */
 public interface View {
 
-    public void updatePassFile(PasswordFile p);
+    public void updatePassFile();
 
-    public void updateUsername(String u);
+    public void updateUsername();
 
-    public void updateLogs(ArrayList<Log> userlog);
+    public void updateLogs();
 
-    public void updateLastMod(LocalDateTime mod);
+    public void updateLastMod();
 
     // todo update sync status
 
