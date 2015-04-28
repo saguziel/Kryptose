@@ -16,10 +16,10 @@ public class OldViewCLI extends OldView {
     final static int CREATEPASS = 5;
 
     Console console = System.console();
-	ClientController ctrl;
+	OldController ctrl;
     Scanner in;
 
-	public OldViewCLI(ClientController c) {
+	public OldViewCLI(OldController c) {
 		this.ctrl = c;
         in = new Scanner( System.in );
 	}

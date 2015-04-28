@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
-public class ClientController {
+public class OldController {
 
     static final String LOGIN = "login";
     static final String CREATE = "create";
@@ -34,9 +34,9 @@ public class ClientController {
     static final String HELP = "help";
     static final String[] KEYWORDS = new String[] {GET, SAVE, SET, DEL, QUERY, PRINT, /*LOGS,*/ LOGOUT, HELP};
     static final String HELP_SYNTAX = "Syntax: help";
-    Client model;
+    OldModel model;
 	
-	public ClientController(Client c) {
+	public OldController(OldModel c) {
 		this.model = c;
 	}
 
@@ -159,7 +159,7 @@ public class ClientController {
 
 		String[] args = request.trim().split("\\s+");
         if (args.length == 0) {
-            model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(ClientController.KEYWORDS));
+            model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(OldController.KEYWORDS));
             return;
         }
         String command = args[0].toLowerCase();
@@ -247,7 +247,7 @@ public class ClientController {
                     HELP_SYNTAX
             );
         } else {
-            model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(ClientController.KEYWORDS)
+            model.continuePrompt("Command not recognized. Full list: " + Arrays.toString(OldController.KEYWORDS)
                                  + "\nEnter help for list of commands, uses, and syntax");
         }
 	}

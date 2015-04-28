@@ -1,25 +1,31 @@
+
 package org.kryptose.client;
 
-import org.kryptose.requests.Log;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
-/**
- * Created by jeff on 4/27/15.
- */
-public interface View {
 
-    public void updatePassFile(PasswordFile p);
+public abstract class View {
+	
+    abstract void promptUserName();
 
-    public void updateUsername(String u);
+	abstract void promptPassword();
 
-    public void updateLogs(ArrayList<Log> userlog);
+    abstract void promptCmd();
 
-    public void updateLastMod(LocalDateTime mod);
+	abstract void promptCmd(String s);
 
-    // todo update sync status
+	abstract void logout();
 
-    // todo update last error
+    abstract void promptStart();
+
+    abstract void displayMessage(String s);
+
+    abstract void createUsername();
+
+    abstract void createPass();
+
+    abstract void set();
+    
+    
 
 }
