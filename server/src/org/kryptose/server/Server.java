@@ -23,6 +23,7 @@ public class Server {
     private static final String LOGGER_NAME = "org.kryptose.server";
     private Logger logger = Logger.getLogger(LOGGER_NAME);
     private DataStore dataStore = new FileSystemDataStore(logger);
+    
     // TODO make configurable?
     private static final int LOG_FILE_COUNT = 20;
     private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
