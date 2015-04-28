@@ -16,7 +16,7 @@ public class Client {
     private static final String PROPERTIES_FILE = "clientProperties.xml";
     Properties properties;
     User user;
-	View view;
+	OldView oldView;
     RequestHandler reqHandler;
     PasswordFile passfile;
     LocalDateTime lastmod;
@@ -72,14 +72,14 @@ public class Client {
     public static void main(String[] args) {
         Client client = new Client();
         ClientController ctrl = new ClientController(client);
-        View view = new ViewCLI(ctrl);
-        client.view = view;
+        OldView oldView = new OldViewCLI(ctrl);
+        client.oldView = oldView;
         client.start();
     }
 
     public void setPassfile(PasswordFile pf) {
         this.passfile = pf;
-        view.promptCmd("Password file successfully fetched");
+        oldView.promptCmd("Password file successfully fetched");
     }
 
     public void setVal(String dom, String user, String pass) {
@@ -89,13 +89,13 @@ public class Client {
         System.out.println(pass);
         lastmod = LocalDateTime.now();
         if(succ){
-            view.displayMessage("password for domain: " + dom + ", user: " + user + " successfully set");
+            oldView.displayMessage("password for domain: " + dom + ", user: " + user + " successfully set");
         } else {
-            view.displayMessage("password for domain: " + dom + ", user: " + user + " successfully created");
+            oldView.displayMessage("password for domain: " + dom + ", user: " + user + " successfully created");
         }
     }
     public void set() {
-        view.set();
+        oldView.set();
     }
 
     public void getCredentialNum(String num) {
@@ -103,15 +103,15 @@ public class Client {
         try{
             index = Integer.parseInt(num);
         } catch (NumberFormatException e) {
-            view.promptCmd(num + " is not valid index");
+            oldView.promptCmd(num + " is not valid index");
             return;
         }
         index--;
         Credential succ = this.passfile.getVal(index);
         if (succ == null)
-            view.promptCmd("No password associated with index: " + num);
+            oldView.promptCmd("No password associated with index: " + num);
         else
-            view.promptCmd("Password for domain:" + succ.getDomain() + ", username:" + succ.getUsername() + " is: " + succ.getPassword());
+            oldView.promptCmd("Password for domain:" + succ.getDomain() + ", username:" + succ.getUsername() + " is: " + succ.getPassword());
     }
 
     public void delValNum(String num) {
@@ -119,33 +119,33 @@ public class Client {
         try{
             index = Integer.parseInt(num);
         } catch (NumberFormatException e) {
-            view.displayMessage(num + " is not valid index");
+            oldView.displayMessage(num + " is not valid index");
             return;
         }
         index--;
         Credential succ = this.passfile.delVal(index);
         if (succ != null) {
-            view.displayMessage("password for domain: " + succ.getDomain() + ", username: " + succ.getUsername() + " successfully deleted");
+            oldView.displayMessage("password for domain: " + succ.getDomain() + ", username: " + succ.getUsername() + " successfully deleted");
         } else {
-            view.displayMessage("No password associated with index: " + num);
+            oldView.displayMessage("No password associated with index: " + num);
         }
     }
 
     public void delVal(String dom, String user) {
         Boolean succ = this.passfile.delVal(dom, user);
         if (succ) {
-            view.displayMessage("password for domain: " + dom + ", username: " + user + " successfully deleted");
+            oldView.displayMessage("password for domain: " + dom + ", username: " + user + " successfully deleted");
         } else {
-            view.displayMessage("there is no password associated with domain: " + dom + ", username :" + user);
+            oldView.displayMessage("there is no password associated with domain: " + dom + ", username :" + user);
         }
     }
 
     public void continuePrompt(String s) {
-        view.promptCmd(s);
+        oldView.promptCmd(s);
     }
 
     public void badMasterPass() {
-        view.promptCmd("Invalid login credentials");
+        oldView.promptCmd("Invalid login credentials");
     }
 
     public void printAll() {
@@ -157,7 +157,7 @@ public class Client {
 //                    " Password: " + c.getPassword() +
                     " Lastmod: " + c.getMod().toString());
         }
-        view.promptCmd();
+        oldView.promptCmd();
     }
 
 
@@ -165,9 +165,9 @@ public class Client {
     public void getCredential(String dom, String user) {
         String password = passfile.getVal(dom, user);
         if (password == null)
-            view.promptCmd("No password associated with domain: " + dom + ", username :" + user);
+            oldView.promptCmd("No password associated with domain: " + dom + ", username :" + user);
         else
-            view.promptCmd("Password for domain: " + dom + ", username :" + user + " is: " + password);
+            oldView.promptCmd("Password for domain: " + dom + ", username :" + user + " is: " + password);
     }
 
     public LocalDateTime getLastMod() {
@@ -179,25 +179,25 @@ public class Client {
     }
 
     public void logout() {
-//        view.logout();
-        view.displayMessage("Logging out!");
+//        oldView.logout();
+        oldView.displayMessage("Logging out!");
         this.start();
     }
 
     public boolean setUsername(String name) {
         if (!User.isValidUsername(name)) {
-            view.displayMessage(User.VALID_USERNAME_DOC);
+            oldView.displayMessage(User.VALID_USERNAME_DOC);
             return false;
         } else {
             this.username = name;
-            view.displayMessage("got username " + name);
+            oldView.displayMessage("got username " + name);
             return true;
         }
     }
 
     public void newPassFile() {
         this.passfile = new PasswordFile(this.user.getUsername());
-        view.promptCmd("New password file created");
+        oldView.promptCmd("New password file created");
     }
 
     void setLogs(ArrayList<Log> a) {
@@ -207,9 +207,9 @@ public class Client {
 
     void displayLogs() {
         for (Log l : userlog) {
-            view.displayMessage(l.toString());
+            oldView.displayMessage(l.toString());
         }
-        view.promptCmd();
+        oldView.promptCmd();
     }
 
     String getMasterpass() {
@@ -223,7 +223,7 @@ public class Client {
     }
 
     void promptMasterpass() {
-        view.promptPassword();
+        oldView.promptPassword();
     }
 
 //    byte[] getFilepass() {
@@ -231,30 +231,30 @@ public class Client {
 //    }
 
     void startLogin(){
-        view.promptUserName();
+        oldView.promptUserName();
     }
 
     public void start() {
-        view.displayMessage("Welcome to Kryptose BETA VERSION. Type LOGIN or CREATE to create a new account");
-        view.promptStart();
+        oldView.displayMessage("Welcome to Kryptose BETA VERSION. Type LOGIN or CREATE to create a new account");
+        oldView.promptStart();
     }
 
     public void startCreate() {
-        view.createUsername();
+        oldView.createUsername();
     }
 
     public void startSetPass() {
-        view.createPass();
+        oldView.createPass();
     }
 
     public void start(String s) {
-        view.displayMessage(s);
-        view.promptStart();
+        oldView.displayMessage(s);
+        oldView.promptStart();
     }
 
     public void restartLogin() {
-        view.displayMessage("Invalid user name or password, please try again");
-        view.promptUserName();
+        oldView.displayMessage("Invalid user name or password, please try again");
+        oldView.promptUserName();
     }
 
 }

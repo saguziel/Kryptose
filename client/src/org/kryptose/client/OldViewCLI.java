@@ -4,10 +4,9 @@ import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
 
 import java.util.Scanner;
-import org.kryptose.exceptions.*;
 import java.io.Console;
 
-public class ViewCLI extends View {
+public class OldViewCLI extends OldView {
 
     final static int CMD = 0;
     final static int USERNAME = 1;
@@ -20,7 +19,7 @@ public class ViewCLI extends View {
 	ClientController ctrl;
     Scanner in;
 
-	public ViewCLI(ClientController c) {
+	public OldViewCLI(ClientController c) {
 		this.ctrl = c;
         in = new Scanner( System.in );
 	}
