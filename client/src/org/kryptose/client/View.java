@@ -10,16 +10,17 @@ import java.util.ArrayList;
  */
 public interface View {
 
-    public void updatePassFile();
-
-    public void updateUsername();
+    public void updateMasterCredentials();
 
     public void updateLogs();
 
     public void updateLastMod();
 
-    // todo update sync status
+    public void updatePasswordFile();
 
-    // todo update last error
+    public void updateServerException();
+
+    public void updateSyncStatus();
+
 
 }
