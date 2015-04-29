@@ -1,7 +1,10 @@
-package org.kryptose.requests;
+package org.kryptose.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+
+import org.kryptose.requests.Request;
+import org.kryptose.requests.User;
 
 
 /**

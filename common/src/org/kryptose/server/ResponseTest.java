@@ -1,4 +1,6 @@
-package org.kryptose.requests;
+package org.kryptose.server;
+
+import org.kryptose.requests.Response;
 
 public final class ResponseTest extends Response {
 	private final String theResponse;
