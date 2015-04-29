@@ -95,7 +95,7 @@ public class PasswordFileTest {
         Blob b = p.encryptBlob(USERNAME1, MASTER_PWD, LocalDateTime.now());
 
         //Try to decrypt the blob with wrong password
-        PasswordFile p2 = new PasswordFile(USERNAME1, b, MASTER_PWD_WRONG);
+        new PasswordFile(USERNAME1, b, MASTER_PWD_WRONG);
     }
 
     @Test(expected = CryptoErrorException.class)
@@ -107,7 +107,7 @@ public class PasswordFileTest {
         Blob b = p.encryptBlob(USERNAME1, MASTER_PWD, LocalDateTime.now());
 
         //Try to decrypt the blob with wrong username
-        PasswordFile p2 = new PasswordFile(USERNAME1_WRONG, b, MASTER_PWD);
+        new PasswordFile(USERNAME1_WRONG, b, MASTER_PWD);
     }
 
 
@@ -131,7 +131,7 @@ public class PasswordFileTest {
         assertFalse(Arrays.equals(b.getDigest(), b2.getDigest()));
 
         //This should fail, as the blob has been tampered.
-        PasswordFile p2 = new PasswordFile(USERNAME1, b2, MASTER_PWD);
+        new PasswordFile(USERNAME1, b2, MASTER_PWD);
     }
 
     @Test(expected = CryptoErrorException.class)
@@ -154,7 +154,7 @@ public class PasswordFileTest {
         assertFalse(Arrays.equals(b.getDigest(), b2.getDigest()));
         
         //This should fail, as the blob has been tampered.
-        PasswordFile p2 = new PasswordFile(USERNAME1, b2, MASTER_PWD);
+        new PasswordFile(USERNAME1, b2, MASTER_PWD);
     }
 
 }

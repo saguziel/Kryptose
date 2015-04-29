@@ -12,7 +12,8 @@ package org.kryptose.exceptions;
  * @author jshi
  */
 public class InternalServerErrorException extends Exception {
-	
+	private static final long serialVersionUID = -102224301046864950L;
+
 	public InternalServerErrorException() {
 		super();
 	}

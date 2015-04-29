@@ -6,6 +6,7 @@ package org.kryptose.exceptions;
  * @author jshi
  */
 public class StaleWriteException extends Exception {
+	private static final long serialVersionUID = 7177041601513315333L;
 
 	public StaleWriteException() {
 	}
