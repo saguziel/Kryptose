@@ -129,20 +129,6 @@ public class PasswordFile {
     //TODO: use correct timestamp and iv
     public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
 
-    	/*
-        byte[] salt = new byte[64];
-    	SecureRandom rnd;
-		try {
-			rnd = SecureRandom.getInstance("SHA1PRNG");
-			rnd.nextBytes(salt);
-		} catch (NoSuchAlgorithmException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			throw new CryptoPrimitiveNotSupportedException(e1);
-		}
-    	*/
-
-
         byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
 
         try {
