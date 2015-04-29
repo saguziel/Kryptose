@@ -11,6 +11,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.Destroyable;
+
 import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -22,7 +24,7 @@ import java.util.ArrayList;
 /**
  * Created by jeff on 3/15/15.
  */
-public class PasswordFile {
+public class PasswordFile implements Destroyable {
 
     ArrayList<Credential> credentials;
     LocalDateTime timestamp;
@@ -213,6 +215,10 @@ public class PasswordFile {
             super(message);
         }
     }
+
+	public void destroy() {
+		// TODO destroy passwordfile
+	}
     
 
 }

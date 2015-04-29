@@ -4,11 +4,13 @@ package org.kryptose.client;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import javax.security.auth.Destroyable;
+
 /**
  * A set of credentials.
  *
  */
-public class Credential implements Serializable {
+public class Credential implements Serializable, Destroyable {
 	
 	private String username;
 	private String password;
@@ -59,6 +61,9 @@ public class Credential implements Serializable {
         recordTime();
     }
 	
+    public void destroy() {
+    	// TODO destroy credentials
+    }
 	
 
 	@Override
