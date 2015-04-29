@@ -30,7 +30,7 @@ public class RequestHandlerTest {
 	}
 
 	@Test
-	public void testSend() {
+	public void testSend() throws Exception, RuntimeException{
 		RequestHandler r = new RequestHandler("localhost",5002,"ClientTrustStore.jks","aaaaaa");
 		
 		Request req = mock(Request.class);
