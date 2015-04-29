@@ -1,4 +1,4 @@
-package org.kryptose.server.test;
+package org.kryptose.server;
 
 import org.junit.After;
 import org.junit.Before;

@@ -1,3 +1,4 @@
+package org.kryptose.server;
 //package org.kryptose.server.test;
 //
 //import static org.junit.Assert.*;

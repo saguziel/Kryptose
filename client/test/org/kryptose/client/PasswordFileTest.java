@@ -1,6 +1,9 @@
-package org.kryptose.client.test;
+package org.kryptose.client;
 
 import org.junit.*;
+import static org.junit.Assert.*;
+
+import org.kryptose.client.Credential;
 import org.kryptose.client.PasswordFile;
 import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.requests.Blob;
@@ -9,7 +12,6 @@ import org.kryptose.requests.KeyDerivator;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
 
 public class PasswordFileTest {
 	
@@ -61,6 +63,28 @@ public class PasswordFileTest {
 
 
     }
+    
+    @Test
+    public final void PasswordFileOperationsTest() throws Exception {
+    	//Create a blob with a credential, encrypt, decrypt and verify it is unaltered.
+        PasswordFile p = new PasswordFile(USERNAME1);
+        p.setVal("MyDom", "MyUser", "MyPwd");
+        p.setVal("MyDom2", "MyUser", "MyPwd");
+        //This should not create a new credential, but update the above one.
+        p.setVal("MyDom2", "MyUser", "MyPwd2");
+        
+        assertNull(p.getVal(-5));
+        assertNull(p.getVal(2));
+        assertNull(p.delVal(-2));
+        Credential c = new Credential("MyUser", "MyPwd", "MyDom");
+        assertEquals(c.getPassword(), p.getVal("MyDom","MyUser"));
+        assertTrue(c.equals(p.getVal(0)));
+        p.delVal(0);
+        assertFalse(c.equals(p.getVal(0)));
+        
+
+    }
+    
 
     @Test(expected = CryptoErrorException.class)
     public final void blobDecryptWrongMasterPasswordTest() throws Exception {

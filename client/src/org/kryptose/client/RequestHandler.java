@@ -25,20 +25,7 @@ public class RequestHandler {
 
 	ObjectInputStream in;
 	ObjectOutputStream out;
-/*	
-	static String getServerHostname() {
-		return serverHostname;
-	}
-	static void setServerHostname(String serverHostname) {
-		RequestHandler.serverHostname = serverHostname;
-	}
-	static int getServerPort() {
-		return serverPort;
-	}
-	static void setServerPort(int serverPort) {
-		RequestHandler.serverPort = serverPort;
-	}
-*/
+
 	RequestHandler(String serverHostname, int serverPort, String clientTrustStore, String clientTrustStorePassword){
 		this.serverHostname = serverHostname;
 		this.serverPort = serverPort;
