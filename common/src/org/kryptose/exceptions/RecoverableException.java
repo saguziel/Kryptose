@@ -6,6 +6,7 @@ package org.kryptose.exceptions;
  * @author jshi
  */
 public class RecoverableException extends Exception {
+	private static final long serialVersionUID = 4384928253759960805L;
 
 	public RecoverableException() {
 	}

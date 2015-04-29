@@ -207,7 +207,9 @@ public class PasswordFile {
     }
 
     public static class BadBlobException extends Exception {
-        public BadBlobException(String message) {
+		private static final long serialVersionUID = 4063553143136409234L;
+
+		public BadBlobException(String message) {
             super(message);
         }
     }

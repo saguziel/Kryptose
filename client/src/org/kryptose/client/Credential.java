@@ -1,6 +1,5 @@
 package org.kryptose.client;
 
-import org.kryptose.requests.Log;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

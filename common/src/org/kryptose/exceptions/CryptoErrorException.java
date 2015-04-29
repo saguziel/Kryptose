@@ -5,6 +5,7 @@ package org.kryptose.exceptions;
 //Suggested response: Interrupt the operation in progress, and warn the user???.
 
 public class CryptoErrorException extends Exception {
+	private static final long serialVersionUID = -2511565660933462965L;
 
 	public CryptoErrorException() {
 		// TODO Auto-generated constructor stub
