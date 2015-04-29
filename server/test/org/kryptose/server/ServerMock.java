@@ -1,4 +1,4 @@
-package org.kryptose.server.test;
+package org.kryptose.server;
 
 import java.util.logging.Logger;
 

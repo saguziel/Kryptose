@@ -1,4 +1,4 @@
-package org.kryptose.client.test;
+package org.kryptose.client;
 
 import org.junit.*;
 import static org.junit.Assert.*;

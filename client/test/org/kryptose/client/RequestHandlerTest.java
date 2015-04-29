@@ -1,5 +1,6 @@
-package org.kryptose.client.test;
+package org.kryptose.client;
 
+import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
@@ -7,6 +8,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.kryptose.client.RequestHandler;
+import org.kryptose.requests.Request;
 
 public class RequestHandlerTest {
 
@@ -28,7 +31,13 @@ public class RequestHandlerTest {
 
 	@Test
 	public void testSend() {
-		fail("Not yet implemented");
+		RequestHandler r = new RequestHandler("localhost",5002,"ClientTrustStore.jks","aaaaaa");
+		
+		Request req = mock(Request.class);
+		
+		r.send(req);
+		
+		
 	}
 
 }

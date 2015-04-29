@@ -1,5 +1,5 @@
 
-package org.kryptose.server.test;
+package org.kryptose.server;
 
 import static org.junit.Assert.*;
 
