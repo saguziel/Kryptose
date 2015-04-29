@@ -28,16 +28,18 @@ import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.User;
 
 public class UserTable implements Serializable {
-	
+	private static final long serialVersionUID = 6410241252645043453L;
+
 	private static final int DEFAULT_SALT_SIZE = 50;
 
 	// TODO: make configurable
 	private static final String DEFAULT_FILENAME = "datastore/usertable.bin";
-	private static final String FILENAME_TEMP_SUFFIX = ".tmp";
+	private static final String FILENAME_BACKUP_SUFFIX = ".bak";
 
 	public enum Result{USER_NOT_FOUND, USER_ALREADY_EXISTS, USER_ADDED, WRONG_CREDENTIALS, AUTHENTICATION_SUCCESS, AUTH_KEY_CHANGED};
 	
 	private class UserRecord implements Serializable {
+		private static final long serialVersionUID = 8562908652006397891L;
 		final String username;
 		byte[] salt;
 		byte[] auth_key_hash;
@@ -165,21 +167,101 @@ public class UserTable implements Serializable {
 
 	// INSTANCE VARIABLES
 	
-	private transient Logger logger;
-	private transient String fileName;
-	private transient String tmpFileName;
+	private transient Logger logger = null;
+	private transient String fileName = null;
+	private transient String bakFileName = null;
 	
 	private final int salt_size;
 	private ConcurrentHashMap<String,UserRecord> users;
 	
-	private transient Object persistLock = new Object();
-	private transient Object ensurePersistMonitor = new Object();
-	private transient volatile boolean persistInProgress = false;
-	private transient volatile boolean persistNextThreadTurn = false;
-	private transient volatile Thread persistNextThread = null;
+	private transient PersistWorkerThread persistThread = null;
+	private transient RepersistRequest persistReqInProgress = null;
+	private transient RepersistRequest nextPersistReq = new RepersistRequest();
+	private transient Object persistReqLock = new Object();
 	
-	
+	private static class RepersistRequest {
+		private boolean requested = false;
+		private Object requestMonitor = new Object();
+		private boolean done = false;
+		private Object doneMonitor = new Object();
+		
+		void makeRequest() {
+			synchronized (requestMonitor) {
+				if (!requested) {
+					requested = true;
+					requestMonitor.notify();
+				}
+			}
+		}
+		void markDone() {
+			synchronized (doneMonitor) {
+				done = true;
+				doneMonitor.notifyAll();
+			}
+		}
+		void waitForRequest() throws InterruptedException {
+			synchronized (requestMonitor) {
+				while (!requested) {
+					requestMonitor.wait();
+				}
+			}
+		}
+		void waitForDone() throws InterruptedException {
+			synchronized (doneMonitor) {
+				while (!done) {
+					doneMonitor.wait();
+				}
+			}
+		}
+	}
 
+	private class PersistWorkerThread extends Thread {
+		PersistWorkerThread() {
+			super();
+			this.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+				@Override
+				public void uncaughtException(Thread thread, Throwable t) {
+					String errorMsg = "Uncaught exception in Usertable save-to-file thread.";
+					logger.log(Level.SEVERE, errorMsg, t);
+					synchronized (persistReqLock) {
+						persistThread = null;
+						ensureThreadStarted();
+					}
+				}
+			});
+		}
+		public void run() {
+			synchronized (persistReqLock) {
+				if (nextPersistReq == null) {
+					nextPersistReq = new RepersistRequest();
+				}
+			}
+			// TODO this design might lose a request or prevent shutdown.
+			boolean keepRunning = true;
+			while (keepRunning || nextPersistReq.requested) {
+				while (!nextPersistReq.requested) {
+					try {
+						nextPersistReq.waitForRequest();
+					} catch (InterruptedException e) {
+						keepRunning = false;
+					}
+				}
+				synchronized (persistReqLock) {
+					persistReqInProgress = nextPersistReq;
+					nextPersistReq = new RepersistRequest();
+				}
+				try {
+					saveToFile();
+				} catch (IOException e) {
+					String errorMsg = "Error saving file of users.";
+					logger.log(Level.SEVERE, errorMsg, e);
+				}
+				persistReqInProgress.markDone();
+				persistReqInProgress = null;
+			}
+		}
+	}
+	
 	public UserTable(Logger logger) {
 		this(logger, DEFAULT_FILENAME, DEFAULT_SALT_SIZE);
 	}
@@ -192,7 +274,7 @@ public class UserTable implements Serializable {
 	public UserTable(Logger logger, String fileName, int salt_size) {
 		this.logger = logger;
 		this.fileName = fileName;
-		this.tmpFileName = fileName + FILENAME_TEMP_SUFFIX;
+		this.bakFileName = fileName + FILENAME_BACKUP_SUFFIX;
 		this.salt_size = salt_size;
 		this.users = new ConcurrentHashMap<String,UserRecord>();
 //		Users.put("me", new UserRecord("me", "AAAAAAAAAAAAAAAA", "A"));
@@ -201,9 +283,9 @@ public class UserTable implements Serializable {
 	private void initFromDeserialization(Logger logger, String fileName) {
 		this.logger = logger;
 		this.fileName = fileName;
-		this.tmpFileName = fileName + FILENAME_TEMP_SUFFIX;
-		this.persistLock = new Object();
-		this.ensurePersistMonitor = new Object();
+		this.bakFileName = fileName + FILENAME_BACKUP_SUFFIX;
+		this.persistReqLock = new Object();
+		this.nextPersistReq = new RepersistRequest();
 	}
 	
 	public boolean contains(String username){
@@ -217,7 +299,7 @@ public class UserTable implements Serializable {
 		users.put(user.getUsername(),
 				new UserRecord(user.getUsername(), user.getPasskey()));
 
-		this.ensurePersistNewThread();
+		this.ensurePersist();
 		
 		return Result.USER_ADDED;
 	}
@@ -229,7 +311,7 @@ public class UserTable implements Serializable {
 			// Do auth.
 			boolean success = users.get(user.getUsername()).authenticate(user.getPasskey());
 			// Persist changes to disk.
-			this.ensurePersistNewThread();
+			this.ensurePersist();
 			// Return result.
 			if (success) return Result.AUTHENTICATION_SUCCESS;
 			else return Result.WRONG_CREDENTIALS;
@@ -243,7 +325,7 @@ public class UserTable implements Serializable {
 			// Do change.
 			boolean success = this.users.get(username).changeUserAuthKey(old_key,new_key);
 			// Persist changes to disk.
-			this.ensurePersistNewThread();
+			this.ensurePersist();
 			// Return result.
 			if (success) return Result.AUTH_KEY_CHANGED;
 			else return Result.WRONG_CREDENTIALS;
@@ -275,96 +357,51 @@ public class UserTable implements Serializable {
 	}
 	
 	private void saveToFile() throws IOException {
-		this.ensureDirectoryExists(new File(this.fileName));
-		try (ObjectOutputStream fw = new ObjectOutputStream(
-				new FileOutputStream(this.tmpFileName))) {
-			fw.writeObject(this);
-			fw.flush();
-		}
-		// TODO: This thing keeps throwing NoSuchFileExceptions and I don't know why T_T.
-		// Might be because of filesystem locks or something.
-		// Something to do with concurrency.
-		Files.move(Paths.get(this.tmpFileName), Paths.get(this.fileName),
+		File file = new File(this.fileName);
+		this.ensureDirectoryExists(file);
+		// Move existing usertable file to backup location.
+		if (file.exists()) {
+			Files.move(Paths.get(this.fileName), Paths.get(this.bakFileName),
 				StandardCopyOption.REPLACE_EXISTING);
+		}
+		// Write this usertable to file.
+		try (ObjectOutputStream fw = new ObjectOutputStream(
+				new FileOutputStream(this.fileName))) {
+			fw.writeObject(this);
+		}
 	}
 	
-	public Thread ensurePersistNewThread() {
-		Thread t = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				UserTable.this.ensurePersist();
-			}
-		});
-		t.start();
-		return t;
-	}
-	
-	// Persist to file on each modification
-	// Exception: if persisting is already being done by another thread, wait for
-	// that thread to finish
-	// Other exception: if there's already a thread waiting for a persist to finish,
-	// kick that thread out and take its place.
+	/**
+	 * Does not block.
+	 */
 	public void ensurePersist() {
-		// Check to see if another thread is already doing a persist.
-		synchronized (ensurePersistMonitor) {
-			if (persistInProgress) {
-				// Queue this thread up as responsible for ensuring a persist.
-				persistNextThread = Thread.currentThread();
-				ensurePersistMonitor.notifyAll(); // relieve other threads of responsibility.
-				// Wait for chance to persist or for responsibility relieved.
-				try {
-				while (persistNextThread == Thread.currentThread() && persistInProgress) {
-					ensurePersistMonitor.wait();
-				}}
-				catch (InterruptedException ex) { }
-				// If woken while not persistNextThread, duty has been relieved
-				if (persistNextThread != Thread.currentThread()) return;
-			}
-			// This thread about to start a persist.
-			// Clear out any other thread that's already waiting for a persist to happen.
-			persistInProgress = true;
-			persistNextThread = null;
+		try {
+			this.ensurePersist(false);
+		} catch (InterruptedException e) {
+			String errorMsg = "InterruptedException where not expected. Serious problem in code.";
+			this.logger.log(Level.SEVERE, errorMsg, e);
 		}
-		// Persist the UserTable.
-		synchronized (persistLock) {
-			try {
-				this.saveToFile();
-			} catch (IOException e) {
-				String errorMsg = "Error saving user table file to disk.";
-				this.logger.log(Level.SEVERE, errorMsg, e);
-			}
-		}
-		// Notify other threads that persisting is done.
-		synchronized (ensurePersistMonitor) {
-			persistInProgress = false;
-			// Notify a thread that's responsible for a future persist.
-			ensurePersistMonitor.notifyAll();
-		}
-	}
-
-	public static void main(String[] args) {
-		UserTable u = new UserTable(null);
-		
-		byte[] good_pwd = "good".getBytes();
-		byte[] bad_pwd = "bad".getBytes();
-		
-		System.out.println(u.contains("Antonio"));
-		//u.addUser("Antonio", good_pwd);
-		System.out.println(u.contains("Antonio"));
-		System.out.println(u.contains("AntonioAAAA"));
-		
-		//System.out.println(u.auth("Mario", good_pwd));		
-		//System.out.println(u.auth("Antonio", good_pwd));		
-		//System.out.println(u.auth("Antonio", bad_pwd));		
-		
-		System.out.println(u.changeAuthKey("Mario", good_pwd, good_pwd));		
-		System.out.println(u.changeAuthKey("Antonio", good_pwd,bad_pwd));		
-		//System.out.println(u.auth("Antonio", good_pwd));		
-		//System.out.println(u.auth("Antonio", bad_pwd));
-		
-		
 	}
 	
+	public void ensurePersist(boolean block) throws InterruptedException {
+		this.ensureThreadStarted();
+		RepersistRequest req;
+		synchronized (this.persistReqLock) {
+			req = this.nextPersistReq;
+		}
+		req.makeRequest();
+		if (block) req.waitForDone();
+	}
+	
+	public void ensureThreadStarted() {
+		synchronized (persistReqLock) {
+			if (this.persistThread == null
+					|| !this.persistThread.isAlive()) {
+				this.persistThread = new PersistWorkerThread();
+				this.persistThread.start();
+			}
+		}
+	}
 
     
     /**

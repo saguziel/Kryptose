@@ -52,11 +52,12 @@ public class UserTableTest {
 
 	@After
 	public void tearDown() throws Exception {
-		// TODO: a way to wait for writing to finish
 		try { Thread.sleep(10); }
-		catch (InterruptedException ex) {}
+		catch (InterruptedException ex) {
+			ex.printStackTrace();
+		}
 		new File(testFile).delete();
-		new File(testFile + ".tmp").delete();
+		new File(testFile + ".bak").delete();
 	}
 
 	@Test
@@ -67,31 +68,36 @@ public class UserTableTest {
 	@Test
 	public void testCanPersist() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		ut.ensurePersist();
+		try {
+			ut.ensurePersist(true);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		assertTrue("save file doesn't exist", new File(testFile).exists());
 	}
 
 	@Test
 	public void testTempFileNotExist() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		ut.ensurePersist();
+		try {
+			ut.ensurePersist(true);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		assertFalse("tmp file exists", new File(testFile + ".tmp").exists());
 	}
 
 	@Test
 	public void testCanPersistMultiple() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		Thread[] t = new Thread[50];
-		for (int i = 0; i < t.length; i++) {
-			t[i] = ut.ensurePersistNewThread();
-		}
-		ut.ensurePersist();
-		for (int i = 0; i < t.length; i++) {
-			try {
-				t[i].join();
-			} catch (InterruptedException e) {
-				fail("Thread interrupted.");
+		try {
+			for (int i = 0; i < 50; i++) {
+				ut.ensurePersist();
+				Thread.sleep(10);
 			}
+			ut.ensurePersist(true);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		assertTrue("save file doesn't exist", new File(testFile).exists());
 	}
@@ -153,9 +159,8 @@ public class UserTableTest {
 	@Test
 	public void testReadBackEmpty() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		ut.ensurePersist();
 		try {
-			Thread.sleep(1000);
+			ut.ensurePersist(true);
 			assertTrue("save file doesn't exist", new File(testFile).exists());
 			UserTable ut2 = UserTable.loadFromFile(LOGGER, testFile);
 			assertFalse(ut2.contains(TEST_USERNAME));
@@ -170,9 +175,8 @@ public class UserTableTest {
 	public void testReadBackOneUser() {
 		UserTable ut = new UserTable(LOGGER, testFile);
 		assertEquals(ut.addUser(TEST_USER), Result.USER_ADDED);
-		ut.ensurePersist();
 		try {
-			Thread.sleep(1000);
+			ut.ensurePersist(true);
 			assertTrue("save file doesn't exist", new File(testFile).exists());
 			UserTable ut2 = UserTable.loadFromFile(LOGGER, testFile);
 			assertTrue(ut2.contains(TEST_USERNAME));
