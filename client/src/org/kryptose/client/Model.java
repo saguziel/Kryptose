@@ -49,7 +49,7 @@ public class Model {
 	}
 
 	public synchronized void setMasterCredentials(MasterCredentials masterCredentials) {
-		if (equals(this.passwordFile, passwordFile)) return;
+		if (equals(this.masterCredentials, masterCredentials)) return;
 		this.masterCredentials = masterCredentials;
         view.updateMasterCredentials();
 	}
@@ -157,7 +157,7 @@ public class Model {
 		if (equals(oldValue, value)) return;
 		
 		// Destroy old value
-		Arrays.fill(oldValue, ' ');
+		if (oldValue != null) Arrays.fill(oldValue, ' ');
 		
 		// Make change and notify view
  		this.formPasses.put(form, value);
@@ -168,7 +168,7 @@ public class Model {
 		return this.selections.get(selection);
 	}
 	
-	public synchronized void setFormText(Selection selection, String value) {
+	public synchronized void setSelection(Selection selection, String value) {
 		// Store empty as null
 		if (value != null && value.length() == 0) value = null;
 

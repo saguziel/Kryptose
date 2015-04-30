@@ -30,5 +30,7 @@ public interface View {
 
 	public void updateViewState();
 
+	public void shutdown();
+
 
 }

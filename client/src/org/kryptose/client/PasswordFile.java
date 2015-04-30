@@ -32,6 +32,15 @@ public class PasswordFile implements Destroyable {
     String username;
     byte[] oldDigest;
 
+    public PasswordFile(MasterCredentials mCred, Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        String password = new String(mCred.getPassword());
+    	decryptBlob(b, mCred.getUsername(), password);
+        this.username = mCred.getUsername();
+        // TODO use char array for passwords
+        // TODO store MasterCredentials as field
+    }
+
+    @Deprecated
     public PasswordFile(String username, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         decryptBlob(b, username, pass);
         this.username = username;
