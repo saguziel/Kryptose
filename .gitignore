@@ -19,6 +19,8 @@ hs_err_pid*
 
 # Server data
 server/datastore/*
+server/usertable.bin
+server/usertable.bin.bak
 
 # Extraneous .gitignores
 server/.gitignore
