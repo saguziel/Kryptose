@@ -1,4 +1,4 @@
-package org.kryptose.common.test;
+package org.kryptose.common;
 
 import static org.junit.Assert.*;
 
