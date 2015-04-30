@@ -16,10 +16,12 @@ public class InternalServerErrorException extends Exception {
 
 	public InternalServerErrorException() {
 		super();
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 	public InternalServerErrorException(String message) {
 		super(message);
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 	
 	// We don't want to send the client details about the internal server error.

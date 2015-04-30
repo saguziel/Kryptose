@@ -14,10 +14,12 @@ public class MalformedRequestException extends RecoverableException {
 
 	public MalformedRequestException() {
 		super();
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 	public MalformedRequestException(String message) {
 		super(message);
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 }
