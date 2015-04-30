@@ -26,7 +26,7 @@ public class Model {
 		CRED_DOMAIN, CRED_USERNAME
 	}
 	public static enum ViewState {
-		LOGIN, CREATE_ACCOUNT, WAITING, DISPLAYING_DOMAIN, DISPLAYING_CRED, CONFIGURING
+		LOGIN, CREATE_ACCOUNT, WAITING, DISPLAYING_DOMAIN, DISPLAYING_CRED, MANAGING
 	}
 	private ViewState viewState = null;
 	private Map<TextForm,String> formTexts = new EnumMap<TextForm,String>(TextForm.class);

@@ -13,7 +13,7 @@ import javax.security.auth.Destroyable;
  * 
  * Contains sensitive information!
  * 
- * Also is immutable.
+ * Also is immutable, except for being destroyable.
  * 
  * @author jshi
  */

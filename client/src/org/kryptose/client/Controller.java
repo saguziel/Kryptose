@@ -178,7 +178,7 @@ public class Controller {
     	model.setMasterCredentials(mCred);
     	
     	// Clear password field
-    	model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
+    	//model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
     	
     	// Fetch from server
     	this.doFetch();
@@ -388,6 +388,7 @@ public class Controller {
 		
 		if (viewState == ViewState.LOGIN) {
 			if (success == true) this.doStateTransition(ViewState.WAITING);
+			else model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
 			return;
 		}
 		
@@ -415,6 +416,14 @@ public class Controller {
 			
 		} else if (oldState == ViewState.CREATE_ACCOUNT
 				&& viewState == ViewState.LOGIN) {
+			this.doStateTransition(viewState);
+			
+		} else if (oldState == ViewState.WAITING
+				&& viewState == ViewState.MANAGING) {
+			this.doStateTransition(viewState);
+			
+		} else if (oldState == ViewState.MANAGING
+				&& viewState == ViewState.WAITING) {
 			this.doStateTransition(viewState);
 			
 		} else {
