@@ -220,5 +220,13 @@ public class UserTableTest {
 		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
 		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
 	}
+	
+	@Test
+	public void testEqualUsers() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
+		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
+	}
 
 }
