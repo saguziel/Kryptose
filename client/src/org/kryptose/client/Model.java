@@ -17,10 +17,10 @@ public class Model {
 	private boolean waitingOnServer = false;
 
 	public static enum TextForm {
-		MASTER_USERNAME, CRED_DOMAIN, CRED_PASSWORD
+		LOGIN_MASTER_USERNAME, CREATE_MASTER_USERNAME, CRED_DOMAIN, CRED_PASSWORD, 
 	}
 	public static enum PasswordForm {
-		MASTER_PASSWORD, CRED_PASSWORD
+		LOGIN_MASTER_PASSWORD, CREATE_MASTER_PASSWORD, CRED_PASSWORD
 	}
 	public static enum Selection {
 		CRED_DOMAIN, CRED_USERNAME
@@ -91,7 +91,7 @@ public class Model {
 	}
 
 	public synchronized void setLastServerException(Exception lastServerException) {
-		if (equals(this.lastServerException, lastServerException)) return;
+		if (this.lastServerException == lastServerException) return;
 		this.lastServerException = lastServerException;
         view.updateServerException();
 	}

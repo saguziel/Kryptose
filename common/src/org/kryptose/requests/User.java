@@ -3,7 +3,10 @@ package org.kryptose.requests;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.regex.Pattern;
+
+import javax.security.auth.Destroyable;
 
 /**
  * Represents a user.
@@ -14,7 +17,7 @@ import java.util.regex.Pattern;
  * 
  * @author jshi
  */
-public final class User implements Comparable<User>, Serializable {
+public final class User implements Comparable<User>, Serializable, Destroyable {
 
 	//TODO: perhaps too restrictive. I cannot use an email address or even an uppercase letter.
 	// Counterargument: not too restrictive. This requirement is a standard industry practice.
@@ -36,7 +39,7 @@ public final class User implements Comparable<User>, Serializable {
      * @see #VALID_USERNAME_PATTERN
      */
     public static boolean isValidUsername(String username) {
-    	return VALID_USERNAME_PATTERN.matcher(username).matches();
+    	return username != null && VALID_USERNAME_PATTERN.matcher(username).matches();
     }
 
     /**
@@ -118,4 +121,9 @@ public final class User implements Comparable<User>, Serializable {
 		return this.username.equals(other.username);
 	}
 
+	@Override
+	public void destroy() {
+		Arrays.fill(this.passkey, (byte)0);
+	}
+	
 }
