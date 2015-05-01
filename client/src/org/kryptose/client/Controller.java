@@ -4,28 +4,37 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.kryptose.client.Model.OptionsForm;
 import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
+import org.kryptose.client.PasswordFile.BadBlobException;
 import org.kryptose.exceptions.CryptoErrorException;
+import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.exceptions.InternalServerErrorException;
 import org.kryptose.exceptions.InvalidCredentialsException;
 import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.exceptions.RecoverableException;
 import org.kryptose.exceptions.UsernameInUseException;
+import org.kryptose.requests.Blob;
 import org.kryptose.requests.KeyDerivator;
 import org.kryptose.requests.Request;
 import org.kryptose.requests.RequestCreateAccount;
 import org.kryptose.requests.RequestGet;
+import org.kryptose.requests.RequestPut;
 import org.kryptose.requests.Response;
 import org.kryptose.requests.ResponseCreateAccount;
 import org.kryptose.requests.ResponseGet;
+import org.kryptose.requests.ResponsePut;
 import org.kryptose.requests.User;
 
 /**
@@ -34,7 +43,36 @@ import org.kryptose.requests.User;
 public class Controller {
 	
     private static final String PROPERTIES_FILE = "clientProperties.xml";
-	
+
+    private abstract class LongTaskRunner implements Runnable {
+    	abstract boolean doRun();
+		@Override
+		public final void run() {
+			model.setWaitingOnServer(true);
+			boolean success = false;
+			try {
+				success = doRun();
+			} catch (Throwable t) {
+				logger.log(Level.SEVERE, "Uncaught error in Controller thread", t);
+			} finally {
+				model.setWaitingOnServer(false);
+				doneProcessing(success);
+			}
+		}
+    }
+
+    private abstract class QuickTaskRunner implements Runnable {
+    	abstract void doRun();
+		@Override
+		public final void run() {
+			try {
+				doRun();
+			} catch (Throwable t) {
+				logger.log(Level.SEVERE, "Uncaught error in Controller thread", t);
+			}
+		}
+    }
+    
     private final ExecutorService pool;
     
 	private final Model model;
@@ -58,7 +96,7 @@ public class Controller {
 
         this.properties = new Properties();
 
-        //SETTING DEFAULT CONFIGURATIONS (can be overriden by the Client settings file)
+        //SETTING DEFAULT CONFIGURATIONS (can be overridden by the Client settings file)
         properties.setProperty("SERVER_PORT_NUMBER", "5002");
         properties.setProperty("CLIENT_KEY_STORE_FILE", "ClientTrustStore.jks");
         properties.setProperty("CLIENT_KEY_STORE_PASSWORD", "aaaaaa");
@@ -99,78 +137,144 @@ public class Controller {
 		
 	}
 
-    public void get(){
-		this.pool.submit(new Runnable() {
-			@Override
-			public void run() {
-                // TODO Auto-generated method stub
-			}
-		});
-    }
-
-
     public void query(String domain, String username){
-		this.pool.submit(new Runnable() {
+		this.pool.submit(new LongTaskRunner() {
 			@Override
-			public void run() {
+			boolean doRun() {
                 // TODO Auto-generated method stub
+				// This is likely not useful anymore.
+				logger.severe("query not implemented in Controller");
+				return false;
 			}
 		});
     }
 
 
     public void save(){
-		this.pool.submit(new Runnable() {
+		this.pool.submit(new LongTaskRunner() {
 			@Override
-			public void run() {
-                // TODO Auto-generated method stub
+			boolean doRun() {
+                return doSave();
 			}
 		});
     }
+    private boolean doSave() {
+    	model.setWaitingOnServer(true);
+    	
+    	MasterCredentials mCred = model.getMasterCredentials();
+    	PasswordFile pFile = model.getPasswordFile();
 
+        Blob newBlob;
+		try {
+			newBlob = pFile.encryptBlob(mCred, model.getLastModDate());
+		} catch (CryptoPrimitiveNotSupportedException | BadBlobException
+				| CryptoErrorException e) {
+			// TODO think about this error case
+			String msg = "Error encrypting password file... could be outdated Kryptose\u2122 client or JRE.";
+			logger.log(Level.SEVERE, msg, e);
+			model.setLastException(new Exception(msg, e));;
+			return false;
+		}
+		
+        RequestPut req = new RequestPut(mCred.getUser(), newBlob, pFile.getOldDigest());
 
-    public void set(String domain, String username){
-		this.pool.submit(new Runnable() {
-			@Override
-			public void run() {
-                // TODO Auto-generated method stub
-			}
-		});
+        ResponsePut r = this.sendRequest(req, ResponsePut.class);
+        if (r == null) {
+			return false;
+        }
+        
+        model.getPasswordFile().setOldDigest(req.getBlob().getDigest());
+		return true;
     }
 
 
-    public void delete(String domain, String username){
-		this.pool.submit(new Runnable() {
+    public void set() {
+		this.pool.submit(new LongTaskRunner() {
 			@Override
-			public void run() {
-                // TODO Auto-generated method stub
+			boolean doRun() {
+				return doSet();
+			}
+		});
+    }
+    private boolean doSet() {
+    	model.setWaitingOnServer(true);
+
+    	String domain = model.getFormText(TextForm.CRED_DOMAIN);
+    	String username = model.getFormText(TextForm.CRED_USERNAME);
+    	char[] password = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
+    	char[] confirm = model.getFormPasswordClone(PasswordForm.CRED_CONFIRM_PASSWORD);
+    	
+    	System.out.println(Arrays.toString(password));
+    	System.out.println(Arrays.toString(confirm));
+    	
+    	String validationError = null;
+    	
+    	// Validate inputs
+    	if (domain == null || domain.length() == 0) {
+    		validationError = "Please enter a domain.";
+    	} else if (username == null || username.length() == 0) {
+    		validationError = "Please enter a username.";
+    		// TODO: maybe allow null usernames?
+    	} else if (password == null || password.length == 0) {
+    		validationError = "Please enter a password.";
+    	} else if (!Arrays.equals(password,confirm)) {
+    		validationError = "Entered passwords do not match.";
+    	}
+		Utils.destroyPassword(confirm);
+		
+    	if (validationError != null) {
+    		Utils.destroyPassword(password);
+    		model.setLastException(new RecoverableException(validationError));
+            return false;
+    	}
+    	
+    	model.getPasswordFile().setVal(domain, username, new String(password));
+    	
+    	return doSave();
+    }
+
+    public void delete() {
+		this.pool.submit(new LongTaskRunner() {
+			@Override
+			boolean doRun() {
+				return doDelete();
 			}
 		});
     }
     
+    private boolean doDelete() {
+    	model.setWaitingOnServer(true);
+
+    	String domain = model.getFormText(TextForm.CRED_DOMAIN);
+    	String username = model.getFormText(TextForm.CRED_USERNAME);
+    	
+    	boolean success = model.getPasswordFile().delVal(domain, username);
+    	
+    	if (success) return this.doSave();
+    	else return false;
+    }
+    
     public void login() {
     	model.setWaitingOnServer(true);
-    	pool.execute(new Runnable() {
-    		public void run() {
-    			doLogin();
+    	pool.execute(new LongTaskRunner() {
+    		boolean doRun() {
+    			return doLogin();
     		}
     	});
     }
 
-    private void doLogin(){
+    private boolean doLogin(){
     	String username = model.getFormText(TextForm.LOGIN_MASTER_USERNAME);
     	char[] password = model.getFormPasswordClone(PasswordForm.LOGIN_MASTER_PASSWORD);
 
     	// Validate inputs
     	if (!MasterCredentials.isValidUsername(username)) {
-    		model.setLastServerException(new RecoverableException(User.VALID_USERNAME_DOC));
-            this.processResponse(false);
-    		return;
+    		model.setLastException(new RecoverableException(User.VALID_USERNAME_DOC));
+            return false;
     	}
     	if (!MasterCredentials.isValidPassword(password)) {
-    		model.setLastServerException(new RecoverableException("Please enter a password."));
-            this.processResponse(false);
-    		return;
+    		model.setLastException(new RecoverableException("Please enter a password."));
+            return false;
     	}
     	
     	// Update master credentials
@@ -181,13 +285,13 @@ public class Controller {
     	//model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
     	
     	// Fetch from server
-    	this.doFetch();
+    	return this.doFetch();
     }
     
     public void logout() {
-    	this.pool.submit(new Runnable() {
+    	this.pool.submit(new QuickTaskRunner() {
 			@Override
-			public void run() {
+			void doRun() {
 				doLogout();
 			}
     	});
@@ -204,7 +308,7 @@ public class Controller {
     	
     	model.setLastModDate(null);
     	model.setWaitingOnServer(false);
-    	model.setLastServerException(null);
+    	model.setLastException(null);
     	model.setUserLogs(null);
     	
     	model.setViewState(ViewState.LOGIN);
@@ -218,19 +322,19 @@ public class Controller {
 		} catch (UnknownHostException e) {
 			String msg = "Could not connect to Kryptose\u2122 server at: " + this.properties.getProperty("SERVER_HOSTNAME");
 			Exception ex = new RecoverableException(msg);
-			model.setLastServerException(ex);
+			model.setLastException(ex);
 			this.logger.log(Level.WARNING, msg, e);
 		} catch (InvalidCredentialsException e) {
-			model.setLastServerException(e);
+			model.setLastException(e);
 			this.logger.log(Level.INFO, "Invalid credentials.", e);
 			// TODO error handling
 		} catch (MalformedRequestException | IOException | ClassCastException e) {
 			String msg = "Error communicating with Kryptose\u2122 server.";
 			Exception ex = new RecoverableException(msg);
-			model.setLastServerException(ex);
+			model.setLastException(ex);
 			this.logger.log(Level.WARNING, msg, e);
 		} catch (InternalServerErrorException e) {
-			model.setLastServerException(e);
+			model.setLastException(e);
 			this.logger.log(Level.WARNING, "Internal server error.", e);
             // TODO error handling
 		}
@@ -239,87 +343,88 @@ public class Controller {
     }
 
     public void fetch() {
-    	pool.execute(new Runnable() {
-    		public void run() {
-    			doFetch();
+    	pool.execute(new LongTaskRunner() {
+    		boolean doRun() {
+    			return doFetch();
     		}
     	});
     }
     
-    private void doFetch(){
+    private boolean doFetch(){
     	model.setWaitingOnServer(true);
     	
-        ResponseGet r = null;
-        boolean success = false;
-        try {
-        	MasterCredentials mCred = model.getMasterCredentials();
-        	RequestGet req = new RequestGet(mCred.getUser());
-			r = this.sendRequest(req, ResponseGet.class);
-			if (r == null) {
-				success = false;
-				return;
-			}
-            if (r.getBlob() == null){
-                PasswordFile pFile = new PasswordFile(mCred.getUsername());
-                model.setPasswordFile(pFile);
-            	success = true;
-            	return;
-            }
-            try {
-            	PasswordFile pFile = new PasswordFile(mCred, r.getBlob());
-            	pFile.setOldDigest(r.getBlob().getDigest());
-            	model.setPasswordFile(pFile);
-            	success = true;
-            	return;
-            } catch (PasswordFile.BadBlobException | CryptoErrorException e) {
-            	String msg = "Error decrypting the passwords file. This could be an outdate Kryptose\u2122 client, "
-            			+ "or temporary data corruption. Please try again or update the client.";
-            	Exception ex = new Exception(msg, e);
-            	model.setLastServerException(ex);
-            	logger.log(Level.SEVERE, "Error decrypting blob.", e);
-            	success = false;
-            	return;
-            }
-        } finally {
-        	this.processResponse(success);
-        }
+    	ResponseGet r = null;
+    	MasterCredentials mCred = model.getMasterCredentials();
+    	RequestGet req = new RequestGet(mCred.getUser());
+    	r = this.sendRequest(req, ResponseGet.class);
+    	if (r == null) {
+    		return false;
+    	}
+    	if (r.getBlob() == null){
+    		PasswordFile pFile = new PasswordFile(mCred.getUsername());
+    		model.setPasswordFile(pFile);
+    		return true;
+    	}
+    	try {
+    		PasswordFile pFile = new PasswordFile(mCred, r.getBlob());
+    		pFile.setOldDigest(r.getBlob().getDigest());
+    		model.setPasswordFile(pFile);
+    		return true;
+    	} catch (PasswordFile.BadBlobException | CryptoErrorException e) {
+    		String msg = "Error decrypting the passwords file. This could be an outdate Kryptose\u2122 client, "
+    				+ "or temporary data corruption. Please try again or update the client.";
+    		Exception ex = new Exception(msg, e);
+    		model.setLastException(ex);
+    		logger.log(Level.SEVERE, "Error decrypting blob.", e);
+    		return false;
+    	}
     }
 
     public void fetchLogs(){
-		this.pool.submit(new Runnable() {
+		this.pool.submit(new LongTaskRunner() {
 			@Override
-			public void run() {
+			boolean doRun() {
                 // TODO Auto-generated method stub
+				logger.severe("fetchLogs not implemented in Controller");
+				return false;
 			}
 		});
     }
 
     public void createAccount(){
-    	pool.execute(new Runnable() {
-    		public void run() {
-    			doCreateAccount();
+    	pool.execute(new LongTaskRunner() {
+    		boolean doRun() {
+    			return doCreateAccount();
     		}
     	});
     }
     
-    private void doCreateAccount() {
+    private boolean doCreateAccount() {
     	model.setWaitingOnServer(true);
     	
     	String username = model.getFormText(TextForm.CREATE_MASTER_USERNAME);
     	char[] password = model.getFormPasswordClone(PasswordForm.CREATE_MASTER_PASSWORD);
+    	char[] confirm = model.getFormPasswordClone(PasswordForm.CREATE_CONFIRM_PASSWORD);
+    	
+    	String validationError = null;
     	
     	// Validate inputs
     	if (!MasterCredentials.isValidUsername(username)) {
-    		model.setLastServerException(new RecoverableException(User.VALID_USERNAME_DOC));
-            this.processResponse(false);
-    		return;
+    		validationError = User.VALID_USERNAME_DOC;
+    	} else if (!MasterCredentials.isValidPassword(password)) {
+    		validationError = "Please enter a password.";
+    	} else if (!Arrays.equals(password, confirm)) {
+    		validationError = "Entered passwords do not match.";
     	}
-    	if (!MasterCredentials.isValidPassword(password)) {
-    		model.setLastServerException(new RecoverableException("Please enter a password."));
-            this.processResponse(false);
-    		return;
+		Utils.destroyPassword(confirm);
+		
+    	if (validationError != null) {
+    		Utils.destroyPassword(password);
+    		model.setLastException(new RecoverableException(validationError));
+            return false;
     	}
     	
+    	// mCred now has responsibility for destroying password.
     	MasterCredentials mCred = new MasterCredentials(username, password);
     	model.setMasterCredentials(mCred);
 
@@ -327,82 +432,114 @@ public class Controller {
         	RequestCreateAccount req = new RequestCreateAccount(mCred.getUser());
         	ResponseCreateAccount r = this.sendRequest(req, ResponseCreateAccount.class);
         	if (r == null) {
-        		this.processResponse(false);
-        		return;
+        		return false;
         	}
             r.verifySuccessful();
             model.setPasswordFile(new PasswordFile(mCred.getUsername()));
-            this.processResponse(true);
+            return true;
         } catch (UsernameInUseException e) {
-        	model.setLastServerException(e);
+        	model.setLastException(e);
         	this.logger.log(Level.INFO, "Failed to create new account.", e);
-            this.processResponse(false);
+            return false;
         }
     	
     }
 
     public void deleteAccount(){
-		this.pool.submit(new Runnable() {
+		this.pool.submit(new LongTaskRunner() {
 			@Override
-			public void run() {
-                // TODO Auto-generated method stub
-			}
-		});
-    }
-
-    public void changeMasterpass(){
-		this.pool.submit(new Runnable() {
-			@Override
-			public void run() {
-                // TODO Auto-generated method stub
+			boolean doRun() {
+				return doDeleteAccount();
 			}
 		});
     }
     
-    public void updateFormText(TextForm form, String value) {
-    	// TODO validate value?
-		this.pool.submit(new Runnable() {
+    private boolean doDeleteAccount() {
+    	model.setWaitingOnServer(true);
+    	
+        // TODO make account deletion happen
+		logger.severe("deleteAccount not implemented in Controller");
+    	
+    	this.doLogout();
+    	return true; 
+    }
+
+    public void changeMasterPassword(){
+		this.pool.submit(new LongTaskRunner() {
 			@Override
-			public void run() {
+			boolean doRun() {
+                return doChangeMasterPassword();
+			}
+		});
+    }
+    private boolean doChangeMasterPassword() {
+    	model.setWaitingOnServer(true);
+
+		logger.severe("changeMasterPassword not implemented in Controller");
+        // TODO make password changing happen
+		return false;
+    }
+    
+    public void updateFormText(TextForm form, String value) {
+		this.pool.submit(new QuickTaskRunner() {
+			@Override
+			void doRun() {
+		    	// TODO validate value? (probably too much work)
 				model.setFormText(form, value);
+				if (form == TextForm.CRED_DOMAIN || form == TextForm.CRED_USERNAME) {
+					refreshCredOptions();
+				}
 			}
 		});
     }
 
-	public void exit() {
-		// TODO confirm exit.
-		this.pool.submit(new Runnable() {
+	public void updateFormPassword(PasswordForm form, char[] password) {
+		this.pool.submit(new QuickTaskRunner() {
 			@Override
-			public void run() {
-				doLogout();
-				pool.shutdown();
-				view.shutdown();
+			void doRun() {
+				model.setFormPassword(form, password);
 			}
 		});
 	}
 
-	private void processResponse(boolean success) {
+	public void exit() {
+		this.pool.submit(new QuickTaskRunner() {
+			@Override
+			void doRun() {
+				doLogout();
+				view.shutdown();
+				pool.shutdown();
+			}
+		});
+	}
+
+	private void doneProcessing(boolean success) {
 		ViewState viewState = model.getViewState();
 		
 		model.setWaitingOnServer(false);
 		
 		if (viewState == ViewState.LOGIN) {
-			if (success == true) this.doStateTransition(ViewState.WAITING);
+			if (success) this.doStateTransition(ViewState.WAITING);
 			else model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
 			return;
 		}
 		
 		if (viewState == ViewState.CREATE_ACCOUNT) {
-			if (success == true) this.doStateTransition(ViewState.WAITING);
+			if (success) this.doStateTransition(ViewState.WAITING);
+			return;
+		}
+		
+		if (viewState == ViewState.MANAGING) {
+			// do nothing.
 			return;
 		}
 		// TODO process other requests
 	}
 
 	public void requestViewState(final ViewState viewState) {
-		this.pool.submit(new Runnable() {
+		this.pool.submit(new QuickTaskRunner() {
 			@Override
-			public void run() {
+			void doRun() {
 				doRequestViewState(viewState);
 			}
 		});
@@ -444,8 +581,32 @@ public class Controller {
 			this.model.setFormText(TextForm.CREATE_MASTER_USERNAME, null);
 			this.model.setFormPassword(PasswordForm.CREATE_MASTER_PASSWORD, null);
 		}
+		
+		if (viewState == ViewState.MANAGING) {
+			this.refreshCredOptions();
+		}
 
 		this.model.setViewState(viewState);
+	}
+	
+	private void refreshCredOptions() {
+		PasswordFile pFile = model.getPasswordFile();
+		
+		String domain = model.getFormText(TextForm.CRED_DOMAIN);
+		String username = model.getFormText(TextForm.CRED_USERNAME);
+		
+
+		String[] domainOptions = pFile.getDomains();
+		String[] usernameOptions = pFile.getUsernames(domain);
+		logger.fine(domain + " ==> " + Arrays.toString(usernameOptions));
+		String passString = pFile.getVal(domain, username);
+		char[] password = passString == null ? null : passString.toCharArray();
+		
+		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptions);
+		model.setFormOptions(OptionsForm.CRED_USERNAME, usernameOptions);
+		model.setFormPassword(PasswordForm.CRED_PASSWORD, password);
+		model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+		
 	}
 
 
@@ -453,6 +614,12 @@ public class Controller {
 
 	
 	public static void main(String[] args) {
+		// For debugging purposes.
+		Handler handler = new ConsoleHandler();
+		handler.setLevel(Level.FINE);
+		Logger clientLogger = Logger.getLogger("org.kryptose.client");
+		clientLogger.setLevel(Level.FINE);
+		clientLogger.addHandler(handler);
 		new Controller().start();
 	}
 

@@ -1,6 +1,7 @@
 package org.kryptose.client;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog.ModalityType;
@@ -11,11 +12,16 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
@@ -23,17 +29,19 @@ import java.awt.event.WindowAdapter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,9 +56,11 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.text.GapContent;
+import javax.swing.text.PlainDocument;
 
 import org.kryptose.client.Model.PasswordForm;
-import org.kryptose.client.Model.Selection;
+import org.kryptose.client.Model.OptionsForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
 import org.kryptose.exceptions.RecoverableException;
@@ -62,14 +72,38 @@ public class ViewGUI implements View {
 	// pixels
 	private static final int GAP = 4;
 	
-
-	private class TextFieldListener implements ActionListener, FocusListener {
-		private JTextField textField;
+	
+	private abstract class FormListener implements ActionListener, FocusListener {
 		private Action action;
+		FormListener(Action action) {
+			this.action = action;
+		}
+		abstract void saveForm();
+		abstract Component getComponent();
+		@Override
+		public void focusGained(FocusEvent ev) {
+			// do nothing
+		}
+		@Override
+		public void focusLost(FocusEvent ev) {
+			this.saveForm();
+		}
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			if (this.action != null) {
+				this.saveForm();
+				this.action.actionPerformed(ev);
+			} else {
+				this.getComponent().transferFocus();
+			}
+		}
+	}
+	private class TextFieldListener extends FormListener {
+		private JTextField textField;
 		private TextForm form;
 		TextFieldListener(TextForm form, Action action) {
+			super(action);
 			this.form = form;
-			this.action = action;
 		}
 		void bindTo(JTextField textField) {
 			this.textField = textField;
@@ -82,34 +116,21 @@ public class ViewGUI implements View {
 				this.textField.setText(value);
 			}
 		}
+		@Override
 		void saveForm() {
-			model.setFormText(form, textField.getText());
+			control.updateFormText(form, textField.getText());
 		}
 		@Override
-		public void focusGained(FocusEvent ev) {
-			// do nothing
-		}
-		@Override
-		public void focusLost(FocusEvent ev) {
-			this.saveForm();
-		}
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			if (action != null) {
-				this.saveForm();
-				action.actionPerformed(ev);
-			} else {
-				textField.transferFocus();
-			}
+		Component getComponent() {
+			return this.textField;
 		}
 	}
-	private class PasswordFieldListener implements ActionListener, FocusListener {
+	private class PasswordFieldListener extends FormListener {
 		private JPasswordField passwordField;
-		private Action action;
 		private PasswordForm form;
 		PasswordFieldListener(PasswordForm form, Action action) {
+			super(action);
 			this.form = form;
-			this.action = action;
 		}
 		void bindTo(JPasswordField passwordField) {
 			this.passwordField = passwordField;
@@ -119,29 +140,78 @@ public class ViewGUI implements View {
 		void updatePasswordForm(PasswordForm form) {
 			if (this.form == form) {
 				char[] value = model.getFormPasswordClone(form);
-				if (value == null) this.passwordField.setText("");
-				else Arrays.fill(value, ' ');
+				if (value == null) {
+					this.passwordField.setText("");
+					return;
+				}
+				// pull shenanigans to be able to "destroy" passwords
+				class PasswordContent extends GapContent {
+					private static final long serialVersionUID = 4924364071282953867L;
+					void setToChars(char[] value) {
+						this.replace(0, 0, value, value.length);
+					}
+				}
+				PasswordContent content = new PasswordContent();
+				this.passwordField.setDocument(new PlainDocument(content));
+				content.setToChars(value);
+				Utils.destroyPassword(value);
 			}
 		}
+		@Override
 		void saveForm() {
-			model.setFormPassword(form, passwordField.getPassword());
+			control.updateFormPassword(form, passwordField.getPassword());
 		}
 		@Override
-		public void focusGained(FocusEvent ev) {
-			// do nothing
+		Component getComponent() {
+			return this.passwordField;
 		}
-		@Override
-		public void focusLost(FocusEvent ev) {
-			this.saveForm();
+	}
+	private class OptionsListener extends FormListener {
+		private JComboBox<String> comboBox;
+		private TextForm textForm;
+		private OptionsForm optionsForm;
+		OptionsListener(TextForm textForm, OptionsForm optionsForm, Action action) {
+			super(action);
+			this.textForm = textForm;
+			this.optionsForm = optionsForm;
 		}
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			if (action != null) {
-				this.saveForm();
-				action.actionPerformed(ev);
-			} else {
-				passwordField.transferFocus();
+		void bindTo(JComboBox<String> comboBox) {
+			this.comboBox = comboBox;
+			// TODO figure out how this all works.
+			this.comboBox.addActionListener(this);
+			this.comboBox.addFocusListener(this);
+			this.comboBox.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					if (e.getStateChange() == ItemEvent.SELECTED) {
+						saveForm();
+						comboBox.getEditor().getEditorComponent().transferFocus();
+					}
+				}				
+			});
+		}
+		void updateTextForm(TextForm form) {
+			if (this.textForm == form) {
+				String value = model.getFormText(form);
+				this.comboBox.setSelectedItem(value);
 			}
+		}
+		void updateOptionsForm(OptionsForm form) {
+			if (this.optionsForm == form) {
+				String[] values = model.getFormOptions(form);
+				this.comboBox.removeAllItems();
+				if (values != null) {
+					for (String item : values) this.comboBox.addItem(item);
+				}
+			}
+		}
+		@Override
+		void saveForm() {
+			control.updateFormText(textForm, (String)comboBox.getSelectedItem());
+		}
+		@Override
+		Component getComponent() {
+			return this.comboBox;
 		}
 	}
 	
@@ -166,6 +236,36 @@ public class ViewGUI implements View {
 		}
 	}
 	
+	class OpacityAdjuster extends MouseAdapter implements MenuListener {
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			hoverFrame.setOpacity(1f);
+		}
+		private void resetMaybe(Point p) {
+			Rectangle bounds = hoverFrame.getBounds();
+			if ((p == null || !bounds.contains(p))
+					&& !mainMenu.isPopupMenuVisible()) {
+				hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
+			}
+		}
+		@Override
+		public void mouseExited(MouseEvent e) {
+			this.resetMaybe(e.getPoint());
+		}
+		@Override
+		public void menuCanceled(MenuEvent e) {
+			this.resetMaybe(hoverFrame.getMousePosition(true));
+		}
+		@Override
+		public void menuDeselected(MenuEvent e) {
+			this.resetMaybe(hoverFrame.getMousePosition(true));
+		}
+		@Override
+		public void menuSelected(MenuEvent e) {
+			// do nothing
+		}
+	};
+	
 	private Model model;
 	private Controller control;
 	private Logger logger = Logger.getLogger("org.kryptose.client.ViewGUI");
@@ -179,10 +279,12 @@ public class ViewGUI implements View {
 	private JDialog manageCredentialsDialog;
 
 	private JMenu mainMenu;
+	private JMenu copyUsernameMenu;
 	private JMenu copyPasswordMenu;
 	
 	private List<TextFieldListener> textFieldListeners = new ArrayList<TextFieldListener>();
 	private List<PasswordFieldListener> passwordFieldListeners = new ArrayList<PasswordFieldListener>();
+	private List<OptionsListener> optionsListeners = new ArrayList<OptionsListener>();
 	
 	private Action logInAction = new AbstractAction("Log in") {
 		@Override
@@ -196,10 +298,25 @@ public class ViewGUI implements View {
 			control.createAccount();
 		}
 	};
+	private Action setCredentialAction = new AbstractAction("Save Credential") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.set();
+		}
+	};
+	private Action reloadAction = new AbstractAction("Reload Credentials") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.fetch();
+		}
+	};
 	private Action logOutAction = new AbstractAction("Log out") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			control.logout();
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Log out?", "Log out", JOptionPane.YES_NO_OPTION);
+			if (val == JOptionPane.YES_OPTION) {
+				control.logout();
+			}
 		}
 	};
 	
@@ -225,6 +342,36 @@ public class ViewGUI implements View {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			control.requestViewState(ViewState.WAITING);
+		}
+	};
+
+	private Action changeMasterPasswordDialogAction = new AbstractAction("Change Master Password") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.CHANGE_MASTER_PASSWORD);
+		}
+	};
+	private Action changeMasterPasswordCancelAction = new AbstractAction("Cancel") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.WAITING);
+		}
+	};
+	private Action changeMasterPasswordAction = new AbstractAction("Change Password") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.changeMasterPassword();
+		}
+	};
+	private Action deleteAccountAction = new AbstractAction("Delete Account") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			// TODO: should authenticate again before allowing this to happen.
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Permanently delete this Kryptose\u2122 account?", "Delete account", JOptionPane.YES_NO_OPTION);
+			if (val != JOptionPane.YES_OPTION) return;
+			int val2 = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Really delete?", "Delete account", JOptionPane.YES_NO_OPTION);
+			if (val2 != JOptionPane.YES_OPTION) return;
+			control.deleteAccount();
 		}
 	};
 	
@@ -277,61 +424,42 @@ public class ViewGUI implements View {
 	private Action exitAction = new AbstractAction("Exit") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			control.exit();
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Exit Kryptose\u2122?", "Exit", JOptionPane.YES_NO_OPTION);
+			if (val == JOptionPane.YES_OPTION) {
+				control.exit();
+			}
 		}
 	};
 	
-	/**
-	 * Using the GridBagLayout
-	 * @param domainListener Set to null to omit domain textfield.
-	 * @param usernameListener
-	 * @param passwordListener
-	 */
-	private static void addCredentialFields(Container cont,
-			TextFieldListener domainListener,
-			TextFieldListener usernameListener,
-			PasswordFieldListener passwordListener) {
+	private static void addGridLeft(Container cont, Component comp) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.insets = new Insets(GAP, GAP/2, GAP, GAP/2);
-		
-		if (domainListener != null) {
-			JLabel domainLabel = new JLabel("Domain: ");
-			JTextField domainField = new JTextField(18);
-			domainLabel.setLabelFor(domainField);
-			gbc.anchor = GridBagConstraints.EAST;
-			gbc.gridwidth = GridBagConstraints.RELATIVE;
-			cont.add(domainLabel,gbc);
-			gbc.anchor = GridBagConstraints.WEST;
-			gbc.gridwidth = GridBagConstraints.REMAINDER;
-			cont.add(domainField,gbc);
-			domainListener.bindTo(domainField);
+		gbc.anchor = GridBagConstraints.EAST;
+		gbc.gridwidth = GridBagConstraints.RELATIVE;
+		cont.add(comp,gbc);
+	}
+	
+	private static void addGridWithLabel(Container cont, String labelText, String tooltip, JComponent comp) {
+		JLabel label = new JLabel(labelText);
+		label.setLabelFor(comp);
+		label.setToolTipText(tooltip);
+		comp.setToolTipText(tooltip);
+		addGridLeft(cont, label);
+		addGridRight(cont, comp);
+	}
+	
+	private static void addGridRight(Container cont, Component comp) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.NONE;
+		if (comp instanceof JComboBox) {
+			// this is terrible hax but it works
+			gbc.fill = GridBagConstraints.HORIZONTAL;
 		}
-		
-		JLabel usernameLabel = new JLabel("Username: ");
-		JTextField usernameField = new JTextField(18);
-		usernameLabel.setLabelFor(usernameField);
-		usernameLabel.setToolTipText(User.VALID_USERNAME_DOC);
-		usernameField.setToolTipText(User.VALID_USERNAME_DOC);
+		gbc.insets = new Insets(GAP, GAP/2, GAP, GAP/2);
 		gbc.anchor = GridBagConstraints.EAST;
-		gbc.gridwidth = GridBagConstraints.RELATIVE;
-		cont.add(usernameLabel,gbc);
-		gbc.anchor = GridBagConstraints.WEST;
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		cont.add(usernameField,gbc);
-		usernameListener.bindTo(usernameField);
-		
-		JLabel passwordLabel = new JLabel("Password: ");
-		JPasswordField passwordField = new JPasswordField(18);
-		passwordLabel.setLabelFor(passwordField);
-		gbc.anchor = GridBagConstraints.EAST;
-		gbc.gridwidth = GridBagConstraints.RELATIVE;
-		cont.add(passwordLabel,gbc);
-		gbc.anchor = GridBagConstraints.WEST;
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		cont.add(passwordField,gbc);
-		passwordListener.bindTo(passwordField);
-		
+		cont.add(comp,gbc);
 	}
 	
 	private JPanel createLoginPanel() {
@@ -352,11 +480,18 @@ public class ViewGUI implements View {
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.anchor = GridBagConstraints.WEST;
 		fieldsPanel.add(loginLabel, gbc);
+		
+		JTextField usernameField = new JTextField(18);
+		addGridWithLabel(fieldsPanel, "Username: ", User.VALID_USERNAME_DOC, usernameField);
 		TextFieldListener tfl = new TextFieldListener(TextForm.LOGIN_MASTER_USERNAME, null);
 		this.textFieldListeners.add(tfl);
+		tfl.bindTo(usernameField);
+
+		JPasswordField passwordField = new JPasswordField(18);
+		addGridWithLabel(fieldsPanel, "Password: ", null, passwordField);
 		PasswordFieldListener pfl = new PasswordFieldListener(PasswordForm.LOGIN_MASTER_PASSWORD, logInAction);
 		this.passwordFieldListeners.add(pfl);
-		ViewGUI.addCredentialFields(fieldsPanel, null, tfl, pfl);
+		pfl.bindTo(passwordField);
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton button = new JButton(logInAction);
@@ -395,22 +530,96 @@ public class ViewGUI implements View {
 	
 	private JPanel createCreateAccountPanel() {
 		JPanel panel = new JPanel(new GridBagLayout());
+		
+		JTextField usernameField = new JTextField(18);
+		addGridWithLabel(panel, "Username: ", User.VALID_USERNAME_DOC, usernameField);
 		TextFieldListener tfl = new TextFieldListener(TextForm.CREATE_MASTER_USERNAME, null);
 		this.textFieldListeners.add(tfl);
-		PasswordFieldListener pfl = new PasswordFieldListener(PasswordForm.CREATE_MASTER_PASSWORD, logInAction);
+		tfl.bindTo(usernameField);
+
+		JPasswordField passwordField = new JPasswordField(18);
+		addGridWithLabel(panel, "Password: ", null, passwordField);
+		PasswordFieldListener pfl = new PasswordFieldListener(PasswordForm.CREATE_MASTER_PASSWORD, null);
 		this.passwordFieldListeners.add(pfl);
-		ViewGUI.addCredentialFields(panel, null, tfl, pfl);
+		pfl.bindTo(passwordField);
+
+		JPasswordField confirmPassword = new JPasswordField(18);
+		addGridWithLabel(panel, "Confirm Password: ", null, confirmPassword);
+		PasswordFieldListener cpfl = new PasswordFieldListener(PasswordForm.CREATE_CONFIRM_PASSWORD, createAccountAction);
+		this.passwordFieldListeners.add(cpfl);
+		cpfl.bindTo(confirmPassword);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
 		buttonPanel.add(new JButton(this.cancelCreateAccountAction));
 		buttonPanel.add(new JButton(this.createAccountAction));
 		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = 2;
-		gbc.anchor = GridBagConstraints.EAST;
-		panel.add(buttonPanel, gbc);
+		addGridRight(panel, buttonPanel);
 		
 		return panel;
+	}
+	
+	private JPanel createManagePanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		
+		JComboBox<String> domainBox = new JComboBox<String>();
+		domainBox.setEditable(true);
+		String domainTooltip = "Name of website or application to be logged into";
+		addGridWithLabel(panel, "Domain: ", domainTooltip, domainBox);
+		OptionsListener dol = new OptionsListener(TextForm.CRED_DOMAIN, OptionsForm.CRED_DOMAIN, null);
+		this.optionsListeners.add(dol);
+		dol.bindTo(domainBox);
+
+		JComboBox<String> usernameBox = new JComboBox<String>();
+		usernameBox.setEditable(true);
+		String usernameTooltip = "Username for this website or application";
+		addGridWithLabel(panel, "Username: ", usernameTooltip, usernameBox);
+		OptionsListener uol = new OptionsListener(TextForm.CRED_USERNAME, OptionsForm.CRED_USERNAME, null);
+		this.optionsListeners.add(uol);
+		uol.bindTo(usernameBox);
+
+		JPasswordField passwordField = new JPasswordField(18);
+		addGridWithLabel(panel, "Password: ", null, passwordField);
+		PasswordFieldListener pfl = new PasswordFieldListener(PasswordForm.CRED_PASSWORD, null);
+		this.passwordFieldListeners.add(pfl);
+		pfl.bindTo(passwordField);
+
+		JPasswordField confirmPassword = new JPasswordField(18);
+		addGridWithLabel(panel, "Confirm Password: ", null, confirmPassword);
+		PasswordFieldListener cpfl = new PasswordFieldListener(PasswordForm.CRED_CONFIRM_PASSWORD, setCredentialAction);
+		this.passwordFieldListeners.add(cpfl);
+		cpfl.bindTo(confirmPassword);
+		
+		// TODO option to display password on screen in plaintext.
+
+		addGridRight(panel, new JButton(this.setCredentialAction));
+		addGridRight(panel, new JButton(this.doneManagingAction));
+		
+		return panel;
+	}
+	
+	private JMenuBar createMenuBar() {
+		this.copyUsernameMenu = new JMenu("Copy username");
+		this.copyPasswordMenu = new JMenu("Copy password");
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenu accountSettingsMenu = new JMenu("Account Settings");
+		accountSettingsMenu.add(new JMenuItem(changeMasterPasswordDialogAction));
+		accountSettingsMenu.add(new JMenuItem(deleteAccountAction));
+		
+		mainMenu = new JMenu("Kryptose\u2122");
+		mainMenu.add(this.copyUsernameMenu);
+		mainMenu.add(this.copyPasswordMenu);;
+		mainMenu.add(new JMenuItem(this.reloadAction));
+		mainMenu.add(new JMenuItem(this.managingDialogAction));
+		mainMenu.add(accountSettingsMenu);
+		mainMenu.addSeparator();
+		mainMenu.add(new JMenuItem(this.minimizeAction));
+		mainMenu.add(new JMenuItem(this.moveAction));
+		mainMenu.add(new JMenuItem(this.logOutAction));
+		mainMenu.add(new JMenuItem(this.exitAction));
+		menuBar.add(mainMenu);
+		
+		return menuBar;
 	}
 	
 	public ViewGUI(Model model, Controller control) {
@@ -435,55 +644,13 @@ public class ViewGUI implements View {
 		this.hoverFrame = new JFrame("Kryptose\u2122");
 		this.hoverFrame.addWindowListener(new WindowCloseHandler(exitAction, hoverFrame));
 		
-		this.copyPasswordMenu = new JMenu("Copy password");
-		
-		JMenuBar menuBar = new JMenuBar();
-		mainMenu = new JMenu("Kryptose");
+		this.hoverFrame.setJMenuBar(this.createMenuBar());
 		this.hoverFrame.setUndecorated(true);
 		this.hoverFrame.setAlwaysOnTop(true);
-		mainMenu.add(this.copyPasswordMenu);
-		mainMenu.add(new JMenuItem(this.managingDialogAction));
-		mainMenu.addSeparator();
-		mainMenu.add(new JMenuItem(this.minimizeAction));
-		mainMenu.add(new JMenuItem(this.moveAction));
-		mainMenu.add(new JMenuItem(this.logOutAction));
-		mainMenu.add(new JMenuItem(this.exitAction));
-		menuBar.add(mainMenu);
-		this.hoverFrame.setJMenuBar(menuBar);
-		
 		this.hoverFrame.pack();
 		this.hoverFrame.setResizable(false);
 		this.hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
 		
-		class OpacityAdjuster extends MouseAdapter implements MenuListener {
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				hoverFrame.setOpacity(1f);
-			}
-			private void resetMaybe(Point p) {
-				Rectangle bounds = hoverFrame.getBounds();
-				if ((p == null || !bounds.contains(p))
-						&& !mainMenu.isPopupMenuVisible()) {
-					hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
-				}
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-				this.resetMaybe(e.getPoint());
-			}
-			@Override
-			public void menuCanceled(MenuEvent e) {
-				this.resetMaybe(hoverFrame.getMousePosition(true));
-			}
-			@Override
-			public void menuDeselected(MenuEvent e) {
-				this.resetMaybe(hoverFrame.getMousePosition(true));
-			}
-			@Override
-			public void menuSelected(MenuEvent e) {
-				// do nothing
-			}
-		};
 		OpacityAdjuster adjuster = new OpacityAdjuster();
 		this.hoverFrame.addMouseListener(adjuster);
 		mainMenu.addMouseListener(adjuster);
@@ -502,7 +669,7 @@ public class ViewGUI implements View {
 		this.manageCredentialsDialog = new JDialog(hoverFrame, "Manage Credentials", ModalityType.APPLICATION_MODAL);
 		this.manageCredentialsDialog.addWindowListener(
 				new WindowCloseHandler(doneManagingAction, manageCredentialsDialog));
-		// TODO this.manageCredentialsDialog.setContentPane();
+		this.manageCredentialsDialog.setContentPane(this.createManagePanel());
 		this.manageCredentialsDialog.pack();
 		this.manageCredentialsDialog.setResizable(false);
 		this.manageCredentialsDialog.setLocationRelativeTo(null);
@@ -513,9 +680,59 @@ public class ViewGUI implements View {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				syncCredentialMenuItems();
 			}
 		});
+	}
+	
+	private void syncCredentialMenuItems() {
+		PasswordFile pFile = model.getPasswordFile();
+		this.copyUsernameMenu.removeAll();
+		this.copyPasswordMenu.removeAll();
+
+		if (pFile == null) return;
+		
+		class CopyAction extends AbstractAction {
+			String domain, username;
+			boolean copyPass;
+			CopyAction(String domain, String username, String title, boolean copyPass) {
+				super(title);
+				this.domain = domain;
+				this.username = username;
+				this.copyPass = copyPass;
+			}
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String content = copyPass ? pFile.getVal(domain, username) : username;
+				// TODO: not sure if this is the right way to set mime types etc
+				String mime = DataFlavor.getTextPlainUnicodeFlavor().getMimeType();
+				DataHandler t = new DataHandler(content, mime);
+				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clip.setContents(t, null); // TODO ClipboardOwner
+			}
+		}
+		
+		for (final String domain : pFile.getDomains()) {
+			String[] usernames = pFile.getUsernames(domain);
+			if (usernames.length == 1) {
+				String username = usernames[0];
+				Action copyUsernameAction = new CopyAction(domain, username, domain, false);
+				this.copyUsernameMenu.add(new JMenuItem(copyUsernameAction));
+				Action copyPasswordAction = new CopyAction(domain, username, domain, true);
+				this.copyPasswordMenu.add(new JMenuItem(copyPasswordAction));
+			} else {
+				JMenu usernameMenu = new JMenu(domain);
+				JMenu domainMenu = new JMenu(domain);
+				for (String username : usernames) {
+					Action copyUsernameAction = new CopyAction(domain, username, username, false);
+					usernameMenu.add(new JMenuItem(copyUsernameAction));
+					Action copyPasswordAction = new CopyAction(domain, username, username, true);
+					domainMenu.add(new JMenuItem(copyPasswordAction));
+				}
+				this.copyUsernameMenu.add(usernameMenu);
+				this.copyPasswordMenu.add(domainMenu);
+			}
+		}
 	}
 
 	@Override
@@ -543,7 +760,7 @@ public class ViewGUI implements View {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				// do nothing.
 			}
 		});
 	}
@@ -594,7 +811,11 @@ public class ViewGUI implements View {
 
 		Action[] actionsToToggle = new Action[] {
 				logInAction, createAccountAction, logOutAction,
-				createAccountDialogAction, cancelCreateAccountAction
+				createAccountDialogAction, cancelCreateAccountAction,
+				reloadAction, managingDialogAction, doneManagingAction,
+				setCredentialAction, changeMasterPasswordAction,
+				changeMasterPasswordCancelAction, changeMasterPasswordDialogAction,
+				deleteAccountAction, reloadAction
 				}; 
 		
 		for (Action action : actionsToToggle) {
@@ -609,8 +830,10 @@ public class ViewGUI implements View {
 			createAccountDialog.setCursor(rightCursor);
 			break;
 		case WAITING:
+			createAccountDialog.setCursor(rightCursor);
 			break;
 		case MANAGING:
+			createAccountDialog.setCursor(rightCursor);
 			break;
 		default:
 			this.logger.log(Level.SEVERE, "Unexpected view state in model", state);
@@ -625,6 +848,9 @@ public class ViewGUI implements View {
 			public void run() {
 				for (TextFieldListener tfl : textFieldListeners) {
 					tfl.updateTextForm(form);
+				}
+				for (OptionsListener ol : optionsListeners) {
+					ol.updateTextForm(form);
 				}
 			}
 		});
@@ -643,11 +869,13 @@ public class ViewGUI implements View {
 	}
 
 	@Override
-	public void updateSelection(Selection selection) {
+	public void updateSelection(OptionsForm form) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
+				for (OptionsListener ol : optionsListeners) {
+					ol.updateOptionsForm(form);
+				}
 			}
 		});
 	}

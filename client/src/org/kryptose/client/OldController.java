@@ -137,7 +137,6 @@ public class OldController {
                 model.continuePrompt("ERROR: Response may have not been saved. Server returned bad response");
             } else if (r instanceof ResponseStaleWrite) {
                 model.continuePrompt("ERROR: Response not saved. Please run GET again before using SET");
-            } else {
                 model.continuePrompt("ERROR: Response may not have been saved. Server returned bad response.");
             }*/
 
