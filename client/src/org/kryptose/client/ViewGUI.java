@@ -29,6 +29,7 @@ import java.awt.event.WindowAdapter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -302,6 +303,12 @@ public class ViewGUI implements View {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			control.set();
+		}
+	};
+	private Action deleteCredentialAction = new AbstractAction("Delete Credential") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.delete();
 		}
 	};
 	private Action reloadAction = new AbstractAction("Reload Credentials") {
@@ -591,6 +598,7 @@ public class ViewGUI implements View {
 		
 		// TODO option to display password on screen in plaintext.
 
+		addGridLeft(panel, new JButton(this.deleteCredentialAction));
 		addGridRight(panel, new JButton(this.setCredentialAction));
 		addGridRight(panel, new JButton(this.doneManagingAction));
 		
@@ -681,6 +689,7 @@ public class ViewGUI implements View {
 			@Override
 			public void run() {
 				syncCredentialMenuItems();
+				handleActionStatuses();
 			}
 		});
 	}
@@ -790,6 +799,45 @@ public class ViewGUI implements View {
 			// TODO
 		}
 	}
+	
+	private void handleActionStatuses() {
+		boolean waitingOnServer = this.model.isWaitingOnServer();
+
+		Action[] actionsToToggle = new Action[] {
+				logInAction, createAccountAction, logOutAction,
+				createAccountDialogAction, cancelCreateAccountAction,
+				reloadAction, managingDialogAction, doneManagingAction,
+				changeMasterPasswordAction,
+				changeMasterPasswordCancelAction, changeMasterPasswordDialogAction,
+				deleteAccountAction, reloadAction
+				}; 
+		
+		for (Action action : actionsToToggle) {
+			action.setEnabled(!waitingOnServer);
+		}
+		
+		if (waitingOnServer) {
+			setCredentialAction.setEnabled(false);
+			deleteCredentialAction.setEnabled(false);
+		} else {
+			boolean setEnabled = false;
+			boolean delEnabled = false;
+			
+			PasswordFile pFile = model.getPasswordFile();
+			if (pFile != null) {
+				String domain = model.getFormText(TextForm.CRED_DOMAIN);
+				String username = model.getFormText(TextForm.CRED_USERNAME);
+				char[] passwordUI = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
+				String tmp = pFile.getVal(domain, username);
+				char[] passwordSaved = tmp == null ? null : tmp.toCharArray();
+				setEnabled = !Arrays.equals(passwordUI, passwordSaved);
+				delEnabled = passwordSaved != null;
+			}
+			setCredentialAction.setEnabled(setEnabled);
+			deleteCredentialAction.setEnabled(delEnabled);
+		}
+		
+	}
 
 	@Override
 	public void updateSyncStatus() {
@@ -802,25 +850,14 @@ public class ViewGUI implements View {
 	}
 	
 	private void handleSyncStatus() {
+		handleActionStatuses();
+		
 		boolean waitingOnServer = this.model.isWaitingOnServer();
 		ViewState state = this.model.getViewState();
 
 		Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
 		Cursor normalCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
 		Cursor rightCursor = waitingOnServer ? waitCursor : normalCursor;
-
-		Action[] actionsToToggle = new Action[] {
-				logInAction, createAccountAction, logOutAction,
-				createAccountDialogAction, cancelCreateAccountAction,
-				reloadAction, managingDialogAction, doneManagingAction,
-				setCredentialAction, changeMasterPasswordAction,
-				changeMasterPasswordCancelAction, changeMasterPasswordDialogAction,
-				deleteAccountAction, reloadAction
-				}; 
-		
-		for (Action action : actionsToToggle) {
-			action.setEnabled(!waitingOnServer);
-		}
 		
 		switch (state) {
 		case LOGIN:
@@ -852,6 +889,7 @@ public class ViewGUI implements View {
 				for (OptionsListener ol : optionsListeners) {
 					ol.updateTextForm(form);
 				}
+				handleActionStatuses();
 			}
 		});
 	}
@@ -864,6 +902,7 @@ public class ViewGUI implements View {
 				for (PasswordFieldListener pfl : passwordFieldListeners) {
 					pfl.updatePasswordForm(form);
 				}
+				handleActionStatuses();
 			}
 		});
 	}
@@ -876,6 +915,7 @@ public class ViewGUI implements View {
 				for (OptionsListener ol : optionsListeners) {
 					ol.updateOptionsForm(form);
 				}
+				handleActionStatuses();
 			}
 		});
 	}

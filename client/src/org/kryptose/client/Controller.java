@@ -247,7 +247,13 @@ public class Controller {
     	
     	boolean success = model.getPasswordFile().delVal(domain, username);
     	
-    	if (success) return this.doSave();
+    	if (success) {
+    		// In case this fails, we should give user option to try saving again
+    		success = this.doSave();
+    		this.updateFormPassword(PasswordForm.CRED_PASSWORD, null);
+    		this.updateFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+    		return success;
+    	}
     	else return false;
     }
     
@@ -358,7 +364,7 @@ public class Controller {
     		return false;
     	}
     	if (r.getBlob() == null){
-    		PasswordFile pFile = new PasswordFile(mCred.getUsername());
+    		PasswordFile pFile = new PasswordFile(mCred);
     		model.setPasswordFile(pFile);
     		return true;
     	}
@@ -432,7 +438,7 @@ public class Controller {
         		return false;
         	}
             r.verifySuccessful();
-            model.setPasswordFile(new PasswordFile(mCred.getUsername()));
+            model.setPasswordFile(new PasswordFile(mCred));
             return true;
         } catch (UsernameInUseException e) {
         	model.setLastException(e);
