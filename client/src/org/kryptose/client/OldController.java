@@ -19,7 +19,7 @@ public class OldController {
     static final String SAVE = "save";
     static final String SAVE_SYNTAX = "Syntax: save";
     static final String SET = "set";
-    static final String SET_SYNTAX = "Syntax: set"; // TODO: JS I changed this, getting rid of $domain $username $password. Jeff please approve. Jeff: I approve
+    static final String SET_SYNTAX = "Syntax: set"; 
     static final String DEL = "del";
     static final String DEL_SYNTAX = "Syntax: del $n";
     static final String QUERY = "query";
