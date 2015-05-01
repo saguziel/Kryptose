@@ -69,9 +69,6 @@ public class PasswordFile implements Destroyable {
             SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
             c.init(Cipher.ENCRYPT_MODE, sks, params);
 
-            //byte[] head = "Head".getBytes();
-            //c.updateAAD(head);
-
             b = new Blob(c.doFinal(raw_data), ivData);
 
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -95,9 +92,6 @@ public class PasswordFile implements Destroyable {
 
             SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
             c.init(Cipher.DECRYPT_MODE, sks, params);
-
-            //byte[] head = "Head".getBytes();
-            //c.updateAAD(head);
 
             return c.doFinal(b.getEncBytes());
 
@@ -137,7 +131,6 @@ public class PasswordFile implements Destroyable {
         }
     }
 
-    //TODO: use correct timestamp and iv
     public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
 
         byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());

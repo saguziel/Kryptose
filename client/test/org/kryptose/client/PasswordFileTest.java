@@ -40,13 +40,6 @@ public class PasswordFileTest {
     public void tearDown() throws Exception {
     }
 
-	/*
-    @Test
-	public final void blobTest() {
-		
-		fail("Not yet implemented"); // TODO
-	}
-*/
 
     @Test
     public final void blobEncryptionTest() throws Exception {

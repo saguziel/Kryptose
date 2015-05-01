@@ -46,16 +46,9 @@ public class RequestHandler {
         	sock = (SSLSocket) sslsocketfactory.createSocket(serverHostname, serverPort);
 
     	    sock.setEnabledProtocols(new String[] {"TLSv1.2"});
-
-    	    //TODO: maybe delete this afterwards
-    	    //Enable this line to test what happens if client and server have no TLS Version in common
-    	    //sock.setEnabledProtocols(new String[] {"TLSv1.1"});
     	    
     	    sock.setEnabledCipherSuites(new String[] {"TLS_DHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"});
     	    
-    	    //TODO: maybe delete this afterwards
-    	    //Enable this line to test what happens if client and server have no CipherSuites in common
-    	    //sock.setEnabledCipherSuites(new String[] {"SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA"});
             out = new ObjectOutputStream(sock.getOutputStream());                
             
             out.writeObject(req);
@@ -71,8 +64,6 @@ public class RequestHandler {
 			// See if Response was an Exception response, throw if so.
 			resp.checkException();
 
-			//TODO: remove later (testing only).
-			//System.out.println("Response received: " + resp.toString());
       
 	        sock.close();
             return resp;
