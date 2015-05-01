@@ -1,4 +1,4 @@
-package org.kryptose.server;
+package org.kryptose.common;
 
 import org.kryptose.requests.Response;
 

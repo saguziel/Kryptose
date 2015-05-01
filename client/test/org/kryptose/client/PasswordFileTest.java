@@ -18,8 +18,8 @@ public class PasswordFileTest {
 	public static String MASTER_PWD = "MasterPassword";
 	public static String MASTER_PWD_WRONG = "WrongMasterPassword";
 	
-	public static String USERNAME1 = "Antonio";
-	public static String USERNAME1_WRONG = "WrongUsername";
+	public static String USERNAME1 = "antonio";
+	public static String USERNAME1_WRONG = "wrongusername";
 	
 
     @BeforeClass
@@ -40,13 +40,6 @@ public class PasswordFileTest {
     public void tearDown() throws Exception {
     }
 
-	/*
-    @Test
-	public final void blobTest() {
-		
-		fail("Not yet implemented"); // TODO
-	}
-*/
 
     @Test
     public final void blobEncryptionTest() throws Exception {

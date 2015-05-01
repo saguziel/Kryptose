@@ -216,19 +216,7 @@ public class SecureServerListener{
 	      
 	      return builder.toString();
 	   } 
-/*
 
-	   //TODO: remove afterwards. For testing only
-	   public static void main(String[] args) {
-		   		System.setProperty("javax.net.debug", "all");
-		   		System.out.println("Server is runningAA");
-		   		SecureServerListener listener = new SecureServerListener(5002);
-		   		listener.start();
-		   		System.out.println("Server is runningAA");
-		   		
-		   	}
-
-*/
 	
 }
 

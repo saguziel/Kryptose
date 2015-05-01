@@ -32,29 +32,36 @@ public class PasswordFile implements Destroyable {
 
     ArrayList<Credential> credentials;
     LocalDateTime timestamp;
+    
     transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
-
-    String username;
+    
+    MasterCredentials mCred = null;
     byte[] oldDigest;
 
     public PasswordFile(MasterCredentials mCred, Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        String password = new String(mCred.getPassword());
-    	decryptBlob(b, mCred.getUsername(), password);
-        this.username = mCred.getUsername();
+        //String password = new String(mCred.getPassword());
+        this.mCred = mCred;
+    	decryptBlob(b);
         // TODO use char array for passwords
-        // TODO store MasterCredentials as field
     }
 
+    //TODO remove use of deprecated methods from the rest of the code.
     @Deprecated
     public PasswordFile(String username, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         decryptBlob(b, username, pass);
-        this.username = username;
+        //this.username = username;
     }
-
-    public PasswordFile(String user) {
-        this.username = user;
+    
+    public PasswordFile(MasterCredentials mCred) {
+        this.mCred = mCred;
         this.timestamp = LocalDateTime.now();
         this.credentials = new ArrayList<Credential>();
+    }
+
+
+    @Deprecated
+    public PasswordFile(String user) {
+    	this(new MasterCredentials(user, new char[10]));
     }
 
     private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException {
@@ -73,9 +80,6 @@ public class PasswordFile implements Destroyable {
 
             SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
             c.init(Cipher.ENCRYPT_MODE, sks, params);
-
-            //byte[] head = "Head".getBytes();
-            //c.updateAAD(head);
 
             b = new Blob(c.doFinal(raw_data), ivData);
 
@@ -101,9 +105,6 @@ public class PasswordFile implements Destroyable {
             SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
             c.init(Cipher.DECRYPT_MODE, sks, params);
 
-            //byte[] head = "Head".getBytes();
-            //c.updateAAD(head);
-
             return c.doFinal(b.getEncBytes());
 
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -126,12 +127,23 @@ public class PasswordFile implements Destroyable {
             this.oldDigest = digest.clone();
         }
     }
-
+    
+    @Deprecated
     public void decryptBlob(Blob b, String username, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
+    	this.mCred = new MasterCredentials(username, pass.toCharArray());
+    	decryptBlob(b);
+    }
 
+    public void decryptBlob(Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        if(mCred==null){
+        	throw new BadBlobException("credentials for Blob decryption not available");
+        	//TODO: Log?
+        }
+    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(mCred.getUsername(), mCred.getPassword());
 
         byte[] decrypted = rawBlobDecrypt(b, raw_key);
+    	//TODO ALEX: destroy raw_key;
+
         try {
             ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
             ObjectInputStream objStream = new ObjectInputStream(byteStream);
@@ -142,7 +154,6 @@ public class PasswordFile implements Destroyable {
         }
     }
 
-    //TODO: use correct timestamp and iv
     @Deprecated
     public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
@@ -246,7 +257,10 @@ public class PasswordFile implements Destroyable {
     }
 
 	public void destroy() {
-		// TODO destroy passwordfile
+		mCred.destroy();
+		for (Credential c : credentials){
+			c.destroy();
+		}
 	}
     
 	public void addChangeListener(PropertyChangeListener listener) {

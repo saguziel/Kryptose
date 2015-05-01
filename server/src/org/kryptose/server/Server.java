@@ -113,8 +113,6 @@ public class Server {
             return this.handleRequestGet((RequestGet) request);
         } else if (request instanceof RequestPut) {
             return this.handleRequestPut((RequestPut)request);
-        } else if (request instanceof RequestTest) { //TODO: remove later, testing only.
-            return this.handleRequestTest((RequestTest) request);
         } else if (request instanceof RequestLog) {
             return this.handleRequestLog((RequestLog) request);
         } else if (request instanceof RequestCreateAccount) {
@@ -217,12 +215,7 @@ public class Server {
         return response;
     }
     
-    
-    //TODO: remove later (testing only)
-    private Response handleRequestTest(RequestTest request) {
-    	return new ResponseTest(request.toString());
-    }
-    
+        
     public DataStore getDataStore() {
         return this.dataStore;
     }

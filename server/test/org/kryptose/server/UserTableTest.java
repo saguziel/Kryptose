@@ -200,5 +200,33 @@ public class UserTableTest {
 		assertEquals(ut.auth(TEST_BAD_USER), Result.WRONG_CREDENTIALS);
 		assertEquals(ut.auth(TEST_USER), Result.AUTHENTICATION_SUCCESS);
 	}
+	
+	@Test
+	public void testChangeAuthKeyWithWrongOldKey() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
+		assertEquals(ut.auth(TEST_BAD_USER), Result.AUTHENTICATION_SUCCESS);
+		assertEquals(ut.auth(TEST_USER), Result.WRONG_CREDENTIALS);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME, TEST_PASSKEY_2, TEST_PASSKEY), Result.WRONG_CREDENTIALS);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME, TEST_PASSKEY_2, TEST_BAD_PASSKEY), Result.WRONG_CREDENTIALS);
+		assertEquals(ut.auth(TEST_BAD_USER), Result.AUTHENTICATION_SUCCESS);
+		assertEquals(ut.auth(TEST_USER), Result.WRONG_CREDENTIALS);
+	}
+
+	@Test
+	public void testChangeAuthKeyForNonExistingUser() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
+		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
+	}
+	
+	@Test
+	public void testEqualUsers() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
+		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
+	}
 
 }

@@ -204,9 +204,6 @@ public class Controller {
     	char[] password = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
     	char[] confirm = model.getFormPasswordClone(PasswordForm.CRED_CONFIRM_PASSWORD);
     	
-    	System.out.println(Arrays.toString(password));
-    	System.out.println(Arrays.toString(confirm));
-    	
     	String validationError = null;
     	
     	// Validate inputs
