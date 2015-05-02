@@ -165,7 +165,7 @@ public class Model implements PropertyChangeListener {
 	}
 	
 	/**
-	 * Destroys the old value.
+	 * Destroys the old value. Will destroy the copy that it is given.
 	 * @param form
 	 * @param value
 	 */

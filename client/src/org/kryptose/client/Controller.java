@@ -584,7 +584,8 @@ public class Controller {
 		
 		String[] domainOptions = pFile.getDomains();
 		String[] usernameOptions = pFile.getUsernames(domain);
-		logger.fine(domain + " ==> " + Arrays.toString(usernameOptions));
+		// WARNING: current code assumes that the char[] obtained from pFile.getVal
+		// is a new copy, and hence destroys the copy obtained.
 		String passString = pFile.getVal(domain, username);
 		char[] password = passString == null ? null : passString.toCharArray();
 		
@@ -592,11 +593,12 @@ public class Controller {
 		System.arraycopy(domainOptions, 0, domainOptionsWithNull, 1, domainOptions.length);
 		String[] usernameOptionsWithNull = new String[usernameOptions.length + 1]; 
 		System.arraycopy(usernameOptions, 0, usernameOptionsWithNull, 1, usernameOptions.length);
-		
-		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptionsWithNull);
-		model.setFormOptions(OptionsForm.CRED_USERNAME, usernameOptionsWithNull);
+
 		model.setFormPassword(PasswordForm.CRED_PASSWORD, password);
 		model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptionsWithNull);
+		model.setFormOptions(OptionsForm.CRED_USERNAME,
+				usernameOptions.length <= 1 ? usernameOptions : usernameOptionsWithNull);
 		
 	}
 
