@@ -343,7 +343,18 @@ public class ViewGUI implements View {
 	private Action deleteCredentialAction = new AbstractAction("Delete Credential") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Delete this credential set?", "Delete", JOptionPane.YES_NO_OPTION);
+			if (val != JOptionPane.YES_OPTION) return;
 			control.delete();
+		}
+	};
+	private Action generatePasswordAction = new AbstractAction("Generate New Password") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			String msg = "Warning: the current password will be overwritten. Please ensure that the current password is no longer needed before continuing.";
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), msg, "Generate New Password", JOptionPane.OK_CANCEL_OPTION);
+			if (val != JOptionPane.YES_OPTION) return;
+			// TODO generate password
 		}
 	};
 	private Action reloadAction = new AbstractAction("Reload Credentials") {
@@ -479,9 +490,8 @@ public class ViewGUI implements View {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Exit Kryptose\u2122?", "Exit", JOptionPane.YES_NO_OPTION);
-			if (val == JOptionPane.YES_OPTION) {
-				control.exit();
-			}
+			if (val != JOptionPane.YES_OPTION) return;
+			control.exit();
 		}
 	};
 	
