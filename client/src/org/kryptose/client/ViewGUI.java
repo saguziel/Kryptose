@@ -272,13 +272,21 @@ public class ViewGUI implements View {
 	class OpacityAdjuster extends MouseAdapter implements MenuListener {
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			hoverFrame.setOpacity(1f);
+			try{
+				hoverFrame.setOpacity(1f);
+			}catch(UnsupportedOperationException ex){
+				//TODO ?????? Nothing should be fine i guess...
+			}
 		}
 		private void resetMaybe(Point p) {
 			Rectangle bounds = hoverFrame.getBounds();
 			if ((p == null || !bounds.contains(p))
 					&& !mainMenu.isPopupMenuVisible()) {
+				try{
 				hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
+				}catch(UnsupportedOperationException ex){
+					//TODO ?????? Nothing should be fine i guess...
+				}
 			}
 		}
 		@Override
@@ -751,7 +759,11 @@ public class ViewGUI implements View {
 		this.hoverFrame.setUndecorated(true);
 		this.hoverFrame.setAlwaysOnTop(true);
 		this.hoverFrame.setResizable(false);
-		this.hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
+		try{
+			this.hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
+		}catch(UnsupportedOperationException e){
+			//TODO is this ok? Made it work for me....
+		}
 		this.hoverFrame.pack();
 		
 		OpacityAdjuster adjuster = new OpacityAdjuster();
