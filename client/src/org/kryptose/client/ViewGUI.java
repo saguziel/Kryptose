@@ -303,6 +303,7 @@ public class ViewGUI implements View {
 	private Controller control;
 	private Logger logger = Logger.getLogger("org.kryptose.client.ViewGUI");
 
+	private URL icon = ViewGUI.class.getResource("resources/icon.png");
 	private URL logo = ViewGUI.class.getResource("resources/logo.png");
 	
 	private JFrame hoverFrame;
@@ -749,13 +750,13 @@ public class ViewGUI implements View {
 		mainMenu.addMenuListener(adjuster);
 		
 		try {
-			if (logo != null) {
-				Image logoIconImage = ImageIO.read(logo);
+			if (icon != null) {
+				Image logoIconImage = ImageIO.read(icon);
 				this.loginFrame.setIconImage(logoIconImage);
 				this.hoverFrame.setIconImage(logoIconImage);
 			}
 		} catch (IOException e) {
-			logger.log(Level.INFO, "Could not load logo image.", e);
+			logger.log(Level.INFO, "Could not load logo icon image.", e);
 		}
 
 		this.manageCredentialsDialog = this.createModalDialog(
