@@ -49,7 +49,7 @@ public class Controller {
 		@Override
 		public final void run() {
 			model.setWaitingOnServer(true);
-			boolean success = false;
+			boolean success = false; // TODO should replace this with exception?
 			try {
 				success = doRun();
 			} catch (Throwable t) {
@@ -158,8 +158,6 @@ public class Controller {
 		});
     }
     private boolean doSave() {
-    	model.setWaitingOnServer(true);
-    	
     	MasterCredentials mCred = model.getMasterCredentials();
     	PasswordFile pFile = model.getPasswordFile();
 
@@ -237,8 +235,6 @@ public class Controller {
     }
     
     private boolean doDelete() {
-    	model.setWaitingOnServer(true);
-
     	String domain = model.getFormText(TextForm.CRED_DOMAIN);
     	String username = model.getFormText(TextForm.CRED_USERNAME);
     	
@@ -255,7 +251,6 @@ public class Controller {
     }
     
     public void login() {
-    	model.setWaitingOnServer(true);
     	pool.execute(new LongTaskRunner() {
     		boolean doRun() {
     			return doLogin();
@@ -356,8 +351,6 @@ public class Controller {
     }
     
     private boolean doFetch(){
-    	model.setWaitingOnServer(true);
-    	
     	ResponseGet r = null;
     	MasterCredentials mCred = model.getMasterCredentials();
     	RequestGet req = new RequestGet(mCred.getUser());
@@ -461,7 +454,12 @@ public class Controller {
     private boolean doDeleteAccount() {
         // TODO make account deletion happen
 		logger.severe("deleteAccount not implemented in Controller");
-    	
+
+		MasterCredentials mCred = model.getMasterCredentials();
+		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
+
+		// stuff happens here.
+		
     	this.doLogout();
     	return true; 
     }
@@ -477,6 +475,14 @@ public class Controller {
     private boolean doChangeMasterPassword() {
 		logger.severe("changeMasterPassword not implemented in Controller");
         // TODO make password changing happen
+		
+		MasterCredentials mCred = model.getMasterCredentials();
+		char[] oldPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_OLD_MASTER_PASSWORD);
+		char[] newPassword = model.getFormPasswordClone(PasswordForm.CHANGE_NEW_MASTER_PASSWORD);
+		char[] newPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD);
+
+		// stuff goes here
+		
 		return false;
     }
     
