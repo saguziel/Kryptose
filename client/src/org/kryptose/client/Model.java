@@ -1,14 +1,20 @@
 package org.kryptose.client;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.kryptose.requests.Log;
 
-public class Model {
+public class Model implements PropertyChangeListener {
+	private Logger logger = Logger.getLogger(Model.class.getCanonicalName());
+	
 	private MasterCredentials masterCredentials = null;
 	private PasswordFile passwordFile = null;
 	private ArrayList<Log> userLogs = null;
@@ -17,26 +23,32 @@ public class Model {
 	private boolean waitingOnServer = false;
 
 	public static enum TextForm {
-		LOGIN_MASTER_USERNAME, CREATE_MASTER_USERNAME, CRED_DOMAIN, CRED_PASSWORD, 
+		LOGIN_MASTER_USERNAME, CREATE_MASTER_USERNAME,
+		CRED_DOMAIN, CRED_USERNAME
 	}
 	public static enum PasswordForm {
-		LOGIN_MASTER_PASSWORD, CREATE_MASTER_PASSWORD, CRED_PASSWORD
+		LOGIN_MASTER_PASSWORD,
+		CREATE_MASTER_PASSWORD, CREATE_CONFIRM_PASSWORD,
+		CRED_PASSWORD, CRED_CONFIRM_PASSWORD,
+		CHANGE_OLD_MASTER_PASSWORD, CHANGE_NEW_MASTER_PASSWORD, CHANGE_CONFIRM_NEW_MASTER_PASSWORD,
+		DELETE_ACCOUNT_CONFIRM_PASSWORD
 	}
-	public static enum Selection {
+	public static enum OptionsForm {
 		CRED_DOMAIN, CRED_USERNAME
 	}
 	public static enum ViewState {
-		LOGIN, CREATE_ACCOUNT, WAITING, DISPLAYING_DOMAIN, DISPLAYING_CRED, MANAGING
+		LOGIN, CREATE_ACCOUNT, WAITING, MANAGING, CHANGE_MASTER_PASSWORD, DELETE_ACCOUNT
 	}
 	private ViewState viewState = null;
 	private Map<TextForm,String> formTexts = new EnumMap<TextForm,String>(TextForm.class);
 	private Map<PasswordForm,char[]> formPasses = new EnumMap<PasswordForm,char[]>(PasswordForm.class);
-	private Map<Selection,String> selections = new EnumMap<Selection,String>(Selection.class);
+	private Map<OptionsForm,String[]> formOptions = new EnumMap<OptionsForm,String[]>(OptionsForm.class);
 	
 	private View view;
 	
 	public Model() {
 		super();
+		this.logger.setLevel(Level.FINE);
 	}
 	
 	public synchronized void registerView(View view) {
@@ -52,6 +64,7 @@ public class Model {
 		if (equals(this.masterCredentials, masterCredentials)) return;
 		this.masterCredentials = masterCredentials;
         view.updateMasterCredentials();
+		logger.fine("Master credentials changed.");
 	}
 	
 	public synchronized PasswordFile getPasswordFile() {
@@ -59,10 +72,12 @@ public class Model {
 	}
 
 	public synchronized void setPasswordFile(PasswordFile passwordFile) {
-		if (equals(this.passwordFile, passwordFile)) return;
-		// TODO: if passwordfile is mutable, notify of changes.
+		if (this.passwordFile == passwordFile) return;
 		this.passwordFile = passwordFile;
+		
+		if (passwordFile != null) passwordFile.addChangeListener(this);
         view.updatePasswordFile();
+		logger.fine("Password file changed.");
 	}
 	
 	public synchronized ArrayList<Log> getUserLogs() {
@@ -73,6 +88,7 @@ public class Model {
 		if (equals(this.userLogs, userLogs)) return;
 		this.userLogs = userLogs;
         view.updateLogs();
+		logger.fine("User logs changed.");
 	}
 	
 	public synchronized LocalDateTime getLastModDate() {
@@ -83,6 +99,7 @@ public class Model {
 		if (equals(this.lastModDate, lastModDate)) return;
 		this.lastModDate = lastModDate;
         view.updateLastMod();
+		logger.fine("LastModDate changed: " + lastModDate);
 	}
 	
 	// Hmm probably want a different format for this.
@@ -90,10 +107,11 @@ public class Model {
 		return lastServerException;
 	}
 
-	public synchronized void setLastServerException(Exception lastServerException) {
+	public synchronized void setLastException(Exception lastServerException) {
 		if (this.lastServerException == lastServerException) return;
 		this.lastServerException = lastServerException;
         view.updateServerException();
+		logger.fine("Last exception changed: " + lastServerException);
 	}
 	
 	public synchronized boolean isWaitingOnServer() {
@@ -104,6 +122,7 @@ public class Model {
 		if (equals(this.waitingOnServer, waitingOnServer)) return;
 		this.waitingOnServer = waitingOnServer;
         view.updateSyncStatus();
+		logger.fine("Waiting status changed: " + waitingOnServer);
 	}
 
 	public synchronized ViewState getViewState() {
@@ -114,6 +133,7 @@ public class Model {
 		if (equals(this.viewState, viewState)) return;
 		this.viewState = viewState;
 		view.updateViewState();
+		logger.fine("View state changed: " + viewState);
 	}
 	
 	public synchronized String getFormText(TextForm form) {
@@ -131,6 +151,7 @@ public class Model {
 		// Make change and notify view
 		this.formTexts.put(form, value);
 		this.view.updateTextForm(form);
+		logger.fine("Form value updated: " + form + " => " + value);
 	}
 	
 	/**
@@ -144,7 +165,7 @@ public class Model {
 	}
 	
 	/**
-	 * Destroys the old value.
+	 * Destroys the old value. Will destroy the copy that it is given.
 	 * @param form
 	 * @param value
 	 */
@@ -157,28 +178,30 @@ public class Model {
 		if (equals(oldValue, value)) return;
 		
 		// Destroy old value
-		if (oldValue != null) Arrays.fill(oldValue, ' ');
+		Utils.destroyPassword(oldValue);
 		
 		// Make change and notify view
  		this.formPasses.put(form, value);
 		this.view.updatePasswordForm(form);
+		logger.fine("Form value updated: " + form);
 	}
 	
-	public synchronized String getSelection(Selection selection) {
-		return this.selections.get(selection);
+	public synchronized String[] getFormOptions(OptionsForm options) {
+		return this.formOptions.get(options);
 	}
 	
-	public synchronized void setSelection(Selection selection, String value) {
+	public synchronized void setFormOptions(OptionsForm options, String[] values) {
 		// Store empty as null
-		if (value != null && value.length() == 0) value = null;
+		if (values != null && values.length == 0) values = null;
 
 		// Check if value changes
-		String oldValue = this.selections.get(selection);
-		if (equals(oldValue, value)) return;
+		String[] oldValue = this.formOptions.get(options);
+		if (Arrays.equals(oldValue, values)) return;
 		
 		// Make change and notify view
-		this.selections.put(selection, value);
-		this.view.updateSelection(selection);
+		this.formOptions.put(options, values);
+		this.view.updateSelection(options);
+		logger.fine("Form value updated: " + options + " => " + Arrays.toString(values));
 	}
 	
 	private static boolean equals(Object a, Object b) {
@@ -187,5 +210,13 @@ public class Model {
 		}
 		return a.equals(b);
 	}
-	
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (evt.getSource() == this.passwordFile) {
+			logger.fine("Password file updated.");
+			this.view.updatePasswordFile();
+		}
+	}
+
 }

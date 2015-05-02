@@ -13,6 +13,8 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.Destroyable;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -20,6 +22,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by jeff on 3/15/15.
@@ -29,8 +33,9 @@ public class PasswordFile implements Destroyable {
     ArrayList<Credential> credentials;
     LocalDateTime timestamp;
     
+    transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+    
     MasterCredentials mCred = null;
-    //String username;
     byte[] oldDigest;
 
     public PasswordFile(MasterCredentials mCred, Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
@@ -149,10 +154,14 @@ public class PasswordFile implements Destroyable {
         }
     }
 
+    @Deprecated
     public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-
         byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
-
+        return encryptBlob(username, raw_key, lastmod);
+    }
+    
+    @Deprecated
+    private  Blob encryptBlob(String username, byte[] cryptKey, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
@@ -162,13 +171,17 @@ public class PasswordFile implements Destroyable {
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
 
-            return rawBlobCreate(bytes, raw_key);
+            return rawBlobCreate(bytes, cryptKey);
 
         } catch (IOException e) {
             e.printStackTrace();
             throw new BadBlobException("Bad blob");
         }
     }
+    
+	public Blob encryptBlob(MasterCredentials mCred, LocalDateTime lastModDate) throws CryptoPrimitiveNotSupportedException, BadBlobException, CryptoErrorException {
+		return encryptBlob(mCred.getUsername(), mCred.getCryptKey(), lastModDate);
+	}
 
     public Credential getVal(int index) {
         if (0 <= index && index < credentials.size()) {
@@ -191,18 +204,25 @@ public class PasswordFile implements Destroyable {
     public Boolean setVal(String dom, String user, String pass) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
+            	String oldVal = c.getPassword();
                 c.setPassword(pass);
+                changeSupport.firePropertyChange(user + "@" + dom, oldVal, pass);
                 return true;
             }
         }
         credentials.add(new Credential(user, pass, dom));
+        changeSupport.firePropertyChange(user + "@" + dom, null, pass);
         return false;
     }
 
     public Credential delVal(int index) {
         if (0 <= index && index < credentials.size()) {
             Credential c = credentials.get(index);
+            String dom = c.getDomain();
+            String user = c.getUsername();
+            String oldVal = c.getPassword();
             credentials.remove(index);
+            changeSupport.firePropertyChange(user + "@" + dom, oldVal, null);
             return c;
         }
         return null;
@@ -218,7 +238,7 @@ public class PasswordFile implements Destroyable {
             }
         }
         if (toRem >= 0) {
-            credentials.remove(toRem);
+        	delVal(toRem);
             return true;
         }
         return false;
@@ -243,5 +263,26 @@ public class PasswordFile implements Destroyable {
 		}
 	}
     
+	public void addChangeListener(PropertyChangeListener listener) {
+		this.changeSupport.addPropertyChangeListener(listener);
+	}
+
+	public String[] getDomains() {
+		Set<String> domains = new HashSet<String>();
+		for (Credential cred : this.credentials) {
+			domains.add(cred.getDomain());
+		}
+		return domains.toArray(new String[domains.size()]);
+	}
+
+	public String[] getUsernames(String domain) {
+		Set<String> usernames = new HashSet<String>();
+		for (Credential cred : this.credentials) {
+			if (cred.getDomain().equals(domain)) {
+				usernames.add(cred.getUsername());
+			}
+		}
+		return usernames.toArray(new String[usernames.size()]);
+	}
 
 }

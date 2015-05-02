@@ -31,7 +31,7 @@ public abstract class Request implements Serializable {
      * Checks that the instance's fields satisfy specified invariants
      * and defensively copies mutable fields.
      */
-    public void validateInstance() {
+    public void validateInstance() throws IllegalArgumentException {
         if (this.user == null) throw new IllegalArgumentException("user is null");
         this.user.validateInstance();
     }

@@ -1,7 +1,5 @@
 package org.kryptose.client;
 
-import java.util.Arrays;
-
 import javax.security.auth.Destroyable;
 
 import org.kryptose.requests.KeyDerivator;
@@ -52,9 +50,9 @@ public class MasterCredentials implements Destroyable {
 	 */
 	@Override
 	public void destroy() {
-		Arrays.fill(password, ' ');
-		Arrays.fill(authKey, (byte)0);
-		Arrays.fill(cryptKey, (byte)0);
+		Utils.destroyPassword(password);
+		Utils.destroyPasskey(authKey);
+		Utils.destroyPasskey(cryptKey);
 		this.user.destroy();
 	}
 	
