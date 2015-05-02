@@ -407,16 +407,22 @@ public class ViewGUI implements View {
 	private Action deleteAccountAction = new AbstractAction("Delete Account") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			// TODO: should authenticate again before allowing this to happen.
-			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Permanently delete this Kryptose\u2122 account?", "Delete account", JOptionPane.YES_NO_OPTION);
-			if (val != JOptionPane.YES_OPTION) return;
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(),
+					"Permanently delete this Kryptose\u2122 account?",
+					"Delete account", JOptionPane.YES_NO_OPTION);
+			if (val != JOptionPane.YES_OPTION) {
+				control.updateFormPassword(
+						PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD,
+						null);
+				return;
+			}
 			control.deleteAccount();
 		}
 	};
 	private Action deleteAccountDialogAction = new AbstractAction("Delete Account") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			control.requestViewState(ViewState.CHANGE_MASTER_PASSWORD);
+			control.requestViewState(ViewState.DELETE_ACCOUNT);
 		}
 	};
 	private Action cancelDeleteAccountAction = new AbstractAction("Cancel") {
@@ -661,6 +667,21 @@ public class ViewGUI implements View {
 		return panel;
 	}
 	
+	private JPanel createDeleteAccountPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+
+		this.addPasswordFieldToGrid(panel, PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD,
+				"Confirm Password: ", this.deleteAccountAction, NO_TOOL_TIP);
+
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
+		buttonPanel.add(new JButton(this.cancelDeleteAccountAction));
+		buttonPanel.add(new JButton(this.deleteAccountAction));
+		
+		addGridRight(panel, buttonPanel);
+		
+		return panel;
+	}
+	
 	private JMenuBar createMenuBar() {
 		this.copyUsernameMenu = new JMenu("Copy username");
 		this.copyPasswordMenu = new JMenu("Copy password");
@@ -668,7 +689,7 @@ public class ViewGUI implements View {
 		
 		JMenu accountSettingsMenu = new JMenu("Account Settings");
 		accountSettingsMenu.add(new JMenuItem(changeMasterPasswordDialogAction));
-		accountSettingsMenu.add(new JMenuItem(deleteAccountAction));
+		accountSettingsMenu.add(new JMenuItem(deleteAccountDialogAction));
 		
 		mainMenu = new JMenu("Kryptose\u2122");
 		mainMenu.add(this.copyUsernameMenu);
@@ -686,6 +707,16 @@ public class ViewGUI implements View {
 		return menuBar;
 	}
 	
+	private JDialog createModalDialog(Window parent, String title,
+			Action closeAction, JPanel content) {
+		JDialog dialog = new JDialog(parent, title, ModalityType.APPLICATION_MODAL);
+		dialog.addWindowListener(
+				new WindowCloseHandler(closeAction, dialog));
+		dialog.setContentPane(content);
+		dialog.pack();
+		return dialog;
+	}
+	
 	public ViewGUI(Model model, Controller control) {
 		this.model = model;
 		this.control = control;
@@ -693,27 +724,24 @@ public class ViewGUI implements View {
 		this.loginFrame = new JFrame("Kryptose\u2122 Password Management System");
 		this.loginFrame.addWindowListener(new WindowCloseHandler(exitAction, loginFrame));
 		this.loginFrame.setContentPane(createLoginPanel());
-		this.loginFrame.pack();
 		this.loginFrame.setResizable(false);
+		this.loginFrame.pack();
 		this.loginFrame.setLocationRelativeTo(null);
 		
-		this.createAccountDialog = new JDialog(loginFrame, "New Account Creation", ModalityType.APPLICATION_MODAL);
-		this.createAccountDialog.addWindowListener(
-				new WindowCloseHandler(cancelCreateAccountAction, createAccountDialog));
-		this.createAccountDialog.setContentPane(createCreateAccountPanel());
-		this.createAccountDialog.pack();
-		this.createAccountDialog.setResizable(false);
+		this.createAccountDialog = this.createModalDialog(
+				this.loginFrame, "New Account Creation",
+				this.cancelCreateAccountAction, this.createCreateAccountPanel()
+				);
 		this.createAccountDialog.setLocationRelativeTo(loginFrame);
 		
 		this.hoverFrame = new JFrame("Kryptose\u2122");
 		this.hoverFrame.addWindowListener(new WindowCloseHandler(exitAction, hoverFrame));
-		
 		this.hoverFrame.setJMenuBar(this.createMenuBar());
 		this.hoverFrame.setUndecorated(true);
 		this.hoverFrame.setAlwaysOnTop(true);
-		this.hoverFrame.pack();
 		this.hoverFrame.setResizable(false);
 		this.hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
+		this.hoverFrame.pack();
 		
 		OpacityAdjuster adjuster = new OpacityAdjuster();
 		this.hoverFrame.addMouseListener(adjuster);
@@ -729,14 +757,25 @@ public class ViewGUI implements View {
 		} catch (IOException e) {
 			logger.log(Level.INFO, "Could not load logo image.", e);
 		}
-		
-		this.manageCredentialsDialog = new JDialog(hoverFrame, "Manage Credentials", ModalityType.APPLICATION_MODAL);
-		this.manageCredentialsDialog.addWindowListener(
-				new WindowCloseHandler(doneManagingAction, manageCredentialsDialog));
-		this.manageCredentialsDialog.setContentPane(this.createManagePanel());
-		this.manageCredentialsDialog.pack();
-		this.manageCredentialsDialog.setResizable(false);
+
+		this.manageCredentialsDialog = this.createModalDialog(
+				this.hoverFrame, "Manage Credentials",
+				this.doneManagingAction, this.createManagePanel()
+				);
 		this.manageCredentialsDialog.setLocationRelativeTo(null);
+		
+		this.changeMasterPasswordDialog = this.createModalDialog(
+				this.hoverFrame, "Change Master Password",
+				this.cancelChangeMasterPasswordAction,
+				this.createChangeMasterPasswordPanel()
+				);
+		this.changeMasterPasswordDialog.setLocationRelativeTo(null);
+		
+		this.deleteAccountDialog = this.createModalDialog(
+				this.hoverFrame, "Delete Kryptose\u2122 Account",
+				this.cancelDeleteAccountAction, this.createDeleteAccountPanel()
+				);
+		this.deleteAccountDialog.setLocationRelativeTo(null);
 	}
 	
 	@Override
@@ -942,8 +981,7 @@ public class ViewGUI implements View {
 				changeMasterPasswordAction,
 				cancelChangeMasterPasswordAction, changeMasterPasswordDialogAction,
 				deleteAccountAction, reloadAction
-				}; 
-		
+				};
 		for (Action action : actionsToToggle) {
 			action.setEnabled(!waitingOnServer);
 		}
@@ -960,10 +998,16 @@ public class ViewGUI implements View {
 				String domain = model.getFormText(TextForm.CRED_DOMAIN);
 				String username = model.getFormText(TextForm.CRED_USERNAME);
 				char[] passwordUI = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
+				// WARNING: code currently assumes that char[] array obtained from
+				// PasswordFile is something that we should destroy here once we're done with it.
 				String tmp = pFile.getVal(domain, username);
 				char[] passwordSaved = tmp == null ? null : tmp.toCharArray();
+				
 				setEnabled = !Arrays.equals(passwordUI, passwordSaved);
 				delEnabled = passwordSaved != null;
+				
+				Utils.destroyPassword(passwordUI);
+				Utils.destroyPassword(passwordSaved); // TODO: see above WARNING about passwordFile destroying passwords
 			}
 			setCredentialAction.setEnabled(setEnabled);
 			deleteCredentialAction.setEnabled(delEnabled);
@@ -983,31 +1027,12 @@ public class ViewGUI implements View {
 	
 	private void handleSyncStatus() {
 		handleActionStatuses();
-		
 		boolean waitingOnServer = this.model.isWaitingOnServer();
-		ViewState state = this.model.getViewState();
 
 		Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
 		Cursor normalCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
-		Cursor rightCursor = waitingOnServer ? waitCursor : normalCursor;
-		
-		switch (state) {
-		case LOGIN:
-			loginFrame.setCursor(rightCursor);
-			break;
-		case CREATE_ACCOUNT:
-			createAccountDialog.setCursor(rightCursor);
-			break;
-		case WAITING:
-			createAccountDialog.setCursor(rightCursor);
-			break;
-		case MANAGING:
-			createAccountDialog.setCursor(rightCursor);
-			break;
-		default:
-			this.logger.log(Level.SEVERE, "Unexpected view state in model", state);
-		}
-		
+		Cursor appropriateCursor = waitingOnServer ? waitCursor : normalCursor;
+		this.getCurrentActiveWindow().setCursor(appropriateCursor);
 	}
 
 	@Override
@@ -1063,6 +1088,10 @@ public class ViewGUI implements View {
 			return this.hoverFrame;
 		case MANAGING:
 			return this.manageCredentialsDialog;
+		case CHANGE_MASTER_PASSWORD:
+			return this.changeMasterPasswordDialog;
+		case DELETE_ACCOUNT:
+			return this.deleteAccountDialog;
 		default:
 			this.logger.log(Level.SEVERE, "Unexpected view state in model", state);
 			return null;
@@ -1079,32 +1108,27 @@ public class ViewGUI implements View {
 		});
 	}
 	private void handleViewState() {
-		ViewState state = this.model.getViewState();
-		switch (state) {
-		case LOGIN:
-			this.hoverFrame.setVisible(false);
-			this.loginFrame.setVisible(true);
-			this.createAccountDialog.setVisible(false);
-			break;
-		case CREATE_ACCOUNT:
-			this.hoverFrame.setVisible(false);
-			this.loginFrame.setVisible(true);
-			this.createAccountDialog.setVisible(true);
-			break;
-		case WAITING:
-			this.hoverFrame.setVisible(true);
-			this.loginFrame.setVisible(false);
-			this.manageCredentialsDialog.setVisible(false);
-			break;
-		case MANAGING:
-			this.hoverFrame.setVisible(true);
-			this.loginFrame.setVisible(false);
-			this.manageCredentialsDialog.setVisible(true);
-			break;
-		default:
-			this.logger.log(Level.SEVERE, "Unexpected view state in model", state);
-		}
+		// Warning: when a modal dialog is set to visible, the thread processing this
+		// method will block until the dialog is dismissed.
+		// Thus setVisible(true) on a modal dialog MUST be the last method called.
+		
 		handleSyncStatus();
+		
+		Window[] windows = new Window[] {
+				createAccountDialog,
+				manageCredentialsDialog, changeMasterPasswordDialog, deleteAccountDialog,
+				loginFrame, hoverFrame,
+		};
+		Window activeWindow = this.getCurrentActiveWindow();
+		for (Window window : windows) {
+			window.setVisible(false);
+		}
+		for (Window window : windows) {
+			if (window.isAncestorOf(activeWindow)
+					&& window instanceof JFrame)
+			window.setVisible(true);
+		}
+		activeWindow.setVisible(true);
 	}
 
 	@Override

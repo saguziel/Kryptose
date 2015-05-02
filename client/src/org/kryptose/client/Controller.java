@@ -56,7 +56,6 @@ public class Controller {
 				logger.log(Level.SEVERE, "Uncaught error in Controller thread", t);
 			} finally {
 				model.setWaitingOnServer(false);
-				doneProcessing(success);
 			}
 		}
     }
@@ -282,11 +281,16 @@ public class Controller {
     	MasterCredentials mCred = new MasterCredentials(username, password);
     	model.setMasterCredentials(mCred);
     	
-    	// Clear password field
-    	//model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
-    	
     	// Fetch from server
-    	return this.doFetch();
+    	boolean success = this.doFetch();
+    	if (success) {
+    		this.doStateTransition(ViewState.WAITING);
+    	} else {
+    		model.getMasterCredentials().destroy();
+    		model.setMasterCredentials(null);
+    	}
+		model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
+		return success;
     }
     
     public void logout() {
@@ -401,8 +405,6 @@ public class Controller {
     }
     
     private boolean doCreateAccount() {
-    	model.setWaitingOnServer(true);
-    	
     	String username = model.getFormText(TextForm.CREATE_MASTER_USERNAME);
     	char[] password = model.getFormPasswordClone(PasswordForm.CREATE_MASTER_PASSWORD);
     	char[] confirm = model.getFormPasswordClone(PasswordForm.CREATE_CONFIRM_PASSWORD);
@@ -437,6 +439,7 @@ public class Controller {
         	}
             r.verifySuccessful();
             model.setPasswordFile(new PasswordFile(mCred));
+			this.doStateTransition(ViewState.WAITING);
             return true;
         } catch (UsernameInUseException e) {
         	model.setLastException(e);
@@ -456,8 +459,6 @@ public class Controller {
     }
     
     private boolean doDeleteAccount() {
-    	model.setWaitingOnServer(true);
-    	
         // TODO make account deletion happen
 		logger.severe("deleteAccount not implemented in Controller");
     	
@@ -474,8 +475,6 @@ public class Controller {
 		});
     }
     private boolean doChangeMasterPassword() {
-    	model.setWaitingOnServer(true);
-
 		logger.severe("changeMasterPassword not implemented in Controller");
         // TODO make password changing happen
 		return false;
@@ -514,29 +513,6 @@ public class Controller {
 		});
 	}
 
-	private void doneProcessing(boolean success) {
-		ViewState viewState = model.getViewState();
-		
-		model.setWaitingOnServer(false);
-		
-		if (viewState == ViewState.LOGIN) {
-			if (success) this.doStateTransition(ViewState.WAITING);
-			else model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
-			return;
-		}
-		
-		if (viewState == ViewState.CREATE_ACCOUNT) {
-			if (success) this.doStateTransition(ViewState.WAITING);
-			return;
-		}
-		
-		if (viewState == ViewState.MANAGING) {
-			// do nothing.
-			return;
-		}
-		// TODO process other requests
-	}
-
 	public void requestViewState(final ViewState viewState) {
 		this.pool.submit(new QuickTaskRunner() {
 			@Override
@@ -548,25 +524,25 @@ public class Controller {
 	private void doRequestViewState(ViewState viewState) {
 		ViewState oldState = this.model.getViewState();
 		
-		if (oldState == ViewState.LOGIN
-				&& viewState == ViewState.CREATE_ACCOUNT) {
-			this.doStateTransition(viewState);
-			
-		} else if (oldState == ViewState.CREATE_ACCOUNT
-				&& viewState == ViewState.LOGIN) {
-			this.doStateTransition(viewState);
-			
-		} else if (oldState == ViewState.WAITING
-				&& viewState == ViewState.MANAGING) {
-			this.doStateTransition(viewState);
-			
-		} else if (oldState == ViewState.MANAGING
-				&& viewState == ViewState.WAITING) {
-			this.doStateTransition(viewState);
-			
-		} else {
-			logger.log(Level.SEVERE, "Bad view state transition from " + oldState + " to " + viewState);
+		ViewState[][] allowedTransitions = new ViewState[][] {
+			new ViewState[] { ViewState.LOGIN, ViewState.CREATE_ACCOUNT},
+			new ViewState[] { ViewState.CREATE_ACCOUNT, ViewState.LOGIN},
+			new ViewState[] { ViewState.WAITING, ViewState.MANAGING},
+			new ViewState[] { ViewState.MANAGING, ViewState.WAITING},
+			new ViewState[] { ViewState.WAITING, ViewState.CHANGE_MASTER_PASSWORD},
+			new ViewState[] { ViewState.CHANGE_MASTER_PASSWORD, ViewState.WAITING},
+			new ViewState[] { ViewState.WAITING, ViewState.DELETE_ACCOUNT},
+			new ViewState[] { ViewState.DELETE_ACCOUNT, ViewState.WAITING},
+		};
+		
+		for (ViewState[] transition : allowedTransitions) {
+			if (oldState == transition[0] && viewState == transition[1]) {
+				this.doStateTransition(viewState);
+				return;
+			}
 		}
+			
+		logger.log(Level.SEVERE, "Bad view state transition from " + oldState + " to " + viewState);
 	}
 
 	private void doStateTransition(ViewState viewState) {
@@ -586,6 +562,16 @@ public class Controller {
 		if (viewState == ViewState.MANAGING) {
 			this.refreshCredOptions();
 		}
+		
+		if (oldState == ViewState.CHANGE_MASTER_PASSWORD) {
+			this.model.setFormPassword(PasswordForm.CHANGE_OLD_MASTER_PASSWORD, null);
+			this.model.setFormPassword(PasswordForm.CHANGE_NEW_MASTER_PASSWORD, null);
+			this.model.setFormPassword(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD, null);
+		}
+		
+		if (oldState == ViewState.DELETE_ACCOUNT) {
+			this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
+		}
 
 		this.model.setViewState(viewState);
 	}
@@ -596,7 +582,6 @@ public class Controller {
 		String domain = model.getFormText(TextForm.CRED_DOMAIN);
 		String username = model.getFormText(TextForm.CRED_USERNAME);
 		
-
 		String[] domainOptions = pFile.getDomains();
 		String[] usernameOptions = pFile.getUsernames(domain);
 		logger.fine(domain + " ==> " + Arrays.toString(usernameOptions));
