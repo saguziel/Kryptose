@@ -1,6 +1,7 @@
 package org.kryptose.client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -15,7 +16,10 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -24,6 +28,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import java.io.IOException;
@@ -39,6 +44,7 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -55,6 +61,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.text.GapContent;
@@ -178,7 +185,6 @@ public class ViewGUI implements View {
 		}
 		void bindTo(JComboBox<String> comboBox) {
 			this.comboBox = comboBox;
-			// TODO figure out how this all works.
 			this.comboBox.addActionListener(this);
 			this.comboBox.addFocusListener(this);
 			this.comboBox.addItemListener(new ItemListener() {
@@ -388,29 +394,53 @@ public class ViewGUI implements View {
 			hoverFrame.setExtendedState(JFrame.ICONIFIED);
 		}
 	};
+	
+	private class DragMoveListener extends MouseAdapter {
+		private Window toMove;
+		private Point mouseDown;
+		public DragMoveListener(Window toMove) {
+			super();
+			this.toMove = toMove;
+		}
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			if (this.mouseDown == null) return;
+			Point p = toMove.getLocation();
+			p.x += e.getX() - mouseDown.getX();
+			p.y += e.getY() - mouseDown.getY();
+			toMove.setLocation(p);
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				this.mouseDown = e.getPoint();
+			}
+		}
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			this.mouseDown = null;
+		}
+	};
+	
 	private Action moveAction = new AbstractAction("Move") {
 		final Cursor moveCursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
 		final Cursor normalCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			MouseAdapter listener = new MouseAdapter() {
+			MouseAdapter listener = new DragMoveListener(hoverFrame) {
 				@Override
-				public void mouseClicked(MouseEvent e) {
+				public void mousePressed(MouseEvent e) {
 					if (!hoverFrame.getCursor().equals(moveCursor)) {
 						reset();
+					} else {
+						super.mousePressed(e);
 					}
-				}
-				@Override
-				public void mouseDragged(MouseEvent e) {
-					Point p = hoverFrame.getLocation();
-					p.x += e.getX();
-					p.y += e.getY();
-					hoverFrame.setLocation(p);
 				}
 				@Override
 				public void mouseReleased(MouseEvent e) {
 					reset();
 					hoverFrame.setCursor(normalCursor);
+					super.mouseReleased(e);
 				}
 				private void reset() {
 					hoverFrame.removeMouseListener(this);
@@ -617,12 +647,12 @@ public class ViewGUI implements View {
 		mainMenu = new JMenu("Kryptose\u2122");
 		mainMenu.add(this.copyUsernameMenu);
 		mainMenu.add(this.copyPasswordMenu);;
-		mainMenu.add(new JMenuItem(this.reloadAction));
 		mainMenu.add(new JMenuItem(this.managingDialogAction));
+		mainMenu.add(new JMenuItem(this.reloadAction));
 		mainMenu.add(accountSettingsMenu);
 		mainMenu.addSeparator();
-		mainMenu.add(new JMenuItem(this.minimizeAction));
 		mainMenu.add(new JMenuItem(this.moveAction));
+		mainMenu.add(new JMenuItem(this.minimizeAction));
 		mainMenu.add(new JMenuItem(this.logOutAction));
 		mainMenu.add(new JMenuItem(this.exitAction));
 		menuBar.add(mainMenu);
@@ -712,12 +742,87 @@ public class ViewGUI implements View {
 			}
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// TODO maybe put this stuff in controller.
+				// and maybe also avoid having inner anonymous classes
+				// in inner anonymous classes in inner anonymous classes.
 				String content = copyPass ? pFile.getVal(domain, username) : username;
-				// TODO: not sure if this is the right way to set mime types etc
 				String mime = DataFlavor.getTextPlainUnicodeFlavor().getMimeType();
 				DataHandler t = new DataHandler(content, mime);
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-				clip.setContents(t, null); // TODO ClipboardOwner
+				class ClipboardWatcher implements ClipboardOwner, ActionListener {
+					static final int CLIPBOARD_DURATION = 9900;
+					static final String msg = "Clipboard will be cleared in %s seconds.";
+					JDialog dialog = new JDialog(hoverFrame, "Clipboard in use");
+					JLabel label = new JLabel(String.format(msg, 10));
+					JButton button = new JButton("Clear now");
+					volatile long expirationTimeMillis;
+					volatile boolean wiped = false;
+					synchronized void init() {
+						update();
+						JPanel panel = new JPanel(new BorderLayout());
+						JPanel buttonPanel = new JPanel();
+						panel.add(label, BorderLayout.NORTH);
+						buttonPanel.add(button);
+						panel.add(buttonPanel, BorderLayout.SOUTH);
+						panel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+						DragMoveListener dragListener = new DragMoveListener(dialog);
+						panel.addMouseMotionListener(dragListener);
+						panel.addMouseListener(dragListener);
+						dialog.add(panel);
+						dialog.setUndecorated(true);
+						dialog.pack();
+						dialog.setResizable(false);
+						button.addActionListener(ClipboardWatcher.this);
+						dialog.setVisible(true);
+					}
+					synchronized void update() {
+						int timeLeftMillis = (int)(expirationTimeMillis - System.currentTimeMillis());
+						if (timeLeftMillis <= 0) clear();
+						label.setText(String.format(msg, timeLeftMillis/1000));
+					}
+					synchronized void start() {
+						expirationTimeMillis = System.currentTimeMillis() + CLIPBOARD_DURATION;
+						init();
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								boolean keepRunning = true;
+								do {
+									synchronized (ClipboardWatcher.this) {
+										keepRunning = !wiped;
+									}
+									SwingUtilities.invokeLater(() -> update());
+									try { Thread.sleep(200);}
+									catch (InterruptedException e) {
+										keepRunning = false;
+										SwingUtilities.invokeLater(() -> clear());
+									}
+								} while (keepRunning);
+							}
+						}).start();
+					}
+					synchronized void clear() {
+						if (!wiped) Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
+						setCleared();
+					}
+					synchronized void setCleared() {
+						wiped = true;
+						dialog.setVisible(false);
+						dialog.dispose();
+					}
+					@Override
+					public synchronized void lostOwnership(Clipboard clipboard,
+							Transferable contents) {
+						setCleared();
+					}
+					@Override
+					public synchronized void actionPerformed(ActionEvent e) {
+						expirationTimeMillis = System.currentTimeMillis();
+					}
+				}
+				ClipboardWatcher watcher = new ClipboardWatcher();
+				watcher.start();
+				clip.setContents(t, watcher);
 			}
 		}
 		
