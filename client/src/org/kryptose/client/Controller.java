@@ -197,8 +197,6 @@ public class Controller {
 		});
     }
     private boolean doSet() {
-    	model.setWaitingOnServer(true);
-
     	String domain = model.getFormText(TextForm.CRED_DOMAIN);
     	String username = model.getFormText(TextForm.CRED_USERNAME);
     	char[] password = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
@@ -605,8 +603,13 @@ public class Controller {
 		String passString = pFile.getVal(domain, username);
 		char[] password = passString == null ? null : passString.toCharArray();
 		
-		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptions);
-		model.setFormOptions(OptionsForm.CRED_USERNAME, usernameOptions);
+		String[] domainOptionsWithNull = new String[domainOptions.length + 1];
+		System.arraycopy(domainOptions, 0, domainOptionsWithNull, 1, domainOptions.length);
+		String[] usernameOptionsWithNull = new String[usernameOptions.length + 1]; 
+		System.arraycopy(usernameOptions, 0, usernameOptionsWithNull, 1, usernameOptions.length);
+		
+		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptionsWithNull);
+		model.setFormOptions(OptionsForm.CRED_USERNAME, usernameOptionsWithNull);
 		model.setFormPassword(PasswordForm.CRED_PASSWORD, password);
 		model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
 		
