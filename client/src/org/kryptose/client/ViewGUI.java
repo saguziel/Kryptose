@@ -1,7 +1,6 @@
 package org.kryptose.client;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -28,7 +27,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import java.io.IOException;
@@ -44,7 +42,6 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -79,6 +76,8 @@ public class ViewGUI implements View {
 	private static final float HOVER_DEFAULT_OPACITY = 0.4f;
 	// pixels
 	private static final int GAP = 4;
+	private static final Action TRANSFER_FOCUS_ACTION = null; // this is supposed to be null
+	private static final String NO_TOOL_TIP = null; // this is supposed to be null
 	
 	
 	private abstract class FormListener implements ActionListener, FocusListener {
@@ -243,6 +242,33 @@ public class ViewGUI implements View {
 		}
 	}
 	
+	private class DragMoveListener extends MouseAdapter {
+		private Window toMove;
+		private Point mouseDown;
+		public DragMoveListener(Window toMove) {
+			super();
+			this.toMove = toMove;
+		}
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			if (this.mouseDown == null) return;
+			Point p = toMove.getLocation();
+			p.x += e.getX() - mouseDown.getX();
+			p.y += e.getY() - mouseDown.getY();
+			toMove.setLocation(p);
+		}
+		@Override
+		public void mousePressed(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				this.mouseDown = e.getPoint();
+			}
+		}
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			this.mouseDown = null;
+		}
+	}
+	
 	class OpacityAdjuster extends MouseAdapter implements MenuListener {
 		@Override
 		public void mouseEntered(MouseEvent e) {
@@ -284,6 +310,8 @@ public class ViewGUI implements View {
 	
 	private JDialog createAccountDialog;
 	private JDialog manageCredentialsDialog;
+	private JDialog changeMasterPasswordDialog;
+	private JDialog deleteAccountDialog;
 
 	private JMenu mainMenu;
 	private JMenu copyUsernameMenu;
@@ -364,7 +392,7 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.CHANGE_MASTER_PASSWORD);
 		}
 	};
-	private Action changeMasterPasswordCancelAction = new AbstractAction("Cancel") {
+	private Action cancelChangeMasterPasswordAction = new AbstractAction("Cancel") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			control.requestViewState(ViewState.WAITING);
@@ -382,9 +410,19 @@ public class ViewGUI implements View {
 			// TODO: should authenticate again before allowing this to happen.
 			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Permanently delete this Kryptose\u2122 account?", "Delete account", JOptionPane.YES_NO_OPTION);
 			if (val != JOptionPane.YES_OPTION) return;
-			int val2 = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Really delete?", "Delete account", JOptionPane.YES_NO_OPTION);
-			if (val2 != JOptionPane.YES_OPTION) return;
 			control.deleteAccount();
+		}
+	};
+	private Action deleteAccountDialogAction = new AbstractAction("Delete Account") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.CHANGE_MASTER_PASSWORD);
+		}
+	};
+	private Action cancelDeleteAccountAction = new AbstractAction("Cancel") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.WAITING);
 		}
 	};
 	
@@ -394,34 +432,6 @@ public class ViewGUI implements View {
 			hoverFrame.setExtendedState(JFrame.ICONIFIED);
 		}
 	};
-	
-	private class DragMoveListener extends MouseAdapter {
-		private Window toMove;
-		private Point mouseDown;
-		public DragMoveListener(Window toMove) {
-			super();
-			this.toMove = toMove;
-		}
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			if (this.mouseDown == null) return;
-			Point p = toMove.getLocation();
-			p.x += e.getX() - mouseDown.getX();
-			p.y += e.getY() - mouseDown.getY();
-			toMove.setLocation(p);
-		}
-		@Override
-		public void mousePressed(MouseEvent e) {
-			if (e.getButton() == MouseEvent.BUTTON1) {
-				this.mouseDown = e.getPoint();
-			}
-		}
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			this.mouseDown = null;
-		}
-	};
-	
 	private Action moveAction = new AbstractAction("Move") {
 		final Cursor moveCursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
 		final Cursor normalCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
@@ -499,6 +509,24 @@ public class ViewGUI implements View {
 		cont.add(comp,gbc);
 	}
 	
+	private void addTextFieldToGrid(Container cont, TextForm form,
+			String label, Action action, String toolTip) {
+		JTextField textField = new JTextField(18);
+		addGridWithLabel(cont, label, toolTip, textField);
+		TextFieldListener tfl = new TextFieldListener(form, action);
+		this.textFieldListeners.add(tfl);
+		tfl.bindTo(textField);
+	}
+	
+	private void addPasswordFieldToGrid(Container cont, PasswordForm form,
+			String label, Action action, String toolTip) {
+		JPasswordField passwordField = new JPasswordField(18);
+		addGridWithLabel(cont, label, toolTip, passwordField);
+		PasswordFieldListener pfl = new PasswordFieldListener(form, action);
+		this.passwordFieldListeners.add(pfl);
+		pfl.bindTo(passwordField);
+	}
+	
 	private JPanel createLoginPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
 
@@ -518,17 +546,11 @@ public class ViewGUI implements View {
 		gbc.anchor = GridBagConstraints.WEST;
 		fieldsPanel.add(loginLabel, gbc);
 		
-		JTextField usernameField = new JTextField(18);
-		addGridWithLabel(fieldsPanel, "Username: ", User.VALID_USERNAME_DOC, usernameField);
-		TextFieldListener tfl = new TextFieldListener(TextForm.LOGIN_MASTER_USERNAME, null);
-		this.textFieldListeners.add(tfl);
-		tfl.bindTo(usernameField);
+		this.addTextFieldToGrid(fieldsPanel, TextForm.LOGIN_MASTER_USERNAME,
+				"Username: ", TRANSFER_FOCUS_ACTION, User.VALID_USERNAME_DOC);
 
-		JPasswordField passwordField = new JPasswordField(18);
-		addGridWithLabel(fieldsPanel, "Password: ", null, passwordField);
-		PasswordFieldListener pfl = new PasswordFieldListener(PasswordForm.LOGIN_MASTER_PASSWORD, logInAction);
-		this.passwordFieldListeners.add(pfl);
-		pfl.bindTo(passwordField);
+		this.addPasswordFieldToGrid(fieldsPanel, PasswordForm.LOGIN_MASTER_PASSWORD,
+				"Password: ", logInAction, NO_TOOL_TIP);
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JButton button = new JButton(logInAction);
@@ -568,23 +590,14 @@ public class ViewGUI implements View {
 	private JPanel createCreateAccountPanel() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		
-		JTextField usernameField = new JTextField(18);
-		addGridWithLabel(panel, "Username: ", User.VALID_USERNAME_DOC, usernameField);
-		TextFieldListener tfl = new TextFieldListener(TextForm.CREATE_MASTER_USERNAME, null);
-		this.textFieldListeners.add(tfl);
-		tfl.bindTo(usernameField);
+		this.addTextFieldToGrid(panel, TextForm.CREATE_MASTER_USERNAME,
+				"Username: ", TRANSFER_FOCUS_ACTION, User.VALID_USERNAME_DOC);
 
-		JPasswordField passwordField = new JPasswordField(18);
-		addGridWithLabel(panel, "Password: ", null, passwordField);
-		PasswordFieldListener pfl = new PasswordFieldListener(PasswordForm.CREATE_MASTER_PASSWORD, null);
-		this.passwordFieldListeners.add(pfl);
-		pfl.bindTo(passwordField);
+		this.addPasswordFieldToGrid(panel, PasswordForm.CREATE_MASTER_PASSWORD,
+				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
 
-		JPasswordField confirmPassword = new JPasswordField(18);
-		addGridWithLabel(panel, "Confirm Password: ", null, confirmPassword);
-		PasswordFieldListener cpfl = new PasswordFieldListener(PasswordForm.CREATE_CONFIRM_PASSWORD, createAccountAction);
-		this.passwordFieldListeners.add(cpfl);
-		cpfl.bindTo(confirmPassword);
+		this.addPasswordFieldToGrid(panel, PasswordForm.CREATE_CONFIRM_PASSWORD,
+				"Confirm Password: ", createAccountAction, NO_TOOL_TIP);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
 		buttonPanel.add(new JButton(this.cancelCreateAccountAction));
@@ -614,23 +627,36 @@ public class ViewGUI implements View {
 		this.optionsListeners.add(uol);
 		uol.bindTo(usernameBox);
 
-		JPasswordField passwordField = new JPasswordField(18);
-		addGridWithLabel(panel, "Password: ", null, passwordField);
-		PasswordFieldListener pfl = new PasswordFieldListener(PasswordForm.CRED_PASSWORD, null);
-		this.passwordFieldListeners.add(pfl);
-		pfl.bindTo(passwordField);
+		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
+				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
 
-		JPasswordField confirmPassword = new JPasswordField(18);
-		addGridWithLabel(panel, "Confirm Password: ", null, confirmPassword);
-		PasswordFieldListener cpfl = new PasswordFieldListener(PasswordForm.CRED_CONFIRM_PASSWORD, setCredentialAction);
-		this.passwordFieldListeners.add(cpfl);
-		cpfl.bindTo(confirmPassword);
-		
-		// TODO option to display password on screen in plaintext.
+		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
+				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
 
 		addGridLeft(panel, new JButton(this.deleteCredentialAction));
 		addGridRight(panel, new JButton(this.setCredentialAction));
 		addGridRight(panel, new JButton(this.doneManagingAction));
+		
+		return panel;
+	}
+	
+	private JPanel createChangeMasterPasswordPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+
+		this.addPasswordFieldToGrid(panel, PasswordForm.CHANGE_OLD_MASTER_PASSWORD,
+				"Old Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
+
+		this.addPasswordFieldToGrid(panel, PasswordForm.CHANGE_NEW_MASTER_PASSWORD,
+				"New Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
+
+		this.addPasswordFieldToGrid(panel, PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD,
+				"Confirm New Password: ", setCredentialAction, NO_TOOL_TIP);
+
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
+		buttonPanel.add(new JButton(this.cancelChangeMasterPasswordAction));
+		buttonPanel.add(new JButton(this.changeMasterPasswordAction));
+		
+		addGridRight(panel, buttonPanel);
 		
 		return panel;
 	}
@@ -895,6 +921,7 @@ public class ViewGUI implements View {
 			final String title = "Error";
 			final Window parent = this.getCurrentActiveWindow();
 			SwingUtilities.invokeLater( new Runnable() {
+				@Override
 				public void run() {
 					JOptionPane.showMessageDialog(
 							parent, msg, title, JOptionPane.ERROR_MESSAGE);
@@ -913,7 +940,7 @@ public class ViewGUI implements View {
 				createAccountDialogAction, cancelCreateAccountAction,
 				reloadAction, managingDialogAction, doneManagingAction,
 				changeMasterPasswordAction,
-				changeMasterPasswordCancelAction, changeMasterPasswordDialogAction,
+				cancelChangeMasterPasswordAction, changeMasterPasswordDialogAction,
 				deleteAccountAction, reloadAction
 				}; 
 		
