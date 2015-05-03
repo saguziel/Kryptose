@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -328,12 +329,25 @@ public class Controller {
 			model.setLastException(e);
 			this.logger.log(Level.INFO, "Invalid credentials.", e);
 			// TODO error handling
-		} catch (MalformedRequestException | IOException | ClassCastException e) {
+		} catch (IOException e) {
+			if(e.getCause() instanceof NoSuchAlgorithmException){
+				String msg = "Error setting up the SSL Socket. Might be due to missing certificate files or wrong password. If persists, check the settings file or reinstall the app.";
+				Exception ex = new RecoverableException(msg);
+				model.setLastException(ex);
+				this.logger.log(Level.WARNING, msg, e);
+			}else{//generic IOException
+				String msg = "Error communicating with Kryptose\u2122 server.";
+				Exception ex = new RecoverableException(msg);
+				model.setLastException(ex);
+				this.logger.log(Level.WARNING, msg, e);				
+			}
+				
+		} catch (MalformedRequestException | ClassCastException e) {
 			String msg = "Error communicating with Kryptose\u2122 server.";
 			Exception ex = new RecoverableException(msg);
 			model.setLastException(ex);
 			this.logger.log(Level.WARNING, msg, e);
-		} catch (InternalServerErrorException e) {
+		}catch (InternalServerErrorException e) {
 			model.setLastException(e);
 			this.logger.log(Level.WARNING, "Internal server error.", e);
             // TODO error handling
