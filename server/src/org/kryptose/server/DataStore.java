@@ -37,6 +37,8 @@ public interface DataStore {
 	 */
 	public abstract Blob readBlob(User user);
 
+    public abstract boolean deleteBlob(User user);
+
     /**
      * Write a user-specific log entry.
      *

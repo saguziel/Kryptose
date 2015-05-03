@@ -157,7 +157,20 @@ public class FileSystemDataStore implements DataStore {
     		return WriteResult.SUCCESS;
     	}
     }
-    
+
+    @Override
+    public boolean deleteBlob(User u) {
+        File file = getUserBlobFile(u);
+
+        if (file.delete()) {
+            return true;
+        } else {
+            String errorMsg = "Error deleting account: " + u.getUsername();
+            logger.log(Level.SEVERE, errorMsg);
+            return false;
+        }
+    }
+
     /**
      * Ensure that the file has been created, and that all its parent directories exist.
      * @param file The file to ensure has been created.

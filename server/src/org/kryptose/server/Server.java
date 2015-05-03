@@ -119,10 +119,24 @@ public class Server {
             return this.handleRequestCreateAccount((RequestCreateAccount) request);
         } else if (request instanceof RequestChangePassword) {
             return this.handleRequestChangePassword((RequestChangePassword) request);
+        } else if (request instanceof RequestDeleteAccount) {
+            return this.handleRequestDeleteAccount((RequestDeleteAccount) request);
         } else {
         	// TODO: make sure this is included on server logs.
             return new ResponseErrorReport(new MalformedRequestException());
         }
+    }
+
+    private Response handleRequestDeleteAccount(RequestDeleteAccount request) {
+        Response response;
+        User u = request.getUser();
+
+        boolean result = this.dataStore.deleteBlob(u);
+        if (!result) {
+            return new ResponseDeleteAccount(false);
+        }
+        boolean result2 = this.userTable.deleteUser(u);
+        return new ResponseDeleteAccount(result2);
     }
 
     private Response handleRequestChangePassword(RequestChangePassword request) {
