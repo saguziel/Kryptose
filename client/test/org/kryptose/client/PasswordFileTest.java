@@ -15,16 +15,22 @@ import java.util.Arrays;
 
 public class PasswordFileTest {
 	
-	public static String MASTER_PWD = "MasterPassword";
-	public static String MASTER_PWD_WRONG = "WrongMasterPassword";
+	public static char[] MASTER_PWD = "MasterPassword".toCharArray();
+	public static char[] MASTER_PWD_WRONG = "WrongMasterPassword".toCharArray();
 	
 	public static String USERNAME1 = "antonio";
 	public static String USERNAME1_WRONG = "wrongusername";
 	
-
+    public static MasterCredentials MASTER_CRED_1;
+	public static MasterCredentials MASTER_CRED_1_WRONG_PWD; 
+	
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         KeyDerivator.setParams("AAAAAAAAAAAAAAAA", 40);
+        MASTER_CRED_1 = new MasterCredentials(USERNAME1, MASTER_PWD);
+    	MASTER_CRED_1_WRONG_PWD = new MasterCredentials(USERNAME1, MASTER_PWD_WRONG);
+
+
     }
 
     @AfterClass
@@ -33,6 +39,7 @@ public class PasswordFileTest {
 
     @Before
     public void setUp() throws Exception {
+        KeyDerivator.setParams("AAAAAAAAAAAAAAAA", 40);
 
     }
 
@@ -44,12 +51,12 @@ public class PasswordFileTest {
     @Test
     public final void blobEncryptionTest() throws Exception {
     	//Create a blob with a credential, encrypt, decrypt and verify it is unaltered.
-        PasswordFile p = new PasswordFile(USERNAME1);
+        PasswordFile p = new PasswordFile(MASTER_CRED_1);
         p.setVal("MyDom", "MyUser", "MyPwd");
 
-        Blob b = p.encryptBlob(USERNAME1, MASTER_PWD, LocalDateTime.now());
+        Blob b = p.encryptBlob(LocalDateTime.now());
 
-        PasswordFile p2 = new PasswordFile(USERNAME1, b, MASTER_PWD);
+        PasswordFile p2 = new PasswordFile(MASTER_CRED_1, b);
 
     	assertEquals(p2.getVal("MyDom","MyUser") , "MyPwd");
     	assertNotEquals(p2.getVal("MyDom","MyUser") , "MyPwdWrong");
@@ -60,7 +67,7 @@ public class PasswordFileTest {
     @Test
     public final void PasswordFileOperationsTest() throws Exception {
     	//Create a blob with a credential, encrypt, decrypt and verify it is unaltered.
-        PasswordFile p = new PasswordFile(USERNAME1);
+        PasswordFile p = new PasswordFile(MASTER_CRED_1);
         p.setVal("MyDom", "MyUser", "MyPwd");
         p.setVal("MyDom2", "MyUser", "MyPwd");
         //This should not create a new credential, but update the above one.
@@ -82,35 +89,35 @@ public class PasswordFileTest {
     @Test(expected = CryptoErrorException.class)
     public final void blobDecryptWrongMasterPasswordTest() throws Exception {
 
-        PasswordFile p = new PasswordFile(USERNAME1);
+        PasswordFile p = new PasswordFile(MASTER_CRED_1);
         p.setVal("MyDom", "MyUser", "MyPwd");
 
-        Blob b = p.encryptBlob(USERNAME1, MASTER_PWD, LocalDateTime.now());
+        Blob b = p.encryptBlob(LocalDateTime.now());
 
         //Try to decrypt the blob with wrong password
-        new PasswordFile(USERNAME1, b, MASTER_PWD_WRONG);
+        new PasswordFile(MASTER_CRED_1_WRONG_PWD, b);
     }
 
     @Test(expected = CryptoErrorException.class)
     public final void blobDecryptWrongUsernameTest() throws Exception {
 
-        PasswordFile p = new PasswordFile(USERNAME1);
+        PasswordFile p = new PasswordFile(MASTER_CRED_1);
         p.setVal("MyDom", "MyUser", "MyPwd");
 
-        Blob b = p.encryptBlob(USERNAME1, MASTER_PWD, LocalDateTime.now());
+        Blob b = p.encryptBlob(LocalDateTime.now());
 
         //Try to decrypt the blob with wrong username
-        new PasswordFile(USERNAME1_WRONG, b, MASTER_PWD);
+        new PasswordFile(new MasterCredentials(USERNAME1_WRONG, MASTER_PWD), b);
     }
 
 
     @Test(expected = CryptoErrorException.class)
     public final void blobEncryptionTamperedBlobTest1() throws Exception {
 
-        PasswordFile p = new PasswordFile(USERNAME1);
+        PasswordFile p = new PasswordFile(MASTER_CRED_1);
         p.setVal("MyDom", "MyUser", "MyPwd");
 
-        Blob b = p.encryptBlob(USERNAME1, MASTER_PWD, LocalDateTime.now());
+        Blob b = p.encryptBlob(LocalDateTime.now());
 
         //Try to alter the blob
         byte[] enc = b.getEncBytes();
@@ -124,16 +131,16 @@ public class PasswordFileTest {
         assertFalse(Arrays.equals(b.getDigest(), b2.getDigest()));
 
         //This should fail, as the blob has been tampered.
-        new PasswordFile(USERNAME1, b2, MASTER_PWD);
+        new PasswordFile(MASTER_CRED_1, b2);
     }
 
     @Test(expected = CryptoErrorException.class)
     public final void blobEncryptionTamperedBlobTest2() throws Exception {
 
-        PasswordFile p = new PasswordFile(USERNAME1);
+        PasswordFile p = new PasswordFile(MASTER_CRED_1);
         p.setVal("MyDom", "MyUser", "MyPwd");
 
-        Blob b = p.encryptBlob(USERNAME1, MASTER_PWD, LocalDateTime.now());
+        Blob b = p.encryptBlob(LocalDateTime.now());
 
         //Try to alter the blob
         byte[] iv = b.getIv();
@@ -147,7 +154,7 @@ public class PasswordFileTest {
         assertFalse(Arrays.equals(b.getDigest(), b2.getDigest()));
         
         //This should fail, as the blob has been tampered.
-        new PasswordFile(USERNAME1, b2, MASTER_PWD);
+        new PasswordFile(MASTER_CRED_1, b2);
     }
 
 }
