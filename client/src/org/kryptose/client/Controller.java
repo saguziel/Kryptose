@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.rmi.server.ExportException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -26,17 +27,7 @@ import org.kryptose.exceptions.InvalidCredentialsException;
 import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.exceptions.RecoverableException;
 import org.kryptose.exceptions.UsernameInUseException;
-import org.kryptose.requests.Blob;
-import org.kryptose.requests.KeyDerivator;
-import org.kryptose.requests.Request;
-import org.kryptose.requests.RequestCreateAccount;
-import org.kryptose.requests.RequestGet;
-import org.kryptose.requests.RequestPut;
-import org.kryptose.requests.Response;
-import org.kryptose.requests.ResponseCreateAccount;
-import org.kryptose.requests.ResponseGet;
-import org.kryptose.requests.ResponsePut;
-import org.kryptose.requests.User;
+import org.kryptose.requests.*;
 
 /**
  * Created by jeff on 4/27/15.
@@ -466,14 +457,19 @@ public class Controller {
     }
     
     private boolean doDeleteAccount() {
-        // TODO make account deletion happen
-		logger.severe("deleteAccount not implemented in Controller");
+        // TODO make account deletion happen - done?
+//		logger.severe("deleteAccount not implemented in Controller");
 
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
 
 		// stuff happens here.
-		
+        RequestDeleteAccount req = new RequestDeleteAccount(model.getMasterCredentials().getUser());
+		ResponseDeleteAccount r = this.sendRequest(req, ResponseDeleteAccount.class);
+        if (r == null)
+            return false;
+        if (!r.verifySuccessful())
+            return false;
     	this.doLogout();
     	return true; 
     }
@@ -486,6 +482,7 @@ public class Controller {
 			}
 		});
     }
+
     private boolean doChangeMasterPassword() {
 		logger.severe("changeMasterPassword not implemented in Controller");
         // TODO make password changing happen
@@ -495,9 +492,27 @@ public class Controller {
 		char[] newPassword = model.getFormPasswordClone(PasswordForm.CHANGE_NEW_MASTER_PASSWORD);
 		char[] newPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD);
 
-		// stuff goes here
-		
-		return false;
+        // TODO verify oldpassword and new passwords
+        PasswordFile pFile = model.getPasswordFile();
+        MasterCredentials newMCred = new MasterCredentials(mCred.getUsername(), newPassword);
+
+        Blob newBlob;
+        try {
+            newBlob = pFile.encryptBlob(newMCred, model.getLastModDate());
+        } catch (BadBlobException | CryptoErrorException e) {
+            model.setLastException(e);
+            this.logger.log(Level.INFO, "Failed to change master password.", e);
+            return false;
+        }
+
+        RequestChangePassword req = new RequestChangePassword(mCred.getUser(), newMCred.getAuthKey(), newBlob, pFile.getOldDigest());
+        ResponseChangePassword r = this.sendRequest(req, ResponseChangePassword.class);
+
+        model.setMasterCredentials(newMCred);
+        model.setPasswordFile(new PasswordFile(newMCred));
+        this.doStateTransition(ViewState.WAITING);
+        
+		return true;
     }
     
     public void updateFormText(TextForm form, String value) {
