@@ -117,10 +117,64 @@ public class Server {
             return this.handleRequestLog((RequestLog) request);
         } else if (request instanceof RequestCreateAccount) {
             return this.handleRequestCreateAccount((RequestCreateAccount) request);
+        } else if (request instanceof RequestChangePassword) {
+            return this.handleRequestChangePassword((RequestChangePassword) request);
         } else {
         	// TODO: make sure this is included on server logs.
             return new ResponseErrorReport(new MalformedRequestException());
         }
+    }
+
+    private Response handleRequestChangePassword(RequestChangePassword request) {
+        Response response;
+        User u = request.getUser();
+
+        Result result = this.userTable.changeAuthKey(u.getUsername(), u.getPasskey(), request.getNewAuthkey());
+        if (result != Result.AUTH_KEY_CHANGED) {
+            //auth key was changed or user deleted between authentication and this call
+            response = new ResponseErrorReport(new InternalServerErrorException());
+            String errorMsg = "Unexpected result from changing password";
+            this.getLogger().log(Level.SEVERE, errorMsg, result);
+            this.dataStore.writeUserLog(u, new Log(u, request, response));
+            return response;
+        }
+        DataStore.WriteResult writeResult = this.dataStore.writeBlob(u, request.getNewBlob(), request.getOldDigest());
+        switch (writeResult) {
+            case SUCCESS:
+                try {
+                    response = new ResponseChangePassword(request.getNewBlob().getDigest());
+                } catch (CryptoPrimitiveNotSupportedException e) {
+                    String errorMsg = "Java Runtime does not support required cryptography operations.";
+                    this.getLogger().log(Level.SEVERE, errorMsg, e);
+                    response = new ResponseErrorReport(new InternalServerErrorException());
+                }
+                break;
+            case STALE_WRITE:
+                response = new ResponseChangePassword(new StaleWriteException());
+                break;
+            case INTERNAL_ERROR:
+                response = new ResponseErrorReport(new InternalServerErrorException());
+                // Assume logging has already been done.
+                break;
+            case USER_DOES_NOT_EXIST: // we should have authenticated by now.
+            default:
+                response = new ResponseErrorReport(new InternalServerErrorException());
+                String errorMsg = "Switch-case fall-through in handleRequestChangePassword.";
+                this.getLogger().log(Level.SEVERE, errorMsg, Thread.currentThread().getStackTrace());
+                break;
+        }
+        if (writeResult != DataStore.WriteResult.SUCCESS) {
+            //revert auth key
+            result = this.userTable.changeAuthKey(u.getUsername(), request.getNewAuthkey(), u.getPasskey());
+            if (result != Result.AUTH_KEY_CHANGED) {
+                response = new ResponseErrorReport(new InternalServerErrorException());
+                String errorMsg = "ERROR: auth key changed but data inconsistent";
+                this.getLogger().log(Level.SEVERE, errorMsg, result);
+            }
+        }
+
+        this.dataStore.writeUserLog(u, new Log(u, request, response));
+        return response;
     }
 
     private Response handleRequestCreateAccount(RequestCreateAccount request) {
