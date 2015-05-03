@@ -742,6 +742,7 @@ public class ViewGUI implements View {
 		
 		this.loginFrame = new JFrame("Kryptose\u2122 Password Management System");
 		this.loginFrame.addWindowListener(new WindowCloseHandler(exitAction, loginFrame));
+		this.loginFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.loginFrame.setContentPane(createLoginPanel());
 		this.loginFrame.setResizable(false);
 		this.loginFrame.pack();
@@ -755,6 +756,7 @@ public class ViewGUI implements View {
 		
 		this.hoverFrame = new JFrame("Kryptose\u2122");
 		this.hoverFrame.addWindowListener(new WindowCloseHandler(exitAction, hoverFrame));
+		this.loginFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		this.hoverFrame.setJMenuBar(this.createMenuBar());
 		this.hoverFrame.setUndecorated(true);
 		this.hoverFrame.setAlwaysOnTop(true);
