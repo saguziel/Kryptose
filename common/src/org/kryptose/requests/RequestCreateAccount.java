@@ -5,7 +5,7 @@ import java.io.ObjectInputStream;
 
 /**
  * A request to get the blob stored by this user.
- * 
+ * <p>
  * Created by alexguziel on 3/15/15.
  */
 public final class RequestCreateAccount extends Request {
@@ -29,6 +29,6 @@ public final class RequestCreateAccount extends Request {
 
     @Override
     public String logEntry() {
-        return String.format("REQUEST: Get from %s\n", super.getUser().getUsername());
+        return String.format("REQUEST: Create account from %s\n", super.getUser().getUsername());
     }
 }
