@@ -15,7 +15,7 @@ public class InternalServerErrorException extends Exception {
 	private static final long serialVersionUID = -102224301046864950L;
 
 	public InternalServerErrorException() {
-		super("An internal server error has occurred. Please try again later.");
+		super("An internal server error has occurred.");
 		this.setStackTrace(new StackTraceElement[0]);
 	}
 
