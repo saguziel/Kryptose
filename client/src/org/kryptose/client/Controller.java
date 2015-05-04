@@ -630,6 +630,10 @@ public class Controller {
         model.setFormOptions(OptionsForm.CRED_USERNAME, null);
         model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
         model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+        model.setFormPassword(PasswordForm.CREATE_CONFIRM_PASSWORD, null);
+        for(PasswordForm e : PasswordForm.values())
+            model.setFormPassword(e, null);
+
 		this.model.setViewState(viewState);
 	}
 	
