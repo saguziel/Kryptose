@@ -931,14 +931,14 @@ public class ViewGUI implements View {
 		this.manageCredentialsDialog.setLocationRelativeTo(null);
 
 		this.editCredentialDialog = this.createModalDialog(
-				this.hoverFrame, "Edit Credential",
-				this.editCredentialAction, this.createEditCredentialPanel()
+				this.manageCredentialsDialog, "Edit Credential",
+				this.cancelEditingCredentialAction, this.createEditCredentialPanel()
 				);
 		this.editCredentialDialog.setLocationRelativeTo(null);
 
 		this.addCredentialDialog = this.createModalDialog(
-				this.hoverFrame, "Add New Credential",
-				this.addCredentialAction, this.createAddCredentialPanel()
+				this.manageCredentialsDialog, "Add New Credential",
+				this.cancelAddingCredentialAction, this.createAddCredentialPanel()
 				);
 		this.addCredentialDialog.setLocationRelativeTo(null);
 		
@@ -1312,12 +1312,14 @@ public class ViewGUI implements View {
 		};
 		Window activeWindow = this.getCurrentActiveWindow();
 		for (Window window : windows) {
-			window.setVisible(false);
+			if (!window.isAncestorOf(activeWindow) && window != activeWindow) {
+				window.setVisible(false);
+			}
 		}
 		for (Window window : windows) {
-			if (window.isAncestorOf(activeWindow)
-					&& window instanceof JFrame)
-			window.setVisible(true);
+			if (window.isAncestorOf(activeWindow) && window instanceof JFrame) {
+				window.setVisible(true);
+			}
 		}
 		activeWindow.setVisible(true);
 	}
