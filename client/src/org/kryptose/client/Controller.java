@@ -626,7 +626,7 @@ public class Controller {
 		if (oldState == ViewState.DELETE_ACCOUNT) {
 			this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
 		}
-        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
+//        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
         model.setFormOptions(OptionsForm.CRED_USERNAME, null);
         model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
         model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
