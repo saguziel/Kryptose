@@ -72,6 +72,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.GapContent;
 import javax.swing.text.PlainDocument;
 
+import org.kryptose.client.Controller.setType;
 import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.OptionsForm;
 import org.kryptose.client.Model.TextForm;
@@ -352,12 +353,6 @@ public class ViewGUI implements View {
 			control.createAccount();
 		}
 	};
-	private Action setCredentialAction = new AbstractAction("Save Credential") {
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			control.set();
-		}
-	};
 	private Action deleteCredentialAction = new AbstractAction("Delete Credential") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -475,7 +470,7 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.EDITING);
 		}
 	};
-	private Action doneEditingCredentialAction = new AbstractAction("Done") {
+	private Action editCredentialAction = new AbstractAction("Done") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			control.requestViewState(ViewState.MANAGING);
@@ -494,15 +489,17 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.ADDING);
 		}
 	};
-	private Action doneAddingCredentialAction = new AbstractAction("Done") {
+	private Action addCredentialAction = new AbstractAction("Done") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
+			control.set(setType.ADD);
 			control.requestViewState(ViewState.MANAGING);
 		}
 	};
 	private Action cancelAddingCredentialAction = new AbstractAction("Cancel") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
+			control.set(setType.EDIT);
 			control.requestViewState(ViewState.MANAGING);
 		}
 	};
@@ -609,6 +606,17 @@ public class ViewGUI implements View {
 		this.textFieldListeners.add(tfl);
 		tfl.bindTo(textField);
 	}
+
+	private void addDisabledTextFieldToGrid(Container cont, TextForm form,
+			String label, Action action, String toolTip) {
+		JTextField textField = new JTextField(18);
+		textField.setEnabled(false);
+		addGridWithLabel(cont, label, toolTip, textField);
+		TextFieldListener tfl = new TextFieldListener(form, action);
+		this.textFieldListeners.add(tfl);
+		tfl.bindTo(textField);
+	}
+
 	
 	private void addPasswordFieldToGrid(Container cont, PasswordForm form,
 			String label, Action action, String toolTip) {
@@ -713,11 +721,11 @@ public class ViewGUI implements View {
 				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
 
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
-				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
+				"Confirm Password: ", editCredentialAction, NO_TOOL_TIP);
 
 		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
 		addGridLeft(panel, new JButton(this.cancelEditingCredentialAction));
-		addGridRight(panel, new JButton(this.doneEditingCredentialAction));
+		addGridRight(panel, new JButton(this.editCredentialAction));
 		
 		return panel;
 	}
@@ -735,11 +743,11 @@ public class ViewGUI implements View {
 				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
 
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
-				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
+				"Confirm Password: ", addCredentialAction, NO_TOOL_TIP);
 
 		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
 		addGridLeft(panel, new JButton(this.cancelAddingCredentialAction));		
-		addGridRight(panel, new JButton(this.doneAddingCredentialAction));
+		addGridRight(panel, new JButton(this.addCredentialAction));
 		
 		return panel;
 	}
@@ -791,15 +799,6 @@ public class ViewGUI implements View {
 		
 		panel.add(buttonPanel);
 		
-//		addGridBelow(panel, buttonPanel);
-//		addGridBelow(panel, buttonPanel);
-//		addGridBelow(panel, buttonPanel);
-//		addGridBelow(panel, buttonPanel);
-//		addGridBelow(panel, new JButton(this.doneManagingAction));
-//		addGridRight(panel, new JButton(this.doneManagingAction));
-//		addGridLeft(panel, new JButton(this.doneManagingAction));
-//		addGridBelow(panel, new JButton(this.doneManagingAction));
-//		addGridBelow(panel, new JButton(this.doneManagingAction));
 		
 
 		
@@ -933,13 +932,13 @@ public class ViewGUI implements View {
 
 		this.editCredentialDialog = this.createModalDialog(
 				this.hoverFrame, "Edit Credential",
-				this.doneEditingCredentialAction, this.createEditCredentialPanel()
+				this.editCredentialAction, this.createEditCredentialPanel()
 				);
 		this.editCredentialDialog.setLocationRelativeTo(null);
 
 		this.addCredentialDialog = this.createModalDialog(
 				this.hoverFrame, "Add New Credential",
-				this.doneAddingCredentialAction, this.createAddCredentialPanel()
+				this.addCredentialAction, this.createAddCredentialPanel()
 				);
 		this.addCredentialDialog.setLocationRelativeTo(null);
 		
@@ -1159,7 +1158,7 @@ public class ViewGUI implements View {
 				reloadAction, 
 				managingDialogAction, doneManagingAction,
 				
-				editCredentialDialogAction, doneEditingCredentialAction,cancelEditingCredentialAction,
+				editCredentialDialogAction, editCredentialAction,cancelEditingCredentialAction,
 				
 				changeMasterPasswordAction,
 				cancelChangeMasterPasswordAction, changeMasterPasswordDialogAction,
@@ -1170,7 +1169,8 @@ public class ViewGUI implements View {
 		}
 		
 		if (waitingOnServer) {
-			setCredentialAction.setEnabled(false);
+			editCredentialAction.setEnabled(false);
+			addCredentialAction.setEnabled(false);
 			deleteCredentialAction.setEnabled(false);
 		} else {
 			boolean setEnabled = false;
@@ -1192,7 +1192,8 @@ public class ViewGUI implements View {
 				Utils.destroyPassword(passwordUI);
 				Utils.destroyPassword(passwordSaved); // TODO: see above WARNING about passwordFile destroying passwords
 			}
-			setCredentialAction.setEnabled(setEnabled);
+			addCredentialAction.setEnabled(setEnabled);
+			editCredentialAction.setEnabled(setEnabled);
 			deleteCredentialAction.setEnabled(delEnabled);
 		}
 		

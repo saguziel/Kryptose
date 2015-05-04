@@ -175,16 +175,18 @@ public class Controller {
 		return true;
     }
 
-
-    public void set() {
+    public static enum setType{ADD, EDIT};
+    
+    public void set(setType s) {
 		this.pool.submit(new LongTaskRunner() {
 			@Override
 			boolean doRun() {
-				return doSet();
+				return doSet(s);
 			}
 		});
     }
-    private boolean doSet() {
+    
+    private boolean doSet(setType s) {
     	String domain = model.getFormText(TextForm.CRED_DOMAIN);
     	String username = model.getFormText(TextForm.CRED_USERNAME);
     	char[] password = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
@@ -204,12 +206,20 @@ public class Controller {
     		validationError = "Entered passwords do not match.";
     	}
 		Utils.destroyPassword(confirm);
+
+		if(validationError == null && s == setType.ADD && model.getPasswordFile().getVal(domain, username)!= null)
+			validationError = "A credential for the same domain and username already exists. Please edit or delete it.";		
+
+		if(validationError == null && s == setType.EDIT && model.getPasswordFile().getVal(domain, username)== null)
+			validationError = "You tried to edit a credential, but it seems the credential you want to edit does not exist. This is a bug. Please contact Kryptose to have it fixed.";				
 		
     	if (validationError != null) {
     		Utils.destroyPassword(password);
     		model.setLastException(new RecoverableException(validationError));
             return false;
     	}
+    	
+
     	
     	model.getPasswordFile().setVal(domain, username, new String(password));
     	
@@ -632,6 +642,23 @@ public class Controller {
 		if (oldState == ViewState.DELETE_ACCOUNT) {
 			this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
 		}
+		
+		if (viewState == viewState.ADDING){
+			this.model.setFormText(TextForm.CRED_DOMAIN, null);
+			this.model.setFormText(TextForm.CRED_USERNAME, null);
+			this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+			this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+		}
+
+		if (viewState == viewState.EDITING && oldState == viewState.MANAGING){
+			//TODO: whatever it is selected in the managing thing
+			this.model.setFormText(TextForm.CRED_DOMAIN, null);
+			this.model.setFormText(TextForm.CRED_USERNAME, null);
+			
+			this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+			this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+		}
+
 //        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
 //        model.setFormOptions(OptionsForm.CRED_USERNAME, null);
         model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
