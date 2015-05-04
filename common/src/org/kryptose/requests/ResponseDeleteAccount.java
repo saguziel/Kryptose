@@ -9,6 +9,7 @@ public final class ResponseDeleteAccount extends Response {
 
     public ResponseDeleteAccount(boolean successful) {
         super();
+        this.successful = successful;
     }
 
     public boolean verifySuccessful() {
