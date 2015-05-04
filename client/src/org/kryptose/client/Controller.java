@@ -463,6 +463,10 @@ public class Controller {
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
 
+        if (!arrEqual(mCred.getPassword(), passwordConfirm)) {
+            return false;
+        }
+
 		// stuff happens here.
         RequestDeleteAccount req = new RequestDeleteAccount(model.getMasterCredentials().getUser());
 		ResponseDeleteAccount r = this.sendRequest(req, ResponseDeleteAccount.class);
@@ -483,6 +487,17 @@ public class Controller {
 		});
     }
 
+    private boolean arrEqual(char[] arr1, char[] arr2) {
+        if(arr1.length == arr2.length) {
+            for(int i = 0; i < arr1.length; i++){
+                if(arr1[i] != arr2[i])
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     private boolean doChangeMasterPassword() {
 		logger.severe("changeMasterPassword not implemented in Controller");
         // TODO make password changing happen
@@ -491,6 +506,15 @@ public class Controller {
 		char[] oldPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_OLD_MASTER_PASSWORD);
 		char[] newPassword = model.getFormPasswordClone(PasswordForm.CHANGE_NEW_MASTER_PASSWORD);
 		char[] newPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD);
+
+        if(!arrEqual(oldPasswordConfirm, mCred.getPassword())){
+            model.setLastException(new RecoverableException("Wrong old password"));
+            return false;
+        }
+        if(!arrEqual(newPassword, newPasswordConfirm)){
+            model.setLastException(new RecoverableException("New passwords do not match"));
+            return false;
+        }
 
         // TODO verify oldpassword and new passwords
         PasswordFile pFile = model.getPasswordFile();
@@ -511,7 +535,7 @@ public class Controller {
         model.setMasterCredentials(newMCred);
         model.setPasswordFile(new PasswordFile(newMCred));
         this.doStateTransition(ViewState.WAITING);
-        
+
 		return true;
     }
     
