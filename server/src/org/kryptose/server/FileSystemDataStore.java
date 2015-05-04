@@ -162,7 +162,7 @@ public class FileSystemDataStore implements DataStore {
     public boolean deleteBlob(User u) {
         File file = getUserBlobFile(u);
 
-        if (file.delete()) {
+        if (!file.exists() || file.delete()) {
             return true;
         } else {
             String errorMsg = "Error deleting account: " + u.getUsername();
