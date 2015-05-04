@@ -503,7 +503,9 @@ public class Controller {
 		char[] newPassword = model.getFormPasswordClone(PasswordForm.CHANGE_NEW_MASTER_PASSWORD);
 		char[] newPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD);
 
-
+        if(!arrEqual(oldPasswordConfirm, mCred.getPassword()) || !arrEqual(newPassword, newPasswordConfirm)){
+            return false;
+        }
 
         // TODO verify oldpassword and new passwords
         PasswordFile pFile = model.getPasswordFile();
