@@ -664,18 +664,4 @@ public class Controller {
 	}
 
 
-
-
-	
-	public static void main(String[] args) {
-		// For debugging purposes.
-		Handler handler = new ConsoleHandler();
-		handler.setLevel(Level.FINE);
-		Logger clientLogger = Logger.getLogger("org.kryptose.client");
-		clientLogger.setLevel(Level.FINE);
-		clientLogger.addHandler(handler);
-		new Controller().start();
-	}
-
-
 }
