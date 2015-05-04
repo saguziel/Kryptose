@@ -463,6 +463,10 @@ public class Controller {
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
 
+        if (!arrEqual(mCred.getPassword(), passwordConfirm)) {
+            return false;
+        }
+
 		// stuff happens here.
         RequestDeleteAccount req = new RequestDeleteAccount(model.getMasterCredentials().getUser());
 		ResponseDeleteAccount r = this.sendRequest(req, ResponseDeleteAccount.class);
@@ -503,7 +507,12 @@ public class Controller {
 		char[] newPassword = model.getFormPasswordClone(PasswordForm.CHANGE_NEW_MASTER_PASSWORD);
 		char[] newPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD);
 
-        if(!arrEqual(oldPasswordConfirm, mCred.getPassword()) || !arrEqual(newPassword, newPasswordConfirm)){
+        if(!arrEqual(oldPasswordConfirm, mCred.getPassword())){
+            model.setLastException(new RecoverableException("Wrong old password"));
+            return false;
+        }
+        if(!arrEqual(newPassword, newPasswordConfirm)){
+            model.setLastException(new RecoverableException("New passwords do not match"));
             return false;
         }
 
