@@ -68,7 +68,6 @@ import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.OptionsForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
-import org.kryptose.exceptions.RecoverableException;
 import org.kryptose.requests.User;
 
 public class ViewGUI implements View {
@@ -980,20 +979,17 @@ public class ViewGUI implements View {
 	}
 	private void handleServerException() {
 		Exception ex = model.getLastServerException();
-		if (ex instanceof RecoverableException) {
-			final String msg = ex.getMessage();
-			final String title = "Error";
-			final Window parent = this.getCurrentActiveWindow();
-			SwingUtilities.invokeLater( new Runnable() {
-				@Override
-				public void run() {
-					JOptionPane.showMessageDialog(
-							parent, msg, title, JOptionPane.ERROR_MESSAGE);
-				}
-			});
-		} else {
-			// TODO
-		}
+		if (ex == null) return;
+		final String msg = ex.getMessage();
+		final String title = "Error";
+		final Window parent = this.getCurrentActiveWindow();
+		SwingUtilities.invokeLater( new Runnable() {
+			@Override
+			public void run() {
+				JOptionPane.showMessageDialog(
+						parent, msg, title, JOptionPane.ERROR_MESSAGE);
+			}
+		});
 	}
 	
 	private void handleActionStatuses() {

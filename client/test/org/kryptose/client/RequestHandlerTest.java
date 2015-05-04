@@ -1,14 +1,7 @@
 package org.kryptose.client;
 
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-
 import java.io.IOException;
-import java.util.logging.Level;
-
-import javax.net.ServerSocketFactory;
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
 
 import org.junit.After;
 import org.junit.AfterClass;
