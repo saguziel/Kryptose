@@ -465,6 +465,7 @@ public class Controller {
 
         if (!arrEqual(mCred.getPassword(), passwordConfirm)) {
             System.out.println("first");
+            model.setLastException(new RecoverableException("Password incorrect."));
             return false;
         }
 
@@ -473,10 +474,12 @@ public class Controller {
 		ResponseDeleteAccount r = this.sendRequest(req, ResponseDeleteAccount.class);
         if (r == null){
             System.out.println("second");
+            model.setLastException(new RecoverableException("Error: server unavailable"));
             return false;
         }
         if (!r.verifySuccessful()) {
             System.out.println("third");
+            model.setLastException(new RecoverableException("Error: account delete failed unexpectedly"));
             return false;
         }
     	this.doLogout();
