@@ -58,7 +58,7 @@ public class LogFormatterTest {
             assertNotEquals(formatted[i], formatted[i + 1]);
         }
         String simpleFormatted = f.format(hello);
-        String[] decrypted = lr.decrypt(formatted);
+        String[] decrypted = lr.decrypt(formatted,0);
         for (int i = 0; i < formatted.length; i++) {
             assertEquals(decrypted[i], simpleFormatted);
         }
@@ -66,7 +66,7 @@ public class LogFormatterTest {
 
     @Test
     public void writeBytes() throws Exception {
-        Path p = FileSystems.getDefault().getPath("server/", "logPassfile");
+        Path p = FileSystems.getDefault().getPath("", "logPassfile");
         Base64.Encoder encoder = Base64.getEncoder();
         Files.write(p, encoder.encode(auth_key), StandardOpenOption.CREATE);
     }
