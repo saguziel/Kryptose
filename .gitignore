@@ -21,6 +21,7 @@ hs_err_pid*
 server/datastore/*
 server/usertable.bin
 server/usertable.bin.bak
+server/logPassfile
 
 # Extraneous .gitignores
 server/.gitignore
