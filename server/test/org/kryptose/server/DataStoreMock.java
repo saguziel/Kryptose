@@ -39,4 +39,10 @@ public class DataStoreMock implements DataStore {
 		return null;
 	}
 
+	@Override
+	public boolean deleteBlob(User user) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

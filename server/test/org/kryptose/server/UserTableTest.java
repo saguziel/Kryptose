@@ -220,13 +220,27 @@ public class UserTableTest {
 		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
 		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
 	}
-	
+/*	
 	@Test
-	public void testEqualUsers() {
+	public void testDeleteUsers() {
 		UserTable ut = new UserTable(LOGGER, testFile);
 		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
-		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
+		assertFalse(ut.deleteUser(TEST_USER));
 		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
 	}
+	*/
+	@Test
+	public void testEqualsUser() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertTrue(TEST_USER.equals(TEST_USER));
+		assertTrue((new User(TEST_USERNAME, TEST_PASSKEY)).equals(new User(TEST_USERNAME, TEST_PASSKEY)));
+		
+		//Two users are equal if they have the same username, even if they have different passwords.
+		assertTrue((new User(TEST_USERNAME, TEST_PASSKEY)).equals(new User(TEST_USERNAME, TEST_PASSKEY_2)));
+		
+		assertFalse((new User(TEST_USERNAME, TEST_PASSKEY)).equals(new User(TEST_USERNAME_2, TEST_PASSKEY)));
+		assertTrue((new User(TEST_USERNAME, TEST_PASSKEY)).hashCode()==  (new User(TEST_USERNAME, TEST_PASSKEY)).hashCode());
+	}
+
 
 }
