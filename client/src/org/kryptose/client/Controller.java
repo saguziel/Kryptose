@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.rmi.server.ExportException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -462,7 +461,7 @@ public class Controller {
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
 
-        if (!arrEqual(mCred.getPassword(), passwordConfirm)) {
+        if (!Arrays.equals(mCred.getPassword(), passwordConfirm)) {
 //            System.out.println("first");
             model.setLastException(new RecoverableException("Password incorrect."));
             return false;
@@ -496,17 +495,6 @@ public class Controller {
 		});
     }
 
-    private boolean arrEqual(char[] arr1, char[] arr2) {
-        if(arr1.length == arr2.length) {
-            for(int i = 0; i < arr1.length; i++){
-                if(arr1[i] != arr2[i])
-                    return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
     private boolean doChangeMasterPassword() {
 		logger.severe("changeMasterPassword not implemented in Controller");
 		
@@ -515,11 +503,11 @@ public class Controller {
 		char[] newPassword = model.getFormPasswordClone(PasswordForm.CHANGE_NEW_MASTER_PASSWORD);
 		char[] newPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD);
 
-        if(!arrEqual(oldPasswordConfirm, mCred.getPassword())){
+        if(!Arrays.equals(oldPasswordConfirm, mCred.getPassword())){
             model.setLastException(new RecoverableException("Wrong old password"));
             return false;
         }
-        if(!arrEqual(newPassword, newPasswordConfirm)){
+        if(!Arrays.equals(newPassword, newPasswordConfirm)){
             model.setLastException(new RecoverableException("New passwords do not match"));
             return false;
         }
