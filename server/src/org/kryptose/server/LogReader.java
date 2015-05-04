@@ -108,14 +108,21 @@ public class LogReader {
                 String[] entries = new String[3];
                 String[] temp = new String[1];
 
+                BufferedWriter bw = null;
+
                 int i = 0;
+                outerloop:
                 do {
+                    if (bw != null) {
+                        bw.close();
+                    }
                     System.out.println("Enter log name or BREAK to quit");
                     String logName = new String(readToNewline(in, 200));
                     if (logName.equalsIgnoreCase("BREAK")) {
                         break;
                     }
                     int counter = 0;
+                    int successful = 0;
                     BufferedReader br = null;
                     try {
                         br = new BufferedReader(new FileReader("datastore/" + logName));
@@ -123,6 +130,9 @@ public class LogReader {
                         System.out.println("File not found, try again");
                         continue;
                     }
+
+                    bw = new BufferedWriter(new FileWriter("datastore/" + logName + ".out"));
+                    int iter_count = 1000;
                     while (true) {
                         if (i < 3) {
                             entries[i] = br.readLine();
@@ -131,16 +141,39 @@ public class LogReader {
                             }
                         } else {
                             temp[0] = entries[0] + "\n" + entries[1] + "\n" + entries[2];
+                            if (counter == iter_count) {
+                                System.out.format("Tag match not found up to hash iteration %d, continue for how many more loops\n", counter);
+                                String continuestring = new String(readToNewline(in, 100));
+                                int x = 0;
+                                while (true) {
+                                    try {
+                                        x = Integer.parseInt(continuestring);
+                                        iter_count += x;
+                                        break;
+                                    } catch (NumberFormatException e) {
+                                        System.out.println("Enter a valid number");
+                                        continuestring = new String(readToNewline(in, 100));
+                                    }
+                                }
+                                if (x == 0) {
+                                    break;
+                                }
+                            }
                             String[] decoded = lr.decrypt(temp, counter++);
                             if (decoded == null) {
                                 continue;
                             } else {
-                                System.out.println(decoded[0]);
+                                successful++;
+                                bw.write(decoded[0]);
                             }
                         }
                         i = (i + 1) % 4;
                     }
+                    System.out.format("Successfully wrote %d entries to %s%s\n", successful, logName, ".out");
                 } while (true);
+                if (bw != null) {
+                    bw.close();
+                }
                 break;
             default:
                 System.out.println("Choice must be CREATE or READ");
@@ -207,13 +240,13 @@ public class LogReader {
                 tag = m.doFinal(things[1]);
             } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
                     InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
                 return null;
             }
             if (Arrays.equals(tag, things[2])) {
                 results[i] = new String(output, Charset.forName("UTF-8"));
             } else {
-                System.out.println("Tag mismatch");
+                //System.out.println("Tag mismatch");
                 return null;
             }
 
