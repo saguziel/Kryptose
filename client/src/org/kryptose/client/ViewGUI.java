@@ -675,7 +675,7 @@ public class ViewGUI implements View {
 				"New Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
 
 		this.addPasswordFieldToGrid(panel, PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD,
-				"Confirm New Password: ", setCredentialAction, NO_TOOL_TIP);
+				"Confirm New Password: ", changeMasterPasswordAction, NO_TOOL_TIP);
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
 		buttonPanel.add(new JButton(this.cancelChangeMasterPasswordAction));
