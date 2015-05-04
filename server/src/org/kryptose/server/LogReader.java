@@ -92,7 +92,7 @@ public class LogReader {
                 clearArray(authkey);
                 clearArray(password);
 
-                Path p = FileSystems.getDefault().getPath("server/", "logPassfile");
+                Path p = FileSystems.getDefault().getPath("", "logPassfile");
                 if (p.getParent() != null) Files.createDirectories(p.getParent());
                 Files.write(p, encodedAuthKey, StandardOpenOption.CREATE_NEW);
 
@@ -118,7 +118,7 @@ public class LogReader {
                     int counter = 0;
                     BufferedReader br = null;
                     try {
-                        br = new BufferedReader(new FileReader("server/datastore/" + logName));
+                        br = new BufferedReader(new FileReader("datastore/" + logName));
                     } catch (FileNotFoundException e) {
                         System.out.println("File not found, try again");
                         continue;
