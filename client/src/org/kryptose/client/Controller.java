@@ -25,6 +25,7 @@ import org.kryptose.exceptions.InternalServerErrorException;
 import org.kryptose.exceptions.InvalidCredentialsException;
 import org.kryptose.exceptions.MalformedRequestException;
 import org.kryptose.exceptions.RecoverableException;
+import org.kryptose.exceptions.StaleWriteException;
 import org.kryptose.exceptions.UsernameInUseException;
 import org.kryptose.requests.*;
 
@@ -526,12 +527,21 @@ public class Controller {
 
         RequestChangePassword req = new RequestChangePassword(mCred.getUser(), newMCred.getAuthKey(), newBlob, pFile.getOldDigest());
         ResponseChangePassword r = this.sendRequest(req, ResponseChangePassword.class);
+        boolean success = true;
+        try {
+			r.getDigest();
+		} catch (StaleWriteException e) {
+			success = false;
+			model.setLastException(e);
+		}
 
-        model.setMasterCredentials(newMCred);
-        model.setPasswordFile(new PasswordFile(newMCred));
+        if (success) {
+        	model.setMasterCredentials(newMCred);
+        	model.setPasswordFile(new PasswordFile(newMCred));
+        }
         this.doStateTransition(ViewState.WAITING);
 
-		return true;
+		return success;
     }
     
     public void updateFormText(TextForm form, String value) {
