@@ -457,14 +457,13 @@ public class Controller {
     }
     
     private boolean doDeleteAccount() {
-        // TODO make account deletion happen - done?
 //		logger.severe("deleteAccount not implemented in Controller");
-        System.out.println("deleting master password");
+//        System.out.println("deleting master password");
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
 
         if (!arrEqual(mCred.getPassword(), passwordConfirm)) {
-            System.out.println("first");
+//            System.out.println("first");
             model.setLastException(new RecoverableException("Password incorrect."));
             return false;
         }
@@ -473,18 +472,18 @@ public class Controller {
         RequestDeleteAccount req = new RequestDeleteAccount(model.getMasterCredentials().getUser());
 		ResponseDeleteAccount r = this.sendRequest(req, ResponseDeleteAccount.class);
         if (r == null){
-            System.out.println("second");
+//            System.out.println("second");
             model.setLastException(new RecoverableException("Error: server unavailable"));
             return false;
         }
         if (!r.verifySuccessful()) {
-            System.out.println("third");
+//            System.out.println("third");
             model.setLastException(new RecoverableException("Error: account delete failed unexpectedly"));
             return false;
         }
     	this.doLogout();
         logger.severe("logging out");
-        System.out.println("logging out");
+//        System.out.println("logging out");
     	return true;
     }
 
@@ -614,7 +613,6 @@ public class Controller {
 
 	private void doStateTransition(ViewState viewState) {
 		ViewState oldState = this.model.getViewState();
-        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
 
         if ((oldState == ViewState.LOGIN || oldState == ViewState.CREATE_ACCOUNT)
 				&& viewState == ViewState.WAITING) {
@@ -641,6 +639,9 @@ public class Controller {
 			this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
 		}
         model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
+        model.setFormOptions(OptionsForm.CRED_USERNAME, null);
+        model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+        model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
 		this.model.setViewState(viewState);
 	}
 	
