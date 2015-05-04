@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.rmi.server.ExportException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Properties;
@@ -457,21 +456,34 @@ public class Controller {
     }
     
     private boolean doDeleteAccount() {
-        // TODO make account deletion happen - done?
 //		logger.severe("deleteAccount not implemented in Controller");
-
+//        System.out.println("deleting master password");
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
+
+        if (!Arrays.equals(mCred.getPassword(), passwordConfirm)) {
+//            System.out.println("first");
+            model.setLastException(new RecoverableException("Password incorrect."));
+            return false;
+        }
 
 		// stuff happens here.
         RequestDeleteAccount req = new RequestDeleteAccount(model.getMasterCredentials().getUser());
 		ResponseDeleteAccount r = this.sendRequest(req, ResponseDeleteAccount.class);
-        if (r == null)
+        if (r == null){
+//            System.out.println("second");
+            model.setLastException(new RecoverableException("Error: server unavailable"));
             return false;
-        if (!r.verifySuccessful())
+        }
+        if (!r.verifySuccessful()) {
+//            System.out.println("third");
+            model.setLastException(new RecoverableException("Error: account delete failed unexpectedly"));
             return false;
+        }
     	this.doLogout();
-    	return true; 
+        logger.severe("logging out");
+//        System.out.println("logging out");
+    	return true;
     }
 
     public void changeMasterPassword(){
@@ -485,14 +497,21 @@ public class Controller {
 
     private boolean doChangeMasterPassword() {
 		logger.severe("changeMasterPassword not implemented in Controller");
-        // TODO make password changing happen
 		
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] oldPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_OLD_MASTER_PASSWORD);
 		char[] newPassword = model.getFormPasswordClone(PasswordForm.CHANGE_NEW_MASTER_PASSWORD);
 		char[] newPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_CONFIRM_NEW_MASTER_PASSWORD);
 
-        // TODO verify oldpassword and new passwords
+        if(!Arrays.equals(oldPasswordConfirm, mCred.getPassword())){
+            model.setLastException(new RecoverableException("Wrong old password"));
+            return false;
+        }
+        if(!Arrays.equals(newPassword, newPasswordConfirm)){
+            model.setLastException(new RecoverableException("New passwords do not match"));
+            return false;
+        }
+
         PasswordFile pFile = model.getPasswordFile();
         MasterCredentials newMCred = new MasterCredentials(mCred.getUsername(), newPassword);
 
@@ -511,7 +530,7 @@ public class Controller {
         model.setMasterCredentials(newMCred);
         model.setPasswordFile(new PasswordFile(newMCred));
         this.doStateTransition(ViewState.WAITING);
-        
+
 		return true;
     }
     
@@ -582,8 +601,8 @@ public class Controller {
 
 	private void doStateTransition(ViewState viewState) {
 		ViewState oldState = this.model.getViewState();
-		
-		if ((oldState == ViewState.LOGIN || oldState == ViewState.CREATE_ACCOUNT)
+
+        if ((oldState == ViewState.LOGIN || oldState == ViewState.CREATE_ACCOUNT)
 				&& viewState == ViewState.WAITING) {
 			this.model.setFormText(TextForm.LOGIN_MASTER_USERNAME, null);
 			this.model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
@@ -607,7 +626,10 @@ public class Controller {
 		if (oldState == ViewState.DELETE_ACCOUNT) {
 			this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
 		}
-
+        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
+        model.setFormOptions(OptionsForm.CRED_USERNAME, null);
+        model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+        model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
 		this.model.setViewState(viewState);
 	}
 	

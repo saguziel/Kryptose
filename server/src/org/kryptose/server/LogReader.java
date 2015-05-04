@@ -6,10 +6,7 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -27,14 +24,10 @@ import java.util.Base64;
  */
 public class LogReader {
     private byte[] auth_key;
-    private byte[] current_key;
-    private int key_iteration;
 
 
     public LogReader(byte[] auth_key) {
         this.auth_key = auth_key.clone();
-        this.current_key = auth_key.clone();
-        this.key_iteration = 0;
     }
 
     public static void clearArray(char[] a) {
@@ -99,7 +92,7 @@ public class LogReader {
                 clearArray(authkey);
                 clearArray(password);
 
-                Path p = FileSystems.getDefault().getPath("", "logPassfile");
+                Path p = FileSystems.getDefault().getPath("server/", "logPassfile");
                 if (p.getParent() != null) Files.createDirectories(p.getParent());
                 Files.write(p, encodedAuthKey, StandardOpenOption.CREATE_NEW);
 
@@ -108,7 +101,6 @@ public class LogReader {
             case "READ":
                 System.out.println("Enter password up to 100 char");
                 password = readToNewline(in, 100);
-
                 authkey = passwordToBytes(password);
                 clearArray(password);
 
@@ -123,7 +115,14 @@ public class LogReader {
                     if (logName.equalsIgnoreCase("BREAK")) {
                         break;
                     }
-                    BufferedReader br = new BufferedReader(new FileReader("datastore/" + logName));
+                    int counter = 0;
+                    BufferedReader br = null;
+                    try {
+                        br = new BufferedReader(new FileReader("server/datastore/" + logName));
+                    } catch (FileNotFoundException e) {
+                        System.out.println("File not found, try again");
+                        continue;
+                    }
                     while (true) {
                         if (i < 3) {
                             entries[i] = br.readLine();
@@ -132,9 +131,9 @@ public class LogReader {
                             }
                         } else {
                             temp[0] = entries[0] + "\n" + entries[1] + "\n" + entries[2];
-                            String[] decoded = lr.decrypt(temp);
-                            if (decoded[0] == null) {
-                                System.out.println("ERROR log tampered");
+                            String[] decoded = lr.decrypt(temp, counter++);
+                            if (decoded == null) {
+                                continue;
                             } else {
                                 System.out.println(decoded[0]);
                             }
@@ -151,7 +150,7 @@ public class LogReader {
 
     }
 
-    public String[] decrypt(String[] entries) {
+    public String[] decrypt(String[] entries, int start) {
 
         MessageDigest md = null;
         try {
@@ -165,6 +164,16 @@ public class LogReader {
         Base64.Decoder decoder = Base64.getDecoder();
 
         String[] results = new String[entries.length];
+
+        byte[] current_key = this.auth_key;
+
+        for (int i = 0; i < start; i++) {
+            md.reset();
+            md.update("iterate".getBytes(Charset.forName("UTF-8")));
+            md.update(current_key);
+            current_key = md.digest();
+            current_key = Arrays.copyOfRange(current_key, 0, 128 / 8);
+        }
 
         for (int i = 0; i < entries.length; i++) {
             String[] split_s = entries[i].split("\n");
@@ -180,7 +189,7 @@ public class LogReader {
 
             md.reset();
             md.update("encrypt".getBytes(Charset.forName("UTF-8")));
-            md.update(this.auth_key);
+            md.update(current_key);
             byte[] mk = Arrays.copyOfRange(md.digest(), 0, 128 / 8);
             sks = new SecretKeySpec(mk, "AES");
             byte[] output = null;
@@ -192,36 +201,36 @@ public class LogReader {
                 c.init(Cipher.DECRYPT_MODE, sks, ivspec);
                 output = c.doFinal(things[1]);
 
-                SecretKeySpec mac_key = new SecretKeySpec(this.auth_key, "AES");
+                SecretKeySpec mac_key = new SecretKeySpec(current_key, "AES");
                 Mac m = Mac.getInstance("HmacSHA1");
                 m.init(mac_key);
                 tag = m.doFinal(things[1]);
             } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
                     InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
                 System.out.println(e.getMessage());
+                return null;
             }
             if (Arrays.equals(tag, things[2])) {
                 results[i] = new String(output, Charset.forName("UTF-8"));
             } else {
                 System.out.println("Tag mismatch");
+                return null;
             }
 
 
             md.reset();
             md.update("iterate".getBytes(Charset.forName("UTF-8")));
-            md.update(this.auth_key);
-            this.auth_key = md.digest();
-            this.auth_key = Arrays.copyOfRange(this.auth_key, 0, 128 / 8);
+            md.update(current_key);
+            current_key = md.digest();
+            current_key = Arrays.copyOfRange(current_key, 0, 128 / 8);
 
         }
         return results;
     }
 
     public void destroy() {
-    	// TODO: should probably clear the arrays.
+        Arrays.fill(auth_key, (byte) 0);
         auth_key = null;
-        current_key = null;
-        key_iteration = -1;
     }
 
 }

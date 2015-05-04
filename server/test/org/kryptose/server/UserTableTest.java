@@ -17,9 +17,9 @@ import org.kryptose.server.UserTable;
 import org.kryptose.server.UserTable.Result;
 
 /**
- *
- * @author jshi
- */
+*
+* @author jshi
+*/
 public class UserTableTest {
 
 	private static Logger LOGGER = Logger.getLogger(UserTableTest.class.getCanonicalName());
@@ -200,7 +200,7 @@ public class UserTableTest {
 		assertEquals(ut.auth(TEST_BAD_USER), Result.WRONG_CREDENTIALS);
 		assertEquals(ut.auth(TEST_USER), Result.AUTHENTICATION_SUCCESS);
 	}
-	
+
 	@Test
 	public void testChangeAuthKeyWithWrongOldKey() {
 		UserTable ut = new UserTable(LOGGER, testFile);
@@ -220,7 +220,7 @@ public class UserTableTest {
 		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
 		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
 	}
-/*	
+
 	@Test
 	public void testDeleteUsers() {
 		UserTable ut = new UserTable(LOGGER, testFile);
@@ -228,7 +228,7 @@ public class UserTableTest {
 		assertFalse(ut.deleteUser(TEST_USER));
 		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
 	}
-	*/
+
 	@Test
 	public void testEqualsUser() {
 		UserTable ut = new UserTable(LOGGER, testFile);

@@ -14,16 +14,16 @@ import java.util.Arrays;
 
 
 public class PasswordFileTest {
-	
+
 	public static char[] MASTER_PWD = "MasterPassword".toCharArray();
 	public static char[] MASTER_PWD_WRONG = "WrongMasterPassword".toCharArray();
-	
+
 	public static String USERNAME1 = "antonio";
 	public static String USERNAME1_WRONG = "wrongusername";
-	
+
     public static MasterCredentials MASTER_CRED_1;
-	public static MasterCredentials MASTER_CRED_1_WRONG_PWD; 
-	
+	public static MasterCredentials MASTER_CRED_1_WRONG_PWD;
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         KeyDerivator.setParams("AAAAAAAAAAAAAAAA", 40);
@@ -63,7 +63,7 @@ public class PasswordFileTest {
 
 
     }
-    
+
     @Test
     public final void PasswordFileOperationsTest() throws Exception {
     	//Create a blob with a credential, encrypt, decrypt and verify it is unaltered.
@@ -72,7 +72,7 @@ public class PasswordFileTest {
         p.setVal("MyDom2", "MyUser", "MyPwd");
         //This should not create a new credential, but update the above one.
         p.setVal("MyDom2", "MyUser", "MyPwd2");
-        
+
         assertNull(p.getVal(-5));
         assertNull(p.getVal(2));
         assertNull(p.delVal(-2));
@@ -81,10 +81,10 @@ public class PasswordFileTest {
         assertTrue(c.equals(p.getVal(0)));
         p.delVal(0);
         assertFalse(c.equals(p.getVal(0)));
-        
+
 
     }
-    
+
 
     @Test(expected = CryptoErrorException.class)
     public final void blobDecryptWrongMasterPasswordTest() throws Exception {
@@ -123,7 +123,7 @@ public class PasswordFileTest {
         byte[] enc = b.getEncBytes();
         if(enc[0] != 0)
         	enc[0] = 0;
-        else 
+        else
         	enc[0] = 1;
 
         Blob b2 = new Blob(enc, b.getIv());
@@ -146,13 +146,13 @@ public class PasswordFileTest {
         byte[] iv = b.getIv();
         if(iv[0] != 0)
         	iv[0] = 0;
-        else 
+        else
         	iv[0]=1;
 
         Blob b2 = new Blob(b.getEncBytes(), iv);
 
         assertFalse(Arrays.equals(b.getDigest(), b2.getDigest()));
-        
+
         //This should fail, as the blob has been tampered.
         new PasswordFile(MASTER_CRED_1, b2);
     }
