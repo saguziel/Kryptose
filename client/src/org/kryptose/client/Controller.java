@@ -655,7 +655,7 @@ public class Controller {
 		String[] usernameOptionsWithNull = new String[usernameOptions.length + 1]; 
 		System.arraycopy(usernameOptions, 0, usernameOptionsWithNull, 1, usernameOptions.length);
 
-		model.setFormPassword(PasswordForm.CRED_PASSWORD, password);
+		model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
 		model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
 		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptionsWithNull);
 		model.setFormOptions(OptionsForm.CRED_USERNAME,
