@@ -717,8 +717,8 @@ public class ViewGUI implements View {
 
 		addGridLeft(panel, new JCheckBox("Show password"));
 //		addGridLeft(panel, new JButton(this.deleteCredentialAction));
-//		addGridRight(panel, new JButton(this.setCredentialAction));
-//		addGridRight(panel, new JButton(this.doneEditCredentialAction));
+		addGridRight(panel, new JButton(this.cancelEditingCredentialAction));
+		addGridRight(panel, new JButton(this.doneEditingCredentialAction));
 		
 		return panel;
 	}
@@ -740,7 +740,8 @@ public class ViewGUI implements View {
 
 		addGridLeft(panel, new JCheckBox("Show password"));
 //		addGridLeft(panel, new JButton(this.deleteCredentialAction));
-//		addGridRight(panel, new JButton(this.setCredentialAction));
+		addGridLeft(panel, new JButton(this.cancelAddingCredentialAction));		
+		addGridRight(panel, new JButton(this.doneAddingCredentialAction));
 //		addGridRight(panel, new JButton(this.doneManagingAction));
 		
 		return panel;
@@ -941,7 +942,7 @@ public class ViewGUI implements View {
 
 		this.addCredentialDialog = this.createModalDialog(
 				this.hoverFrame, "Add New Credential",
-				this.doneAddingCredentialAction, this.createEditCredentialPanel()
+				this.doneAddingCredentialAction, this.createAddCredentialPanel()
 				);
 		this.addCredentialDialog.setLocationRelativeTo(null);
 		
