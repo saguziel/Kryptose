@@ -133,6 +133,7 @@ public class Server {
 
         boolean result = this.dataStore.deleteBlob(u);
         if (!result) {
+            System.out.println("no bono");
             return new ResponseDeleteAccount(false);
         }
         boolean result2 = this.userTable.deleteUser(u);

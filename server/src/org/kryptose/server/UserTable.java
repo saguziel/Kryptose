@@ -106,10 +106,11 @@ public class UserTable implements Serializable {
     }
 
     public boolean deleteUser(User user) {
-        UserRecord ur = users.remove(user);
+        UserRecord ur = users.remove(user.getUsername());
         if (ur == null) {
             logger.log(Level.SEVERE, "Error deleting user from user table: " + user.getUsername());
         }
+        this.ensurePersist();
         return (ur != null);
     }
 
