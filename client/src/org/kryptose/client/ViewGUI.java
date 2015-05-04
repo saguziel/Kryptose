@@ -715,9 +715,8 @@ public class ViewGUI implements View {
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
 				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
 
-		addGridLeft(panel, new JCheckBox("Show password"));
-//		addGridLeft(panel, new JButton(this.deleteCredentialAction));
-		addGridRight(panel, new JButton(this.cancelEditingCredentialAction));
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
+		addGridLeft(panel, new JButton(this.cancelEditingCredentialAction));
 		addGridRight(panel, new JButton(this.doneEditingCredentialAction));
 		
 		return panel;
@@ -738,11 +737,9 @@ public class ViewGUI implements View {
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
 				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
 
-		addGridLeft(panel, new JCheckBox("Show password"));
-//		addGridLeft(panel, new JButton(this.deleteCredentialAction));
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
 		addGridLeft(panel, new JButton(this.cancelAddingCredentialAction));		
 		addGridRight(panel, new JButton(this.doneAddingCredentialAction));
-//		addGridRight(panel, new JButton(this.doneManagingAction));
 		
 		return panel;
 	}
