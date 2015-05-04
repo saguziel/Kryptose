@@ -500,7 +500,6 @@ public class Controller {
 
     private boolean doChangeMasterPassword() {
 		logger.severe("changeMasterPassword not implemented in Controller");
-        // TODO make password changing happen
 		
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] oldPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_OLD_MASTER_PASSWORD);
@@ -516,7 +515,6 @@ public class Controller {
             return false;
         }
 
-        // TODO verify oldpassword and new passwords
         PasswordFile pFile = model.getPasswordFile();
         MasterCredentials newMCred = new MasterCredentials(mCred.getUsername(), newPassword);
 
