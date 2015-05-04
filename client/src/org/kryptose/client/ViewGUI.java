@@ -932,13 +932,18 @@ public class ViewGUI implements View {
 				this.doneManagingAction, this.createManagePanel()
 				);
 		this.manageCredentialsDialog.setLocationRelativeTo(null);
-/*
-		this.editCredentialsDialog = this.createModalDialog(
-				this.hoverFrame, "Manage Credentials",
-				this.doneManagingAction, this.createManagePanel()
+
+		this.editCredentialDialog = this.createModalDialog(
+				this.hoverFrame, "Edit Credential",
+				this.doneEditingCredentialAction, this.createEditCredentialPanel()
 				);
-		this.manageCredentialsDialog.setLocationRelativeTo(null);
-*/
+		this.editCredentialDialog.setLocationRelativeTo(null);
+
+		this.addCredentialDialog = this.createModalDialog(
+				this.hoverFrame, "Add New Credential",
+				this.doneAddingCredentialAction, this.createEditCredentialPanel()
+				);
+		this.addCredentialDialog.setLocationRelativeTo(null);
 		
 		this.changeMasterPasswordDialog = this.createModalDialog(
 				this.hoverFrame, "Change Master Password",
@@ -1301,7 +1306,8 @@ public class ViewGUI implements View {
 		Window[] windows = new Window[] {
 				createAccountDialog,
 				manageCredentialsDialog, 
-				//editCredentialDialog,
+				editCredentialDialog,
+				addCredentialDialog,
 				changeMasterPasswordDialog, deleteAccountDialog,
 				loginFrame, hoverFrame,
 		};

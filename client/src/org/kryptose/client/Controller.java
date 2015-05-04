@@ -587,6 +587,12 @@ public class Controller {
 			new ViewState[] { ViewState.CHANGE_MASTER_PASSWORD, ViewState.WAITING},
 			new ViewState[] { ViewState.WAITING, ViewState.DELETE_ACCOUNT},
 			new ViewState[] { ViewState.DELETE_ACCOUNT, ViewState.WAITING},
+			
+			new ViewState[] { ViewState.MANAGING, ViewState.EDITING},
+			new ViewState[] { ViewState.EDITING, ViewState.MANAGING},
+			new ViewState[] { ViewState.MANAGING, ViewState.ADDING},
+			new ViewState[] { ViewState.ADDING, ViewState.MANAGING},
+						
 		};
 		
 		for (ViewState[] transition : allowedTransitions) {
