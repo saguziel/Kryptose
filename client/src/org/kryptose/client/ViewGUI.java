@@ -37,13 +37,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.scene.control.TextFormatter;
+
 import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -55,12 +59,16 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.GapContent;
 import javax.swing.text.PlainDocument;
 
@@ -319,6 +327,8 @@ public class ViewGUI implements View {
 	
 	private JDialog createAccountDialog;
 	private JDialog manageCredentialsDialog;
+	private JDialog editCredentialDialog;
+	private JDialog addCredentialDialog;
 	private JDialog changeMasterPasswordDialog;
 	private JDialog deleteAccountDialog;
 
@@ -405,6 +415,12 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.WAITING);
 		}
 	};
+	private Action showPasswordAction = new AbstractAction("Show Password") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.WAITING);
+		}
+	};
 
 	private Action changeMasterPasswordDialogAction = new AbstractAction("Change Master Password") {
 		@Override
@@ -451,6 +467,46 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.WAITING);
 		}
 	};
+	
+	
+	private Action editCredentialDialogAction = new AbstractAction("Edit Credential") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.EDITING);
+		}
+	};
+	private Action doneEditingCredentialAction = new AbstractAction("Done") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+	private Action cancelEditingCredentialAction = new AbstractAction("Cancel") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+
+	private Action addCredentialDialogAction = new AbstractAction("New Credential") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.ADDING);
+		}
+	};
+	private Action doneAddingCredentialAction = new AbstractAction("Done") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+	private Action cancelAddingCredentialAction = new AbstractAction("Cancel") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+	
 	
 	private Action minimizeAction = new AbstractAction("Minimize") {
 		@Override
@@ -511,6 +567,17 @@ public class ViewGUI implements View {
 		gbc.gridwidth = GridBagConstraints.RELATIVE;
 		cont.add(comp,gbc);
 	}
+	
+	private static void addGridBelow(Container cont, Component comp) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(GAP, GAP/2, GAP, GAP/2);
+		gbc.gridy =  GridBagConstraints.RELATIVE;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.gridwidth = GridBagConstraints.RELATIVE;
+		cont.add(comp,gbc);
+	}
+
 	
 	private static void addGridWithLabel(Container cont, String labelText, String tooltip, JComponent comp) {
 		JLabel label = new JLabel(labelText);
@@ -633,34 +700,110 @@ public class ViewGUI implements View {
 		return panel;
 	}
 	
-	private JPanel createManagePanel() {
+	private JPanel createEditCredentialPanel() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		
-		JComboBox<String> domainBox = new JComboBox<String>();
-		domainBox.setEditable(true);
 		String domainTooltip = "Name of website or application to be logged into";
-		addGridWithLabel(panel, "Domain: ", domainTooltip, domainBox);
-		OptionsListener dol = new OptionsListener(TextForm.CRED_DOMAIN, OptionsForm.CRED_DOMAIN, null);
-		this.optionsListeners.add(dol);
-		dol.bindTo(domainBox);
-
-		JComboBox<String> usernameBox = new JComboBox<String>();
-		usernameBox.setEditable(true);
+		this.addTextFieldToGrid(panel, TextForm.CRED_DOMAIN, "Domain: ", TRANSFER_FOCUS_ACTION, domainTooltip);
+		
 		String usernameTooltip = "Username for this website or application";
-		addGridWithLabel(panel, "Username: ", usernameTooltip, usernameBox);
-		OptionsListener uol = new OptionsListener(TextForm.CRED_USERNAME, OptionsForm.CRED_USERNAME, null);
-		this.optionsListeners.add(uol);
-		uol.bindTo(usernameBox);
-
+		this.addTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
+		
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
 				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
 
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
 				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
 
-		addGridLeft(panel, new JButton(this.deleteCredentialAction));
-		addGridRight(panel, new JButton(this.setCredentialAction));
-		addGridRight(panel, new JButton(this.doneManagingAction));
+		addGridLeft(panel, new JCheckBox("Show password"));
+//		addGridLeft(panel, new JButton(this.deleteCredentialAction));
+//		addGridRight(panel, new JButton(this.setCredentialAction));
+//		addGridRight(panel, new JButton(this.doneEditCredentialAction));
+		
+		return panel;
+	}
+
+	private JPanel createAddCredentialPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		
+		String domainTooltip = "Name of website or application to be logged into";
+		this.addTextFieldToGrid(panel, TextForm.CRED_DOMAIN, "Domain: ", TRANSFER_FOCUS_ACTION, domainTooltip);
+		
+		String usernameTooltip = "Username for this website or application";
+		this.addTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
+		
+		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
+				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
+
+		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
+				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
+
+		addGridLeft(panel, new JCheckBox("Show password"));
+//		addGridLeft(panel, new JButton(this.deleteCredentialAction));
+//		addGridRight(panel, new JButton(this.setCredentialAction));
+//		addGridRight(panel, new JButton(this.doneManagingAction));
+		
+		return panel;
+	}
+
+	
+	private JPanel createManagePanel() {
+		JPanel panel = new JPanel();
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+	    String headers[] = {"Domain", "Username"};
+	    String data[][] = {
+	      {"google", "antonio"},
+	      {"yahoo", "Jonathan"},
+	      {"google", "Jeff"},
+	    };
+	    DefaultTableModel model =
+	      new DefaultTableModel(data, headers) {
+	        // Make read-only
+	        public boolean isCellEditable(int x, int y) {
+	          return false;
+	        }
+	      };
+
+	      model.addRow(new Object[]{"v1", "v2"});
+
+	    JTable table = new JTable(model);
+
+	    // Set selection to first row
+	    ListSelectionModel selectionModel =
+	      table.getSelectionModel();
+	    selectionModel.setSelectionInterval(0, 0);
+	    selectionModel.setSelectionMode(
+	      ListSelectionModel.SINGLE_SELECTION);
+	    // Add to screen so scrollable
+	    JScrollPane credentialScrollableTable = new JScrollPane (table);
+	    credentialScrollableTable.setSize(200,100);
+	    
+	    panel.add(credentialScrollableTable);
+	    
+
+	    
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
+		buttonPanel.add(new JButton(this.deleteCredentialAction));
+		buttonPanel.add(new JButton(this.addCredentialDialogAction));
+		buttonPanel.add(new JButton(this.editCredentialDialogAction));
+		buttonPanel.add(new JButton(this.doneManagingAction));
+		
+		panel.add(buttonPanel);
+		
+//		addGridBelow(panel, buttonPanel);
+//		addGridBelow(panel, buttonPanel);
+//		addGridBelow(panel, buttonPanel);
+//		addGridBelow(panel, buttonPanel);
+//		addGridBelow(panel, new JButton(this.doneManagingAction));
+//		addGridRight(panel, new JButton(this.doneManagingAction));
+//		addGridLeft(panel, new JButton(this.doneManagingAction));
+//		addGridBelow(panel, new JButton(this.doneManagingAction));
+//		addGridBelow(panel, new JButton(this.doneManagingAction));
+		
+
 		
 		return panel;
 	}
@@ -712,7 +855,7 @@ public class ViewGUI implements View {
 		
 		mainMenu = new JMenu("Kryptose\u2122");
 		mainMenu.add(this.copyUsernameMenu);
-		mainMenu.add(this.copyPasswordMenu);;
+		mainMenu.add(this.copyPasswordMenu);
 		mainMenu.add(new JMenuItem(this.managingDialogAction));
 		mainMenu.add(new JMenuItem(this.reloadAction));
 		mainMenu.add(accountSettingsMenu);
@@ -782,12 +925,20 @@ public class ViewGUI implements View {
 		} catch (IOException e) {
 			logger.log(Level.INFO, "Could not load logo icon image.", e);
 		}
-
+		
+		
 		this.manageCredentialsDialog = this.createModalDialog(
 				this.hoverFrame, "Manage Credentials",
 				this.doneManagingAction, this.createManagePanel()
 				);
 		this.manageCredentialsDialog.setLocationRelativeTo(null);
+/*
+		this.editCredentialsDialog = this.createModalDialog(
+				this.hoverFrame, "Manage Credentials",
+				this.doneManagingAction, this.createManagePanel()
+				);
+		this.manageCredentialsDialog.setLocationRelativeTo(null);
+*/
 		
 		this.changeMasterPasswordDialog = this.createModalDialog(
 				this.hoverFrame, "Change Master Password",
@@ -1002,7 +1153,11 @@ public class ViewGUI implements View {
 		Action[] actionsToToggle = new Action[] {
 				logInAction, createAccountAction, logOutAction,
 				createAccountDialogAction, cancelCreateAccountAction,
-				reloadAction, managingDialogAction, doneManagingAction,
+				reloadAction, 
+				managingDialogAction, doneManagingAction,
+				
+				editCredentialDialogAction, doneEditingCredentialAction,cancelEditingCredentialAction,
+				
 				changeMasterPasswordAction,
 				cancelChangeMasterPasswordAction, changeMasterPasswordDialogAction,
 				deleteAccountAction, reloadAction
@@ -1113,6 +1268,10 @@ public class ViewGUI implements View {
 			return this.hoverFrame;
 		case MANAGING:
 			return this.manageCredentialsDialog;
+		case EDITING:
+			return this.editCredentialDialog;
+		case ADDING:
+			return this.addCredentialDialog;
 		case CHANGE_MASTER_PASSWORD:
 			return this.changeMasterPasswordDialog;
 		case DELETE_ACCOUNT:
@@ -1141,7 +1300,9 @@ public class ViewGUI implements View {
 		
 		Window[] windows = new Window[] {
 				createAccountDialog,
-				manageCredentialsDialog, changeMasterPasswordDialog, deleteAccountDialog,
+				manageCredentialsDialog, 
+				//editCredentialDialog,
+				changeMasterPasswordDialog, deleteAccountDialog,
 				loginFrame, hoverFrame,
 		};
 		Window activeWindow = this.getCurrentActiveWindow();

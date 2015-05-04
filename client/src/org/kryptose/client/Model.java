@@ -37,7 +37,7 @@ public class Model implements PropertyChangeListener {
 		CRED_DOMAIN, CRED_USERNAME
 	}
 	public static enum ViewState {
-		LOGIN, CREATE_ACCOUNT, WAITING, MANAGING, CHANGE_MASTER_PASSWORD, DELETE_ACCOUNT
+		LOGIN, CREATE_ACCOUNT, WAITING, MANAGING, EDITING, ADDING, CHANGE_MASTER_PASSWORD, DELETE_ACCOUNT
 	}
 	private ViewState viewState = null;
 	private Map<TextForm,String> formTexts = new EnumMap<TextForm,String>(TextForm.class);
