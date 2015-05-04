@@ -459,23 +459,30 @@ public class Controller {
     private boolean doDeleteAccount() {
         // TODO make account deletion happen - done?
 //		logger.severe("deleteAccount not implemented in Controller");
-
+        System.out.println("deleting master password");
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] passwordConfirm = model.getFormPasswordClone(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD);
 
         if (!arrEqual(mCred.getPassword(), passwordConfirm)) {
+            System.out.println("first");
             return false;
         }
 
 		// stuff happens here.
         RequestDeleteAccount req = new RequestDeleteAccount(model.getMasterCredentials().getUser());
 		ResponseDeleteAccount r = this.sendRequest(req, ResponseDeleteAccount.class);
-        if (r == null)
+        if (r == null){
+            System.out.println("second");
             return false;
-        if (!r.verifySuccessful())
+        }
+        if (!r.verifySuccessful()) {
+            System.out.println("third");
             return false;
+        }
     	this.doLogout();
-    	return true; 
+        logger.severe("logging out");
+        System.out.println("logging out");
+    	return true;
     }
 
     public void changeMasterPassword(){
@@ -604,8 +611,9 @@ public class Controller {
 
 	private void doStateTransition(ViewState viewState) {
 		ViewState oldState = this.model.getViewState();
-		
-		if ((oldState == ViewState.LOGIN || oldState == ViewState.CREATE_ACCOUNT)
+        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
+
+        if ((oldState == ViewState.LOGIN || oldState == ViewState.CREATE_ACCOUNT)
 				&& viewState == ViewState.WAITING) {
 			this.model.setFormText(TextForm.LOGIN_MASTER_USERNAME, null);
 			this.model.setFormPassword(PasswordForm.LOGIN_MASTER_PASSWORD, null);
@@ -629,7 +637,7 @@ public class Controller {
 		if (oldState == ViewState.DELETE_ACCOUNT) {
 			this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
 		}
-
+        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
 		this.model.setViewState(viewState);
 	}
 	
