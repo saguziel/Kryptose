@@ -513,8 +513,10 @@ public class Controller {
         MasterCredentials newMCred = new MasterCredentials(mCred.getUsername(), newPassword);
 
         Blob newBlob;
+        PasswordFile newPFile = new PasswordFile(newMCred);
         try {
             newBlob = pFile.encryptBlob(newMCred, model.getLastModDate());
+            newPFile.decryptBlob(newBlob);
         } catch (BadBlobException | CryptoErrorException e) {
             this.logger.log(Level.INFO, "Failed to change master password.", e);
             return e;
@@ -530,7 +532,7 @@ public class Controller {
 		}
 
         model.setMasterCredentials(newMCred);
-        model.setPasswordFile(new PasswordFile(newMCred));
+        model.setPasswordFile(newPFile);
         this.doStateTransition(ViewState.WAITING);
 
 		return null;
