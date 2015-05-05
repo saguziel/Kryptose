@@ -58,8 +58,8 @@ public class PasswordFileTest {
 
         PasswordFile p2 = new PasswordFile(MASTER_CRED_1, b);
 
-    	assertArrayEquals(p2.getVal("MyDom","MyUser") , "MyPwd".toCharArray());
-    	assertFalse(Arrays.equals(p2.getVal("MyDom","MyUser") , "MyPwdWrong".toCharArray()));
+    	assertArrayEquals(p2.getValClone("MyDom","MyUser") , "MyPwd".toCharArray());
+    	assertFalse(Arrays.equals(p2.getValClone("MyDom","MyUser") , "MyPwdWrong".toCharArray()));
 
 
     }
@@ -77,7 +77,7 @@ public class PasswordFileTest {
         assertNull(p.getVal(2));
         assertNull(p.delVal(-2));
         Credential c = new Credential("MyUser", "MyPwd".toCharArray(), "MyDom");
-        assertArrayEquals(c.getPassword(), p.getVal("MyDom","MyUser"));
+        assertArrayEquals(c.getPasswordClone(), p.getValClone("MyDom","MyUser"));
         System.out.println(p.getVal(0).getDomain());
         System.out.println(p.getVal(0).getUsername());
         assertTrue(c.equals(p.getVal(0)));

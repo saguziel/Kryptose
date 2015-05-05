@@ -13,6 +13,7 @@ public class Client {
 		
 		// For debugging purposes.
 		if (args.length >= 1 && args[0].equals("--debug")) {
+
 			
 			Handler handler = new ConsoleHandler();
 			handler.setLevel(Level.FINE);

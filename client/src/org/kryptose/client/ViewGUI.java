@@ -1001,7 +1001,7 @@ public class ViewGUI implements View {
 				// and maybe also avoid having inner anonymous classes
 				// in inner anonymous classes in inner anonymous classes.
 				
-				char[] content = copyPass ? pFile.getVal(domain, username) : (username== null ? null : username.toCharArray());
+				char[] content = copyPass ? pFile.getValClone(domain, username) : (username== null ? null : username.toCharArray());
 				String mime = DataFlavor.getTextPlainUnicodeFlavor().getMimeType();
 				DataHandler t = new DataHandler(content, mime);
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1079,6 +1079,7 @@ public class ViewGUI implements View {
 				ClipboardWatcher watcher = new ClipboardWatcher();
 				watcher.start();
 				clip.setContents(t, watcher);
+				Utils.destroyPassword(content);
 			}
 		}
 		
@@ -1212,14 +1213,13 @@ public class ViewGUI implements View {
 				char[] passwordUI = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
 				// WARNING: code currently assumes that char[] array obtained from
 				// PasswordFile is something that we should destroy here once we're done with it.
-				char[] passwordSaved = pFile.getVal(domain, username);
+				char[] passwordSaved = pFile.getValClone(domain, username);
 				
 				setEnabled = !Arrays.equals(passwordUI, passwordSaved);
 				delEnabled = passwordSaved != null;
 				
 				Utils.destroyPassword(passwordUI);
 				Utils.destroyPassword(passwordSaved);
-				// TODO: see above WARNING about passwordFile destroying passwords
 			}
 			addCredentialAction.setEnabled(setEnabled);
 			editCredentialAction.setEnabled(setEnabled);

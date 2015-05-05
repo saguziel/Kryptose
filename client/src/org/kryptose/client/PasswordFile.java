@@ -1,5 +1,6 @@
 package org.kryptose.client;
 
+import org.kryptose.Utils;
 import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.Blob;
@@ -171,10 +172,10 @@ public class PasswordFile implements Destroyable {
         return null;
     }
 
-    public char[] getVal(String dom, String user) {
+    public char[] getValClone(String dom, String user) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
-                return c.getPassword().clone();
+                return c.getPasswordClone();
             }
         }
         return null;
@@ -184,12 +185,15 @@ public class PasswordFile implements Destroyable {
     public Boolean setVal(String dom, String user, char[] pass) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
-            	char[] oldVal = c.getPassword();
+            	char[] oldVal = c.getPasswordClone();
+                // Credential class now responsible for destroying pass.
                 c.setPassword(pass);
                 changeSupport.firePropertyChange(user + "@" + dom, oldVal, pass);
+                Utils.destroyPassword(oldVal);
                 return true;
             }
         }
+        // Credential class now responsible for destroying pass.
         credentials.add(new Credential(user, pass, dom));
         changeSupport.firePropertyChange(user + "@" + dom, null, pass);
         return false;
@@ -200,9 +204,10 @@ public class PasswordFile implements Destroyable {
             Credential c = credentials.get(index);
             String dom = c.getDomain();
             String user = c.getUsername();
-            char[] oldVal = c.getPassword();
+            char[] oldVal = c.getPasswordClone();
             credentials.remove(index);
             changeSupport.firePropertyChange(user + "@" + dom, oldVal, null);
+            Utils.destroyPassword(oldVal);
             return c;
         }
         return null;

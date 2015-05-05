@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 import javax.security.auth.Destroyable;
 
+import org.kryptose.Utils;
+
 /**
  * A set of credentials.
  *
@@ -18,11 +20,13 @@ public class Credential implements Serializable, Destroyable {
 	private char[] password;
 	private String domain;
 	private LocalDateTime lastmod;
-	
+
+    // destroys the input password char[]
 	public Credential(String username, char[] password, String domain) {
 		super();
 		this.username = username;
 		this.password = password.clone();
+		Utils.destroyPassword(password);
 		this.domain = domain;
         recordTime();
 	}
@@ -35,8 +39,8 @@ public class Credential implements Serializable, Destroyable {
 		return username;
 	}
 
-	public char[] getPassword() {
-		return password;
+	public char[] getPasswordClone() {
+		return password == null ? null : password.clone();
 	}
 
 
@@ -48,8 +52,11 @@ public class Credential implements Serializable, Destroyable {
 		return domain;
 	}
 
+    // destroys the input password char[]
     void setPassword(char[] p) {
+    	Utils.destroyPassword(this.password);
         this.password = p.clone();
+        Utils.destroyPassword(p);
         recordTime();
     }
 
@@ -64,7 +71,7 @@ public class Credential implements Serializable, Destroyable {
     }
 	
     public void destroy() {
-    	// TODO destroy credentials
+    	Utils.destroyPassword(this.password);
     }
 	
 

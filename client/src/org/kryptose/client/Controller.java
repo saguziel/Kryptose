@@ -150,12 +150,15 @@ public class Controller {
         }
         Utils.destroyPassword(confirm);
 
-        if (validationError == null && s == setType.ADD && model.getPasswordFile().getVal(domain, username) != null)
+        char[] retrievedCredential = model.getPasswordFile().getValClone(domain, username);
+        if (validationError == null && s == setType.ADD && retrievedCredential != null)
             validationError = "A credential for the same domain and username already exists. Please edit or delete it.";
 
-        if (validationError == null && s == setType.EDIT && model.getPasswordFile().getVal(domain, username) == null)
+        if (validationError == null && s == setType.EDIT && retrievedCredential == null)
             validationError = "You tried to edit a credential, but it seems the credential you want to edit does not exist. This is a bug. Please contact Kryptose to have it fixed.";
 
+        Utils.destroyPassword(retrievedCredential);
+        
         if (validationError != null) {
             Utils.destroyPassword(password);
             return new RecoverableException(validationError);
@@ -624,11 +627,13 @@ public class Controller {
             this.model.setFormText(TextForm.CRED_DOMAIN, model.selectedDomain);
             this.model.setFormText(TextForm.CRED_USERNAME, model.selectedUser);
 
-            if (model.getPasswordFile().getVal(model.selectedDomain, model.selectedUser) == null) {
+            char[] credPassword = model.getPasswordFile().getValClone(model.selectedDomain, model.selectedUser);
+            if (credPassword == null) {
                 this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
             } else {
-                this.model.setFormPassword(PasswordForm.CRED_PASSWORD, model.getPasswordFile().getVal(model.selectedDomain, model.selectedUser));
+                this.model.setFormPassword(PasswordForm.CRED_PASSWORD, credPassword);
             }
+            Utils.destroyPassword(credPassword);
 
             this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
         }
@@ -656,9 +661,6 @@ public class Controller {
 
         String[] domainOptions = pFile.getDomains();
         String[] usernameOptions = pFile.getUsernames(domain);
-        // WARNING: current code assumes that the char[] obtained from pFile.getVal
-        // is a new copy, and hence destroys the copy obtained.
-        char[] passString = pFile.getVal(domain, username);
 
         String[] domainOptionsWithNull = new String[domainOptions.length + 1];
         System.arraycopy(domainOptions, 0, domainOptionsWithNull, 1, domainOptions.length);
