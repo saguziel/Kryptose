@@ -6,9 +6,11 @@ JUNIT_LIB=junit-4.12.jar:hamcrest-all-1.3.jar:mockito-all-1.9.5.jar
 JUNIT_RUNNER=org.junit.runner.JUnitCore
 
 COMMON_SRC=common/src/org/kryptose/*.java common/src/org/kryptose/*/*.java
-CLIENT_SRC=client/src/org/kryptose/client/*.java client/src/org/kryptose/client/resources/*.png 
+CLIENT_SRC=client/src/org/kryptose/client/*.java
 SERVER_SRC=server/src/org/kryptose/server/*.java
 TEST_SRC=client/test/org/kryptose/client/*.java common/test/org/kryptose/common/*.java server/test/org/kryptose/server/*.java
+
+CLIENT_RESOURCES=client/src/org/kryptose/client/resources/*.png
 
 CLIENT_BIN=bin/client
 SERVER_BIN=bin/server
@@ -25,6 +27,8 @@ LOG_JAR=kryptose-log-reader.jar
 compile-client:
 	mkdir -p $(CLIENT_BIN)
 	$(JAVAC) -d $(CLIENT_BIN) $(COMMON_SRC) $(CLIENT_SRC)
+	mkdir -p $(CLIENT_BIN)/org/kryptose/client/resources/
+	cp $(CLIENT_RESOURCES) $(CLIENT_BIN)/org/kryptose/client/resources/
 
 compile-server:
 	mkdir -p $(SERVER_BIN)
@@ -63,8 +67,8 @@ run-test: compile-test
 	$(JAVA) -cp $(JUNIT_LIB):$(TEST_BIN) $(JUNIT_RUNNER) org.kryptose.server.LogFormatterTest || true
 	$(JAVA) -cp $(JUNIT_LIB):$(TEST_BIN) $(JUNIT_RUNNER) org.kryptose.server.ServerRequestsHandlingTest || true
 	$(JAVA) -cp $(JUNIT_LIB):$(TEST_BIN) $(JUNIT_RUNNER) org.kryptose.server.ServerTest || true
-	$(JAVA) -cp $(JUNIT_LIB):$(TEST_BIN) $(JUNIT_RUNNER) org.kryptose.client.test.PasswordFileTest || true
-	$(JAVA) -cp $(JUNIT_LIB):$(TEST_BIN) $(JUNIT_RUNNER) org.kryptose.client.test.KeyDerivatorTest || true
+	$(JAVA) -cp $(JUNIT_LIB):$(TEST_BIN) $(JUNIT_RUNNER) org.kryptose.client.PasswordFileTest || true
+	$(JAVA) -cp $(JUNIT_LIB):$(TEST_BIN) $(JUNIT_RUNNER) org.kryptose.client.RequestHandlerTest || true
 
 clean-client:
 	rm -f $(CLIENT_JAR)
