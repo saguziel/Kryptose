@@ -13,7 +13,7 @@ public class StaleWriteException extends RecoverableException {
 			+ "Please reload the credentials from the server and try again.";
 
 	public StaleWriteException() {
-		super();
+		super(MSG);
 		this.setStackTrace(new StackTraceElement[0]);
 	}
 
