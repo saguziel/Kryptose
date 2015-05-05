@@ -499,7 +499,7 @@ public class Controller {
         model.setPasswordFile(newPFile);
         this.doStateTransition(ViewState.WAITING);
 
-        return null;
+        return doFetch();
     }
 
     public void updateFormText(TextForm form, String value) {
