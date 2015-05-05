@@ -34,8 +34,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
+
 
 
 import javax.activation.DataHandler;
@@ -76,11 +81,11 @@ import javax.swing.text.PlainDocument;
 
 import org.kryptose.client.Controller.setType;
 import org.kryptose.Utils;
-
 import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
+import org.kryptose.exceptions.RecoverableException;
 import org.kryptose.requests.User;
 
 public class ViewGUI implements View {
@@ -481,9 +486,20 @@ public class ViewGUI implements View {
 	};
 	private Action editCredentialAction = new AbstractAction("Done") {
 		@Override
-		public void actionPerformed(ActionEvent ev) {
-			control.set(setType.EDIT);
-			control.requestViewState(ViewState.MANAGING);
+		public void actionPerformed(ActionEvent ev) {			
+			Exception e = null; 
+				try {
+					e = control.set(setType.EDIT).get();
+				} catch (InterruptedException | ExecutionException e1) {
+					//TODO Jonathan: what do I do here?
+				}
+		
+			
+			if(e == null ){//No exception, edit succeeded
+				control.requestViewState(ViewState.MANAGING);
+			}else {
+				//TODO Jonathan: we should probably display an alert-box about the exception here.
+			}			
 		}
 	};
 	private Action cancelEditingCredentialAction = new AbstractAction("Cancel") {
@@ -502,14 +518,26 @@ public class ViewGUI implements View {
 	private Action addCredentialAction = new AbstractAction("Done") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			control.set(setType.ADD);
-			control.requestViewState(ViewState.MANAGING);
+				Exception e = null; 
+				try {
+					e = control.set(setType.ADD).get();
+				} catch (InterruptedException | ExecutionException e1) {
+					//TODO Jonathan: what do I do here?
+				}
+				
+				System.out.println(e == null);
+				System.out.println(e instanceof RecoverableException);
+			
+			if(e == null){//No exception, edit succeeded
+				control.requestViewState(ViewState.MANAGING);
+			}else {
+				//TODO Jonathan: we should probably display an alert-box about the exception here.
+			}			
 		}
 	};
 	private Action cancelAddingCredentialAction = new AbstractAction("Cancel") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			control.set(setType.EDIT);
 			control.requestViewState(ViewState.MANAGING);
 		}
 	};

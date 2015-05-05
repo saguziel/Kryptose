@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -160,13 +161,14 @@ public class Controller {
 
     public static enum setType{ADD, EDIT};
     
-    public void set(setType s) {
-		this.pool.submit(new LongTaskRunner() {
+    public Future<Exception> set(setType s) {
+		Future<?> f = this.pool.submit(new LongTaskRunner() {
 			@Override
 			Exception doRun() {
 				return doSet(s);
 			}
 		});
+		return (Future<Exception>) f;
     }
     
     private Exception doSet(setType s) {
