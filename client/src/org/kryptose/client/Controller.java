@@ -161,14 +161,13 @@ public class Controller {
 
     public static enum setType{ADD, EDIT};
     
-    public Future<Exception> set(setType s) {
-		Future<?> f = this.pool.submit(new LongTaskRunner() {
+    public void set(setType s) {
+		this.pool.submit(new LongTaskRunner() {
 			@Override
 			Exception doRun() {
 				return doSet(s);
 			}
 		});
-		return (Future<Exception>) f;
     }
     
     private Exception doSet(setType s) {
@@ -206,7 +205,13 @@ public class Controller {
     	
     	model.getPasswordFile().setVal(domain, username, password);
     	
-    	return doSave();
+    	Exception ex = doSave();
+    	
+    	if(ex == null){
+    		this.requestViewState(ViewState.MANAGING);
+    	}
+    	
+    	return ex;
     }
 
     public void delete() {

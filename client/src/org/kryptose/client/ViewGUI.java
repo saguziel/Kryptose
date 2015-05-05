@@ -487,19 +487,7 @@ public class ViewGUI implements View {
 	private Action editCredentialAction = new AbstractAction("Done") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {			
-			Exception e = null; 
-				try {
-					e = control.set(setType.EDIT).get();
-				} catch (InterruptedException | ExecutionException e1) {
-					//TODO Jonathan: what do I do here?
-				}
-		
-			
-			if(e == null ){//No exception, edit succeeded
-				control.requestViewState(ViewState.MANAGING);
-			}else {
-				//TODO Jonathan: we should probably display an alert-box about the exception here.
-			}			
+			control.set(setType.ADD);			
 		}
 	};
 	private Action cancelEditingCredentialAction = new AbstractAction("Cancel") {
@@ -517,22 +505,8 @@ public class ViewGUI implements View {
 	};
 	private Action addCredentialAction = new AbstractAction("Done") {
 		@Override
-		public void actionPerformed(ActionEvent ev) {
-				Exception e = null; 
-				try {
-					e = control.set(setType.ADD).get();
-				} catch (InterruptedException | ExecutionException e1) {
-					//TODO Jonathan: what do I do here?
-				}
-				
-				System.out.println(e == null);
-				System.out.println(e instanceof RecoverableException);
-			
-			if(e == null){//No exception, edit succeeded
-				control.requestViewState(ViewState.MANAGING);
-			}else {
-				//TODO Jonathan: we should probably display an alert-box about the exception here.
-			}			
+		public void actionPerformed(ActionEvent ev) {	
+			control.set(setType.ADD);
 		}
 	};
 	private Action cancelAddingCredentialAction = new AbstractAction("Cancel") {
