@@ -38,7 +38,7 @@ public final class RequestChangePassword extends Request {
     }
 
     public byte[] getOldDigest() {
-        return oldDigest.clone();
+        return (oldDigest == null) ? null : oldDigest.clone();
     }
 
     @Override
