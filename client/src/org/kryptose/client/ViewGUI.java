@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 
 
 
+
 import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -194,6 +195,7 @@ public class ViewGUI implements View {
 			return this.passwordField;
 		}
 	}
+	
 	private final class WindowCloseHandler extends WindowAdapter {
 		private Action action;
 		private Window source;
@@ -280,6 +282,7 @@ public class ViewGUI implements View {
 		}
 	};
 	
+	
 	private Model model;
 	private Controller control;
 	private Logger logger = Logger.getLogger("org.kryptose.client.ViewGUI");
@@ -301,19 +304,10 @@ public class ViewGUI implements View {
 	private JMenu copyUsernameMenu;
 	private JMenu copyPasswordMenu;
 	
+	private List<JCheckBox> showPasswordCheckBoxes = new ArrayList<JCheckBox>();
+	
 	private List<JPasswordField> unblindablePasswordFields = new ArrayList<JPasswordField>();
-	/*
-	private CheckBoxListener showPasswordCheckBowListener = new ItemListener() {
-		
-		@Override
-		public void itemStateChanged(ItemEvent e) {
-			if (e.getStateChange() == e.SELECTED)
-				model.setShowPassword(true);
-			else if(e.getStateChange() == e.DESELECTED)
-				model.setShowPassword(false);
-		}
-	};
-	*/
+	
 	private List<TextFieldListener> textFieldListeners = new ArrayList<TextFieldListener>();
 	private List<PasswordFieldListener> passwordFieldListeners = new ArrayList<PasswordFieldListener>();
 	
@@ -397,11 +391,6 @@ public class ViewGUI implements View {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			boolean b = ((AbstractButton) ev.getSource()).getModel().isSelected();
-			char c = b ? (char) 0 : '*';
-			for(JPasswordField p : unblindablePasswordFields){
-					p.setEchoChar(c);
-			}
-			model.setShowPassword(b);
 		}
 	};
 	
@@ -712,8 +701,18 @@ public class ViewGUI implements View {
 						"Confirm Password: ", editCredentialAction, NO_TOOL_TIP)
 				);
 
-		
-		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox(showPasswordsAction));
+		JCheckBox showPasswordCheckBox = new JCheckBox(showPasswordsAction);
+		showPasswordCheckBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED)
+					control.updateShowPassword(true);
+				else if(e.getStateChange() == ItemEvent.DESELECTED)
+					control.updateShowPassword(false);
+			}
+		});
+		this.showPasswordCheckBoxes.add(showPasswordCheckBox);
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, showPasswordCheckBox);
 		addGridLeft(panel, new JButton(this.cancelEditingCredentialAction));
 		addGridRight(panel, new JButton(this.editCredentialAction));
 		addGridRight(panel, new JButton(this.deleteCredentialAction));
@@ -738,8 +737,19 @@ public class ViewGUI implements View {
 				this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
 						"Confirm Password: ", addCredentialAction, NO_TOOL_TIP)
 				);
-
-		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox(showPasswordsAction));
+		
+		JCheckBox showPasswordCheckBox = new JCheckBox(showPasswordsAction);
+		showPasswordCheckBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED)
+					model.setShowPassword(true);
+				else if(e.getStateChange() == ItemEvent.DESELECTED)
+					model.setShowPassword(false);
+			}
+		});
+		this.showPasswordCheckBoxes.add(showPasswordCheckBox);
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, showPasswordCheckBox);
 		addGridLeft(panel, new JButton(this.cancelAddingCredentialAction));		
 		addGridRight(panel, new JButton(this.addCredentialAction));
 		
@@ -1347,6 +1357,20 @@ public class ViewGUI implements View {
 				loginFrame.dispose();
 			}
 		});
+	}
+
+	@Override
+	public void updateShowPasswords() {
+		boolean b = this.model.getShowPassword();
+		
+		char c = b ? (char) 0 : '*';
+		for(JPasswordField p : unblindablePasswordFields){
+				p.setEchoChar(c);
+		}
+		
+		for (JCheckBox box : this.showPasswordCheckBoxes) {
+			box.setSelected(b);
+		}
 	}
 
 }

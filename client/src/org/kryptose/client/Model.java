@@ -221,7 +221,10 @@ public class Model implements PropertyChangeListener {
 	}
 	
 	public synchronized void setShowPassword(boolean b){
+		if (showPassword == b) return;
 		showPassword = b;
+		this.view.updateShowPasswords();
+		logger.fine("Show password updated: " + b);
 	}
 	
 	public synchronized boolean getShowPassword(){

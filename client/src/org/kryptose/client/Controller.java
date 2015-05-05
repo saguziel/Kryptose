@@ -620,6 +620,7 @@ public class Controller {
             this.model.setFormText(TextForm.CRED_USERNAME, null);
             this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
             this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+			this.model.setShowPassword(false);
         }
 
         if (oldState == viewState.MANAGING && viewState == viewState.EDITING) {
@@ -636,6 +637,7 @@ public class Controller {
             Utils.destroyPassword(credPassword);
 
             this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+			this.model.setShowPassword(false);
         }
 
 
@@ -707,6 +709,15 @@ public class Controller {
             }
         }
     }
+
+	public void updateShowPassword(boolean b) {
+		this.pool.submit(new QuickTaskRunner() {
+			@Override
+			void doRun() {
+				model.setShowPassword(b);
+			}
+		});
+	}
 
 
 }

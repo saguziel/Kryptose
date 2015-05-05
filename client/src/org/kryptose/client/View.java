@@ -32,5 +32,7 @@ public interface View {
 
 	public void shutdown();
 
+	public void updateShowPasswords();
+
 
 }
