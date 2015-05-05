@@ -5,10 +5,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 public class Log implements Serializable {
-	//TODO: So far the only thing you can log are requests.
-	// We need a broader way to log events (like ssl connections, ip addresses)
 
-    String message;
+	private static final long serialVersionUID = 2220976602447785L;
+
+	String message;
     User user;
     Request request;
     Response response;
@@ -23,7 +23,7 @@ public class Log implements Serializable {
         if (req.getConnection() != null) {
         	connectionId = req.getConnection().getId();
         }
-        message = String.format("%s\nUsername: %s\nConnection ID:%s\n%s%s\n",
+        message = String.format("%s%nUsername: %s%nConnection ID:%s%n%s%s%n",
         		time, user.getUsername(), connectionId, request.logEntry(), response.logEntry());
     }
 

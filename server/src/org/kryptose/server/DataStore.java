@@ -57,14 +57,6 @@ public interface DataStore {
 	 */
 	public abstract WriteResult writeUserLog(User user, Log log);
 
-	/**
-	 * 
-	 * TODO: remove this; obsoleted by java.util.logging.
-	 * @param log
-	 * @return
-	 */
-	public abstract WriteResult writeSystemLog(Log log);
-
 	
     public enum WriteResult {
         SUCCESS,

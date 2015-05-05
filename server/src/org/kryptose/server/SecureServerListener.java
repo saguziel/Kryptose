@@ -13,7 +13,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 
 import org.kryptose.exceptions.InternalServerErrorException;
-import org.kryptose.exceptions.RecoverableException;
 import org.kryptose.requests.ResponseErrorReport;
 
 

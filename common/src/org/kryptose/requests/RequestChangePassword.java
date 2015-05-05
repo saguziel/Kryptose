@@ -9,17 +9,18 @@ import java.io.ObjectInputStream;
  * Created by alexguziel on 3/15/15.
  */
 public final class RequestChangePassword extends Request {
-
-    private byte[] newAuthkey;
+	private static final long serialVersionUID = 7721398455729573266L;
+	
+	private byte[] newAuthkey;
     private Blob newBlob;
     private byte[] oldDigest;
 
     public RequestChangePassword(User u, byte[] newAuthkey, Blob newBlob, byte[] oldDigest) {
         super(u);
         this.newAuthkey = newAuthkey;
-        this.validateInstance();
         this.newBlob = newBlob;
-        this.oldDigest = oldDigest;
+        this.oldDigest = oldDigest.clone();
+        this.validateInstance();
     }
 
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
@@ -37,17 +38,20 @@ public final class RequestChangePassword extends Request {
     }
 
     public byte[] getOldDigest() {
-        return oldDigest;
+        return oldDigest.clone();
     }
 
     @Override
     public void validateInstance() {
+        if (newAuthkey == null) {
+            throw new IllegalArgumentException("New auth key cannot be null");
+        }
         super.validateInstance();
     }
 
 
     @Override
     public String logEntry() {
-        return String.format("REQUEST: Change password from %s\n", super.getUser().getUsername());
+        return String.format("REQUEST: Change password from %s%n%n", super.getUser().getUsername());
     }
 }

@@ -13,8 +13,9 @@ import java.io.Serializable;
  * @author jnshi
  */
 public abstract class Request implements Serializable {
+	private static final long serialVersionUID = 6660587690717727997L;
 
-    private final User user;
+	private final User user;
     private transient Connection connection;
 
     public Request(User user) {

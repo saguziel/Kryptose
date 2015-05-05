@@ -71,13 +71,11 @@ public final class User implements Comparable<User>, Serializable, Destroyable {
      * @return
      */
     public byte[] getPasskey() {
-    	// TODO think about security implications of public getPasskey
     	// Ideally the passkey would be erased from memory as soon as the user
     	// is authenticated, but that's infeasible to control precisely given
     	// Java's memory model anyway.
     	//
-    	// TODO Perhaps we could have the passkey only be released in hashed form (even though it is shipped in clear)
-        return passkey.clone();
+        return (passkey == null) ? null : passkey.clone();
     }
     
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {

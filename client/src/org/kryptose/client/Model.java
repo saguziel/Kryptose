@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.kryptose.Utils;
 import org.kryptose.requests.Log;
 
 public class Model implements PropertyChangeListener {
@@ -19,7 +20,7 @@ public class Model implements PropertyChangeListener {
 	private PasswordFile passwordFile = null;
 	private ArrayList<Log> userLogs = null;
 	private LocalDateTime lastModDate = null;
-	private Exception lastServerException = null;
+	private Exception exception = null;
 	private boolean waitingOnServer = false;
 
 	public static enum TextForm {
@@ -119,14 +120,14 @@ public class Model implements PropertyChangeListener {
 	
 	// Hmm probably want a different format for this.
 	public synchronized Exception getLastServerException() {
-		return lastServerException;
+		return exception;
 	}
 
-	public synchronized void setLastException(Exception lastServerException) {
-		if (this.lastServerException == lastServerException) return;
-		this.lastServerException = lastServerException;
+	public synchronized void setException(Exception exception) {
+		if (this.exception == exception) return;
+		this.exception = exception;
         view.updateServerException();
-		logger.fine("Last exception changed: " + lastServerException);
+		logger.fine("Last exception changed: " + exception);
 	}
 	
 	public synchronized boolean isWaitingOnServer() {
@@ -236,7 +237,7 @@ public class Model implements PropertyChangeListener {
 	}
 
 	@Override
-	public void propertyChange(PropertyChangeEvent evt) {
+	public synchronized void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getSource() == this.passwordFile) {
 			logger.fine("Password file updated.");
 			this.view.updatePasswordFile();

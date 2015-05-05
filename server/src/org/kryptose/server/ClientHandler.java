@@ -41,8 +41,10 @@ class ClientHandler implements Runnable {
 			Response resp = this.server.handleRequest(request);
 
 			// Send back the response.
-			if (resp != null) speak(resp);
-			// TODO: should resp ever be null?
+			if (resp != null) {
+				
+				speak(resp);
+			}
 		}
 		finally {
 			try {

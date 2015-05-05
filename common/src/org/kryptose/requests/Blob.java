@@ -18,9 +18,8 @@ import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
  * @author jshi
  */
 public final class Blob implements Serializable {
-
-    // TODO: generate serial version UID, after fields are decided.
-
+	private static final long serialVersionUID = -304040678350247434L;
+	
 	// Encrypted content.
     private byte[] encBytes;
     // Initialization vector for encryption.
@@ -69,7 +68,6 @@ public final class Blob implements Serializable {
     	if (this.iv == null) throw new IllegalArgumentException("iv is null");
     	if (this.encBytes == null) throw new IllegalArgumentException("encBytes is null");
     	
-    	//TODO: is this needed?
     	this.iv = iv.clone();
     	this.encBytes = encBytes.clone();
 

@@ -76,11 +76,12 @@ import javax.swing.text.GapContent;
 import javax.swing.text.PlainDocument;
 
 import org.kryptose.client.Controller.setType;
+import org.kryptose.Utils;
+
 import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
-import org.kryptose.exceptions.RecoverableException;
 import org.kryptose.requests.User;
 
 public class ViewGUI implements View {
@@ -284,20 +285,20 @@ public class ViewGUI implements View {
 	class OpacityAdjuster extends MouseAdapter implements MenuListener {
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			try{
+			try {
 				hoverFrame.setOpacity(1f);
-			}catch(UnsupportedOperationException ex){
-				//TODO ?????? Nothing should be fine i guess...
+			} catch(UnsupportedOperationException ex) {
+				// do nothing.
 			}
 		}
 		private void resetMaybe(Point p) {
 			Rectangle bounds = hoverFrame.getBounds();
 			if ((p == null || !bounds.contains(p))
 					&& !mainMenu.isPopupMenuVisible()) {
-				try{
-				hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
-				}catch(UnsupportedOperationException ex){
-					//TODO ?????? Nothing should be fine i guess...
+				try {
+					hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
+				} catch (UnsupportedOperationException ex){
+					// do nothing.
 				}
 			}
 		}
@@ -377,15 +378,7 @@ public class ViewGUI implements View {
 			control.delete();
 		}
 	};
-	private Action generatePasswordAction = new AbstractAction("Generate New Password") {
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			String msg = "Warning: the current password will be overwritten. Please ensure that the current password is no longer needed before continuing.";
-			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), msg, "Generate New Password", JOptionPane.OK_CANCEL_OPTION);
-			if (val != JOptionPane.YES_OPTION) return;
-			// TODO generate password
-		}
-	};
+
 	private Action reloadAction = new AbstractAction("Reload Credentials") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -650,10 +643,6 @@ public class ViewGUI implements View {
 		JPanel loginFormPanel = new JPanel(new BorderLayout());
 		loginFormPanel.setBorder(BorderFactory.createEmptyBorder(
 				GAP, 2*GAP, 2*GAP, GAP/2));
-
-		// TODO: add form status validation notification thingy?
-		// TODO: following label is currently not used and should be removed.
-		JLabel loginValidationLabel = new JLabel("");
 		
 		JPanel fieldsPanel = new JPanel(new GridBagLayout());
 		JLabel loginLabel = new JLabel("Please enter username and password:");
@@ -673,7 +662,6 @@ public class ViewGUI implements View {
 		JButton button = new JButton(logInAction);
 		buttonPanel.add(button);
 		
-		loginFormPanel.add(loginValidationLabel, BorderLayout.NORTH);
 		loginFormPanel.add(fieldsPanel, BorderLayout.CENTER);
 		loginFormPanel.add(buttonPanel, BorderLayout.SOUTH);
 		
@@ -898,10 +886,10 @@ public class ViewGUI implements View {
 		this.hoverFrame.setUndecorated(true);
 		this.hoverFrame.setAlwaysOnTop(true);
 		this.hoverFrame.setResizable(false);
-		try{
+		try {
 			this.hoverFrame.setOpacity(HOVER_DEFAULT_OPACITY);
-		}catch(UnsupportedOperationException e){
-			//TODO is this ok? Made it work for me....
+		} catch (UnsupportedOperationException e) {
+			// do nothing
 		}
 		this.hoverFrame.pack();
 		
@@ -1008,7 +996,9 @@ public class ViewGUI implements View {
 				// TODO maybe put this stuff in controller.
 				// and maybe also avoid having inner anonymous classes
 				// in inner anonymous classes in inner anonymous classes.
-				String content = copyPass ? pFile.getVal(domain, username) : username;
+				
+				//TODO Jonathan: this should be a char array since it contains password.
+				char[] content = copyPass ? pFile.getVal(domain, username) : (username== null ? null : username.toCharArray());
 				String mime = DataFlavor.getTextPlainUnicodeFlavor().getMimeType();
 				DataHandler t = new DataHandler(content, mime);
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -1170,20 +1160,17 @@ public class ViewGUI implements View {
 	}
 	private void handleServerException() {
 		Exception ex = model.getLastServerException();
-		if (ex instanceof RecoverableException) {
-			final String msg = ex.getMessage();
-			final String title = "Error";
-			final Window parent = this.getCurrentActiveWindow();
-			SwingUtilities.invokeLater( new Runnable() {
-				@Override
-				public void run() {
-					JOptionPane.showMessageDialog(
-							parent, msg, title, JOptionPane.ERROR_MESSAGE);
-				}
-			});
-		} else {
-			// TODO
-		}
+		if (ex == null) return;
+		final String msg = ex.getMessage();
+		final String title = "Error";
+		final Window parent = this.getCurrentActiveWindow();
+		SwingUtilities.invokeLater( new Runnable() {
+			@Override
+			public void run() {
+				JOptionPane.showMessageDialog(
+						parent, msg, title, JOptionPane.ERROR_MESSAGE);
+			}
+		});
 	}
 	
 	private void handleActionStatuses() {
@@ -1222,14 +1209,14 @@ public class ViewGUI implements View {
 				char[] passwordUI = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
 				// WARNING: code currently assumes that char[] array obtained from
 				// PasswordFile is something that we should destroy here once we're done with it.
-				String tmp = pFile.getVal(domain, username);
-				char[] passwordSaved = tmp == null ? null : tmp.toCharArray();
+				char[] passwordSaved = pFile.getVal(domain, username);
 				
 				setEnabled = !Arrays.equals(passwordUI, passwordSaved);
 				delEnabled = passwordSaved != null;
 				
 				Utils.destroyPassword(passwordUI);
-				Utils.destroyPassword(passwordSaved); // TODO: see above WARNING about passwordFile destroying passwords
+				Utils.destroyPassword(passwordSaved);
+				// TODO: see above WARNING about passwordFile destroying passwords
 			}
 			addCredentialAction.setEnabled(setEnabled);
 			editCredentialAction.setEnabled(setEnabled);

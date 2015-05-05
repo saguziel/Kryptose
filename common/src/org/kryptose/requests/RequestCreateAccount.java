@@ -9,8 +9,10 @@ import java.io.ObjectInputStream;
  * Created by alexguziel on 3/15/15.
  */
 public final class RequestCreateAccount extends Request {
+	private static final long serialVersionUID = -4177944517246478600L;
 
-    public RequestCreateAccount(User u) {
+
+	public RequestCreateAccount(User u) {
         super(u);
         this.validateInstance();
     }
@@ -29,6 +31,6 @@ public final class RequestCreateAccount extends Request {
 
     @Override
     public String logEntry() {
-        return String.format("REQUEST: Create account from %s\n", super.getUser().getUsername());
+        return String.format("REQUEST: Create account from %s%n", super.getUser().getUsername());
     }
 }

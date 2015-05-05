@@ -15,14 +15,14 @@ import java.util.Arrays;
 
 public class PasswordFileTest {
 
-	public static char[] MASTER_PWD = "MasterPassword".toCharArray();
-	public static char[] MASTER_PWD_WRONG = "WrongMasterPassword".toCharArray();
+	private final static char[] MASTER_PWD = "MasterPassword".toCharArray();
+	private final static char[] MASTER_PWD_WRONG = "WrongMasterPassword".toCharArray();
 
-	public static String USERNAME1 = "antonio";
-	public static String USERNAME1_WRONG = "wrongusername";
+	private final static String USERNAME1 = "antonio";
+	private final static String USERNAME1_WRONG = "wrongusername";
 
-    public static MasterCredentials MASTER_CRED_1;
-	public static MasterCredentials MASTER_CRED_1_WRONG_PWD;
+    private static MasterCredentials MASTER_CRED_1;
+	private static MasterCredentials MASTER_CRED_1_WRONG_PWD;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -65,7 +65,7 @@ public class PasswordFileTest {
     }
 
     @Test
-    public final void PasswordFileOperationsTest() throws Exception {
+    public final void passwordFileOperationsTest() throws Exception {
     	//Create a blob with a credential, encrypt, decrypt and verify it is unaltered.
         PasswordFile p = new PasswordFile(MASTER_CRED_1);
         p.setVal("MyDom", "MyUser", "MyPwd");

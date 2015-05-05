@@ -48,7 +48,7 @@ public class PasswordFile implements Destroyable {
     
     public PasswordFile(MasterCredentials mCred) {
     	this.mCred = mCred;
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now(); // TODO: this timestamp is never used?
         this.credentials = new ArrayList<Credential>();
     }
 
@@ -117,10 +117,10 @@ public class PasswordFile implements Destroyable {
         }
     }
 
-    public void decryptBlob(Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        if(mCred==null){
+    @SuppressWarnings("unchecked")
+	public void decryptBlob(Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        if (mCred == null){
         	throw new BadBlobException("credentials for Blob decryption not available");
-        	//TODO: Log?
         }
     	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(mCred.getUsername(), mCred.getPassword());
 
@@ -131,8 +131,11 @@ public class PasswordFile implements Destroyable {
             ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
             ObjectInputStream objStream = new ObjectInputStream(byteStream);
             credentials = (ArrayList<Credential>) objStream.readObject();
+            for (Credential cred : credentials) {
+            	Credential.class.cast(cred);
+            }
             timestamp = (LocalDateTime) objStream.readObject();
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (ClassNotFoundException | ClassCastException | IOException e) {
             throw new BadBlobException("Bad blob");
         }
     }
@@ -147,9 +150,8 @@ public class PasswordFile implements Destroyable {
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
        
-            if(mCred==null){
+            if (mCred==null) {
             	throw new BadBlobException("Trying to encrypt a Blob without an encryption key. Something is wrong in the code.");
-            	//TODO: Log?
             }
             
             return rawBlobCreate(bytes,mCred.getCryptKey());
@@ -169,7 +171,7 @@ public class PasswordFile implements Destroyable {
         return null;
     }
 
-    public String getVal(String dom, String user) {
+    public char[] getVal(String dom, String user) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
                 return c.getPassword();
@@ -179,10 +181,10 @@ public class PasswordFile implements Destroyable {
     }
 
     // returns true if value overwritten, false if new val inserted
-    public Boolean setVal(String dom, String user, String pass) {
+    public Boolean setVal(String dom, String user, char[] pass) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
-            	String oldVal = c.getPassword();
+            	char[] oldVal = c.getPassword();
                 c.setPassword(pass);
                 changeSupport.firePropertyChange(user + "@" + dom, oldVal, pass);
                 return true;
@@ -198,7 +200,7 @@ public class PasswordFile implements Destroyable {
             Credential c = credentials.get(index);
             String dom = c.getDomain();
             String user = c.getUsername();
-            String oldVal = c.getPassword();
+            char[] oldVal = c.getPassword();
             credentials.remove(index);
             changeSupport.firePropertyChange(user + "@" + dom, oldVal, null);
             return c;
@@ -273,51 +275,7 @@ public class PasswordFile implements Destroyable {
 		}
 		return usernames.toArray(new String[usernames.size()]);
 	}
-
-    //TODO remove use of deprecated methods from the rest of the code.
-    @Deprecated
-    public PasswordFile(String username, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        decryptBlob(b, username, pass);
-        //this.username = username;
-    }
-
-    @Deprecated
-    public PasswordFile(String user) {
-    	this(new MasterCredentials(user, new char[10]));
-    }
     
-    @Deprecated
-    public void decryptBlob(Blob b, String username, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-    	this.mCred = new MasterCredentials(username, pass.toCharArray());
-    	decryptBlob(b);
-    }
-
-    @Deprecated
-    public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
-        return encryptBlob(username, raw_key, lastmod);
-    }
-    
-    @Deprecated
-    private  Blob encryptBlob(String username, byte[] cryptKey, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        try {
-            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-            ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
-            objStream.writeObject(credentials);
-            objStream.writeObject(lastmod);
-            objStream.flush();
-            byte[] bytes = byteStream.toByteArray();
-            objStream.close();
-
-            return rawBlobCreate(bytes, cryptKey);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new BadBlobException("Bad blob");
-        }
-    }
-    
-    @Deprecated 
 	public Blob encryptBlob(MasterCredentials mCred, LocalDateTime lastModDate) throws CryptoPrimitiveNotSupportedException, BadBlobException, CryptoErrorException {
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();

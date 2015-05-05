@@ -11,16 +11,17 @@ import javax.security.auth.Destroyable;
  *
  */
 public class Credential implements Serializable, Destroyable {
+	private static final long serialVersionUID = 7942387805138241646L;
 	
 	private String username;
-	private String password;
+	private char[] password;
 	private String domain;
 	private LocalDateTime lastmod;
 	
-	public Credential(String username, String password, String domain) {
+	public Credential(String username, char[] password, String domain) {
 		super();
 		this.username = username;
-		this.password = password;
+		this.password = password.clone();
 		this.domain = domain;
         recordTime();
 	}
@@ -33,7 +34,7 @@ public class Credential implements Serializable, Destroyable {
 		return username;
 	}
 
-	public String getPassword() {
+	public char[] getPassword() {
 		return password;
 	}
 
@@ -46,8 +47,8 @@ public class Credential implements Serializable, Destroyable {
 		return domain;
 	}
 
-    void setPassword(String p) {
-        this.password = p;
+    void setPassword(char[] p) {
+        this.password = p.clone();
         recordTime();
     }
 

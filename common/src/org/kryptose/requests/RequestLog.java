@@ -9,8 +9,9 @@ import java.io.ObjectInputStream;
  * Created by alexguziel on 3/15/15.
  */
 public final class RequestLog extends Request {
+	private static final long serialVersionUID = 5061261125851281881L;
 
-    public RequestLog(User u) {
+	public RequestLog(User u) {
         super(u);
         this.validateInstance();
     }
@@ -29,6 +30,6 @@ public final class RequestLog extends Request {
 
     @Override
     public String logEntry() {
-        return String.format("REQUEST: Log from %s\n", super.getUser().getUsername());
+        return String.format("REQUEST: Log from %s%n", super.getUser().getUsername());
     }
 }

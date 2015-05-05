@@ -7,10 +7,9 @@ import java.io.ObjectInputStream;
  * A request to store a new blob for a user.
  */
 public final class RequestPut extends Request {
-
-    // TODO generate serialversionuid after fields are decided upon
-
-    private final Blob blob;
+	private static final long serialVersionUID = 6467352395398158259L;
+	
+	private final Blob blob;
     private byte[] oldDigest;
 
     /**
@@ -62,6 +61,6 @@ public final class RequestPut extends Request {
 
     @Override
     public String logEntry() {
-        return String.format("REQUEST: Put from %s\n", super.getUser().getUsername());
+        return String.format("REQUEST: Put from %s%n", super.getUser().getUsername());
     }
 }

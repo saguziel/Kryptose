@@ -5,7 +5,8 @@ import org.kryptose.exceptions.InvalidCredentialsException;
 import org.kryptose.exceptions.MalformedRequestException;
 
 public class ResponseErrorReport extends Response {
-	
+	private static final long serialVersionUID = 6466952963530056267L;
+
 	private InvalidCredentialsException icex = null;
 	private MalformedRequestException mrex = null;
 	private InternalServerErrorException iseex = null; 
@@ -56,7 +57,6 @@ public class ResponseErrorReport extends Response {
 	
 	@Override
 	public String logEntry() {
-		// TODO: this is lazy.
 		return "RESPONSE: " + this.getException().toString();
 	}
 
