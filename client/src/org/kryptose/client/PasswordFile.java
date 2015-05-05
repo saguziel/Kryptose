@@ -174,7 +174,7 @@ public class PasswordFile implements Destroyable {
     public char[] getVal(String dom, String user) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
-                return c.getPassword();
+                return c.getPassword().clone();
             }
         }
         return null;

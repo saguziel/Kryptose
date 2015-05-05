@@ -994,7 +994,7 @@ public class ViewGUI implements View {
 				this.username = username;
 				this.copyPass = copyPass;
 			}
-			@Override
+			@Override     
 			public void actionPerformed(ActionEvent e) {
 				// TODO maybe put this stuff in controller.
 				// and maybe also avoid having inner anonymous classes
