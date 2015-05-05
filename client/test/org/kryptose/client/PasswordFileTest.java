@@ -52,14 +52,14 @@ public class PasswordFileTest {
     public final void blobEncryptionTest() throws Exception {
     	//Create a blob with a credential, encrypt, decrypt and verify it is unaltered.
         PasswordFile p = new PasswordFile(MASTER_CRED_1);
-        p.setVal("MyDom", "MyUser", "MyPwd");
+        p.setVal("MyDom", "MyUser", "MyPwd".toCharArray());
 
         Blob b = p.encryptBlob(LocalDateTime.now());
 
         PasswordFile p2 = new PasswordFile(MASTER_CRED_1, b);
 
-    	assertEquals(p2.getVal("MyDom","MyUser") , "MyPwd");
-    	assertNotEquals(p2.getVal("MyDom","MyUser") , "MyPwdWrong");
+    	assertArrayEquals(p2.getVal("MyDom","MyUser") , "MyPwd".toCharArray());
+    	assertFalse(Arrays.equals(p2.getVal("MyDom","MyUser") , "MyPwdWrong".toCharArray()));
 
 
     }
@@ -68,16 +68,18 @@ public class PasswordFileTest {
     public final void passwordFileOperationsTest() throws Exception {
     	//Create a blob with a credential, encrypt, decrypt and verify it is unaltered.
         PasswordFile p = new PasswordFile(MASTER_CRED_1);
-        p.setVal("MyDom", "MyUser", "MyPwd");
-        p.setVal("MyDom2", "MyUser", "MyPwd");
+        p.setVal("MyDom", "MyUser", "MyPwd".toCharArray());
+        p.setVal("MyDom2", "MyUser", "MyPwd".toCharArray());
         //This should not create a new credential, but update the above one.
-        p.setVal("MyDom2", "MyUser", "MyPwd2");
+        p.setVal("MyDom2", "MyUser", "MyPwd2".toCharArray());
 
         assertNull(p.getVal(-5));
         assertNull(p.getVal(2));
         assertNull(p.delVal(-2));
-        Credential c = new Credential("MyUser", "MyPwd", "MyDom");
-        assertEquals(c.getPassword(), p.getVal("MyDom","MyUser"));
+        Credential c = new Credential("MyUser", "MyPwd".toCharArray(), "MyDom");
+        assertArrayEquals(c.getPassword(), p.getVal("MyDom","MyUser"));
+        System.out.println(p.getVal(0).getDomain());
+        System.out.println(p.getVal(0).getUsername());
         assertTrue(c.equals(p.getVal(0)));
         p.delVal(0);
         assertFalse(c.equals(p.getVal(0)));
@@ -90,7 +92,7 @@ public class PasswordFileTest {
     public final void blobDecryptWrongMasterPasswordTest() throws Exception {
 
         PasswordFile p = new PasswordFile(MASTER_CRED_1);
-        p.setVal("MyDom", "MyUser", "MyPwd");
+        p.setVal("MyDom", "MyUser", "MyPwd".toCharArray());
 
         Blob b = p.encryptBlob(LocalDateTime.now());
 
@@ -102,7 +104,7 @@ public class PasswordFileTest {
     public final void blobDecryptWrongUsernameTest() throws Exception {
 
         PasswordFile p = new PasswordFile(MASTER_CRED_1);
-        p.setVal("MyDom", "MyUser", "MyPwd");
+        p.setVal("MyDom", "MyUser", "MyPwd".toCharArray());
 
         Blob b = p.encryptBlob(LocalDateTime.now());
 
@@ -115,7 +117,7 @@ public class PasswordFileTest {
     public final void blobEncryptionTamperedBlobTest1() throws Exception {
 
         PasswordFile p = new PasswordFile(MASTER_CRED_1);
-        p.setVal("MyDom", "MyUser", "MyPwd");
+        p.setVal("MyDom", "MyUser", "MyPwd".toCharArray());
 
         Blob b = p.encryptBlob(LocalDateTime.now());
 
@@ -138,7 +140,7 @@ public class PasswordFileTest {
     public final void blobEncryptionTamperedBlobTest2() throws Exception {
 
         PasswordFile p = new PasswordFile(MASTER_CRED_1);
-        p.setVal("MyDom", "MyUser", "MyPwd");
+        p.setVal("MyDom", "MyUser", "MyPwd".toCharArray());
 
         Blob b = p.encryptBlob(LocalDateTime.now());
 
