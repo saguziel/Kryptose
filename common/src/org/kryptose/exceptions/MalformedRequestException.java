@@ -10,13 +10,16 @@ package org.kryptose.exceptions;
  * @author jshi
  */
 public class MalformedRequestException extends RecoverableException {
+	private static final long serialVersionUID = 6166848162362646330L;
 
 	public MalformedRequestException() {
-		super();
+		super("Error communicating to the server. Client program might be out of date.");
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 	public MalformedRequestException(String message) {
 		super(message);
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 }

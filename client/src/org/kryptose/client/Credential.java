@@ -1,25 +1,32 @@
 package org.kryptose.client;
 
-import org.kryptose.requests.Log;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+
+import javax.security.auth.Destroyable;
+
+import org.kryptose.Utils;
 
 /**
  * A set of credentials.
  *
  */
-public class Credential implements Serializable {
+public class Credential implements Serializable, Destroyable {
+	private static final long serialVersionUID = 7942387805138241646L;
 	
 	private String username;
-	private String password;
+	private char[] password;
 	private String domain;
 	private LocalDateTime lastmod;
-	
-	public Credential(String username, String password, String domain) {
+
+    // destroys the input password char[]
+	public Credential(String username, char[] password, String domain) {
 		super();
 		this.username = username;
-		this.password = password;
+		this.password = password.clone();
+		Utils.destroyPassword(password);
 		this.domain = domain;
         recordTime();
 	}
@@ -32,8 +39,8 @@ public class Credential implements Serializable {
 		return username;
 	}
 
-	public String getPassword() {
-		return password;
+	public char[] getPasswordClone() {
+		return password == null ? null : password.clone();
 	}
 
 
@@ -45,8 +52,11 @@ public class Credential implements Serializable {
 		return domain;
 	}
 
-    void setPassword(String p) {
-        this.password = p;
+    // destroys the input password char[]
+    void setPassword(char[] p) {
+    	Utils.destroyPassword(this.password);
+        this.password = p.clone();
+        Utils.destroyPassword(p);
         recordTime();
     }
 
@@ -60,6 +70,9 @@ public class Credential implements Serializable {
         recordTime();
     }
 	
+    public void destroy() {
+    	Utils.destroyPassword(this.password);
+    }
 	
 
 	@Override
@@ -91,7 +104,7 @@ public class Credential implements Serializable {
 		if (password == null) {
 			if (other.password != null)
 				return false;
-		} else if (!password.equals(other.password))
+		} else if (!Arrays.equals(password,other.password))
 			return false;
 		if (username == null) {
 			if (other.username != null)

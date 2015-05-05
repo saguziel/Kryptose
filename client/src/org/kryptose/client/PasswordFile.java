@@ -1,9 +1,9 @@
 package org.kryptose.client;
 
+import org.kryptose.Utils;
 import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.Blob;
-import org.kryptose.requests.KeyDerivator;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -11,6 +11,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.security.auth.Destroyable;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -18,28 +22,36 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by jeff on 3/15/15.
  */
-public class PasswordFile {
+public class PasswordFile implements Destroyable {
 
     ArrayList<Credential> credentials;
     LocalDateTime timestamp;
-
-    String username;
+    
+    transient PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+    
+    MasterCredentials mCred = null;
     byte[] oldDigest;
 
-    public PasswordFile(String username, Blob b, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        decryptBlob(b, username, pass);
-        this.username = username;
+    public PasswordFile(MasterCredentials mCred, Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        //String password = new String(mCred.getPassword());
+        this.mCred = mCred;
+    	decryptBlob(b);
+        // TODO use char array for passwords
     }
 
-    public PasswordFile(String user) {
-        this.username = user;
-        this.timestamp = LocalDateTime.now();
+    
+    public PasswordFile(MasterCredentials mCred) {
+    	this.mCred = mCred;
+        this.timestamp = LocalDateTime.now(); // TODO: this timestamp is never used?
         this.credentials = new ArrayList<Credential>();
     }
+
 
     private static Blob rawBlobCreate(byte[] raw_data, byte[] raw_key) throws CryptoPrimitiveNotSupportedException, CryptoErrorException {
         Blob b;
@@ -57,9 +69,6 @@ public class PasswordFile {
 
             SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
             c.init(Cipher.ENCRYPT_MODE, sks, params);
-
-            //byte[] head = "Head".getBytes();
-            //c.updateAAD(head);
 
             b = new Blob(c.doFinal(raw_data), ivData);
 
@@ -85,9 +94,6 @@ public class PasswordFile {
             SecretKeySpec sks = new SecretKeySpec(raw_key, "AES");
             c.init(Cipher.DECRYPT_MODE, sks, params);
 
-            //byte[] head = "Head".getBytes();
-            //c.updateAAD(head);
-
             return c.doFinal(b.getEncBytes());
 
         } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -111,57 +117,52 @@ public class PasswordFile {
         }
     }
 
-    public void decryptBlob(Blob b, String username, String pass) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
+    @SuppressWarnings("unchecked")
+	public void decryptBlob(Blob b) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
+        if (mCred == null){
+        	throw new BadBlobException("credentials for Blob decryption not available");
+        }
+    	//byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(mCred.getUsername(), mCred.getPassword());
 
+        byte[] decrypted = rawBlobDecrypt(b, mCred.getCryptKey());
+    	//TODO ALEX: destroy raw_key;
 
-        byte[] decrypted = rawBlobDecrypt(b, raw_key);
         try {
             ByteArrayInputStream byteStream = new ByteArrayInputStream(decrypted);
             ObjectInputStream objStream = new ObjectInputStream(byteStream);
             credentials = (ArrayList<Credential>) objStream.readObject();
+            for (Credential cred : credentials) {
+            	Credential.class.cast(cred);
+            }
             timestamp = (LocalDateTime) objStream.readObject();
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (ClassNotFoundException | ClassCastException | IOException e) {
             throw new BadBlobException("Bad blob");
         }
     }
 
-    //TODO: use correct timestamp and iv
-    public Blob encryptBlob(String username, String pass, LocalDateTime lastmod) throws BadBlobException, CryptoPrimitiveNotSupportedException, CryptoErrorException {
-
-    	/*
-        byte[] salt = new byte[64];
-    	SecureRandom rnd;
-		try {
-			rnd = SecureRandom.getInstance("SHA1PRNG");
-			rnd.nextBytes(salt);
-		} catch (NoSuchAlgorithmException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			throw new CryptoPrimitiveNotSupportedException(e1);
-		}
-    	*/
-
-
-        byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(username, pass.toCharArray());
-
+	public Blob encryptBlob(LocalDateTime lastModDate) throws CryptoPrimitiveNotSupportedException, BadBlobException, CryptoErrorException {
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
             ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
             objStream.writeObject(credentials);
-            objStream.writeObject(lastmod);
+            objStream.writeObject(lastModDate);
             objStream.flush();
             byte[] bytes = byteStream.toByteArray();
             objStream.close();
-
-            return rawBlobCreate(bytes, raw_key);
+       
+            if (mCred==null) {
+            	throw new BadBlobException("Trying to encrypt a Blob without an encryption key. Something is wrong in the code.");
+            }
+            
+            return rawBlobCreate(bytes,mCred.getCryptKey());
 
         } catch (IOException e) {
             e.printStackTrace();
             throw new BadBlobException("Bad blob");
         }
-    }
+	}
 
+    
     public Credential getVal(int index) {
         if (0 <= index && index < credentials.size()) {
             Credential c = credentials.get(index);
@@ -170,31 +171,42 @@ public class PasswordFile {
         return null;
     }
 
-    public String getVal(String dom, String user) {
+    public char[] getValClone(String dom, String user) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
-                return c.getPassword();
+                return c.getPasswordClone();
             }
         }
         return null;
     }
 
     // returns true if value overwritten, false if new val inserted
-    public Boolean setVal(String dom, String user, String pass) {
+    public Boolean setVal(String dom, String user, char[] pass) {
         for (Credential c : credentials) {
             if (c.getDomain().equals(dom) && c.getUsername().equals(user)) {
+            	char[] oldVal = c.getPasswordClone();
+                // Credential class now responsible for destroying pass.
                 c.setPassword(pass);
+                changeSupport.firePropertyChange(user + "@" + dom, oldVal, pass);
+                Utils.destroyPassword(oldVal);
                 return true;
             }
         }
+        // Credential class now responsible for destroying pass.
         credentials.add(new Credential(user, pass, dom));
+        changeSupport.firePropertyChange(user + "@" + dom, null, pass);
         return false;
     }
 
     public Credential delVal(int index) {
         if (0 <= index && index < credentials.size()) {
             Credential c = credentials.get(index);
+            String dom = c.getDomain();
+            String user = c.getUsername();
+            char[] oldVal = c.getPasswordClone();
             credentials.remove(index);
+            changeSupport.firePropertyChange(user + "@" + dom, oldVal, null);
+            Utils.destroyPassword(oldVal);
             return c;
         }
         return null;
@@ -210,7 +222,7 @@ public class PasswordFile {
             }
         }
         if (toRem >= 0) {
-            credentials.remove(toRem);
+        	delVal(toRem);
             return true;
         }
         return false;
@@ -221,10 +233,70 @@ public class PasswordFile {
     }
 
     public static class BadBlobException extends Exception {
-        public BadBlobException(String message) {
+		private static final long serialVersionUID = 4063553143136409234L;
+
+		public BadBlobException(String message) {
             super(message);
         }
     }
-    
 
+	public void destroy() {
+		mCred.destroy();
+		for (Credential c : credentials){
+			c.destroy();
+		}
+	}
+    
+	public void addChangeListener(PropertyChangeListener listener) {
+		this.changeSupport.addPropertyChangeListener(listener);
+	}
+
+	
+	public boolean existsCredential(String domain, String username){
+		if(this.credentials == null || username == null || domain == null) return false;
+		
+		for (Credential cred : this.credentials) {
+			if(username.equals(cred.getUsername()) && domain.equals(cred.getDomain()))
+				return true;
+		}
+		return false;
+	}
+	
+	public String[] getDomains() {
+		Set<String> domains = new HashSet<String>();
+		for (Credential cred : this.credentials) {
+			domains.add(cred.getDomain());
+		}
+		return domains.toArray(new String[domains.size()]);
+	}
+
+	public String[] getUsernames(String domain) {
+		Set<String> usernames = new HashSet<String>();
+		for (Credential cred : this.credentials) {
+			if (cred.getDomain().equals(domain)) {
+				usernames.add(cred.getUsername());
+			}
+		}
+		return usernames.toArray(new String[usernames.size()]);
+	}
+    
+	public Blob encryptBlob(MasterCredentials mCred, LocalDateTime lastModDate) throws CryptoPrimitiveNotSupportedException, BadBlobException, CryptoErrorException {
+        try {
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
+            objStream.writeObject(credentials);
+            objStream.writeObject(lastModDate);
+            objStream.flush();
+            byte[] bytes = byteStream.toByteArray();
+            objStream.close();
+       
+            return rawBlobCreate(bytes,mCred.getCryptKey());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BadBlobException("Bad blob");
+        }
+	}
+
+	
 }

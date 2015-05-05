@@ -23,6 +23,7 @@ public class Server {
     private static final String LOGGER_NAME = "org.kryptose.server";
     private Logger logger = Logger.getLogger(LOGGER_NAME);
     private DataStore dataStore = new FileSystemDataStore(logger);
+    
     // TODO make configurable?
     private static final int LOG_FILE_COUNT = 20;
     private static final int LOG_FILE_SIZE = 40 * 1024; // bytes
@@ -112,16 +113,96 @@ public class Server {
             return this.handleRequestGet((RequestGet) request);
         } else if (request instanceof RequestPut) {
             return this.handleRequestPut((RequestPut)request);
-        } else if (request instanceof RequestTest) { //TODO: remove later, testing only.
-            return this.handleRequestTest((RequestTest) request);
         } else if (request instanceof RequestLog) {
             return this.handleRequestLog((RequestLog) request);
         } else if (request instanceof RequestCreateAccount) {
             return this.handleRequestCreateAccount((RequestCreateAccount) request);
+        } else if (request instanceof RequestChangePassword) {
+            return this.handleRequestChangePassword((RequestChangePassword) request);
+        } else if (request instanceof RequestDeleteAccount) {
+            return this.handleRequestDeleteAccount((RequestDeleteAccount) request);
         } else {
-        	// TODO: make sure this is included on server logs.
+        	String username = request.getUser() == null ? "null" : request.getUser().getUsername();
+        	String connectId = request.getConnection() == null ? "null" : "" + request.getConnection().getId();
+        	logger.log(Level.WARNING, "Unexpected Request: " + request.toString()
+        			+ " from user " + username 
+        			+ " on connection " + connectId);
             return new ResponseErrorReport(new MalformedRequestException());
         }
+    }
+
+    private Response handleRequestDeleteAccount(RequestDeleteAccount request) {
+        User u = request.getUser();
+
+        if (this.dataStore.userHasBlob(u)) {
+            boolean result = this.dataStore.deleteBlob(u);
+            if (!result) {
+                System.out.println("no bono");
+                return new ResponseDeleteAccount(false);
+            }
+        }
+        boolean result2 = this.userTable.deleteUser(u);
+        return new ResponseDeleteAccount(result2);
+    }
+
+    private Response handleRequestChangePassword(RequestChangePassword request) {
+        Response response;
+        User u = request.getUser();
+
+        Result result = this.userTable.changeAuthKey(u.getUsername(), u.getPasskey(), request.getNewAuthkey());
+        if (result != Result.AUTH_KEY_CHANGED) {
+            //auth key was changed or user deleted between authentication and this call
+            response = new ResponseErrorReport(new InternalServerErrorException());
+            String errorMsg = "Unexpected result from changing password";
+            this.getLogger().log(Level.SEVERE, errorMsg, result);
+            this.dataStore.writeUserLog(u, new Log(u, request, response));
+            return response;
+        }
+        if (!this.dataStore.userHasBlob(u)) {
+            response = new ResponseChangePassword((byte[]) null);
+            //no userlog
+            return response;
+        }
+        if (request.getNewBlob() == null) {
+            return new ResponseChangePassword(new StaleWriteException());
+        }
+        DataStore.WriteResult writeResult = this.dataStore.writeBlob(u, request.getNewBlob(), request.getOldDigest());
+        switch (writeResult) {
+            case SUCCESS:
+                try {
+                    response = new ResponseChangePassword(request.getNewBlob().getDigest());
+                } catch (CryptoPrimitiveNotSupportedException e) {
+                    String errorMsg = "Java Runtime does not support required cryptography operations.";
+                    this.getLogger().log(Level.SEVERE, errorMsg, e);
+                    response = new ResponseErrorReport(new InternalServerErrorException());
+                }
+                break;
+            case STALE_WRITE:
+                response = new ResponseChangePassword(new StaleWriteException());
+                break;
+            case INTERNAL_ERROR:
+                response = new ResponseErrorReport(new InternalServerErrorException());
+                // Assume logging has already been done.
+                break;
+            case USER_DOES_NOT_EXIST: // we should have authenticated by now.
+            default:
+                response = new ResponseErrorReport(new InternalServerErrorException());
+                String errorMsg = "Switch-case fall-through in handleRequestChangePassword.";
+                this.getLogger().log(Level.SEVERE, errorMsg, Thread.currentThread().getStackTrace());
+                break;
+        }
+        if (writeResult != DataStore.WriteResult.SUCCESS) {
+            //revert auth key
+            result = this.userTable.changeAuthKey(u.getUsername(), request.getNewAuthkey(), u.getPasskey());
+            if (result != Result.AUTH_KEY_CHANGED) {
+                response = new ResponseErrorReport(new InternalServerErrorException());
+                String errorMsg = "ERROR: auth key changed but data inconsistent";
+                this.getLogger().log(Level.SEVERE, errorMsg, result);
+            }
+        }
+
+        this.dataStore.writeUserLog(u, new Log(u, request, response));
+        return response;
     }
 
     private Response handleRequestCreateAccount(RequestCreateAccount request) {
@@ -130,7 +211,7 @@ public class Server {
 
         Result result = this.userTable.addUser(u);
         if (result == Result.USER_ADDED) {
-        	response = new ResponseCreateAccount(); // TODO userauditlog
+        	response = new ResponseCreateAccount();
         } else if (result == Result.USER_ALREADY_EXISTS) {
         	response = new ResponseCreateAccount(new UsernameInUseException());
         } else {
@@ -153,7 +234,7 @@ public class Server {
             Blob b = this.dataStore.readBlob(u);
 
             if (b != null) {
-                response = new ResponseGet(b); // TODO userauditlog
+                response = new ResponseGet(b);
             } else {
                 response = new ResponseErrorReport(new InternalServerErrorException());
                 String errorMsg = "Blob was null, but hasBlob was true. User: " + u.getUsername();
@@ -161,9 +242,7 @@ public class Server {
             }
         } else {
         	// User has not yet stored a blob.
-            response = new ResponseGet((Blob)null); // TODO userauditlog
-            // TODO is this an exceptional response? Do we need to create an exception?
-            // ^ probably not.
+            response = new ResponseGet((Blob)null);
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
@@ -216,12 +295,7 @@ public class Server {
         return response;
     }
     
-    
-    //TODO: remove later (testing only)
-    private Response handleRequestTest(RequestTest request) {
-    	return new ResponseTest(request.toString());
-    }
-    
+        
     public DataStore getDataStore() {
         return this.dataStore;
     }
@@ -267,7 +341,7 @@ public class Server {
     private void initLogger() {
 		this.logger.setLevel(Level.ALL);
 		
-		// TODO this log Handler is for debug purposes. remove or configure.
+		// This log Handler is for debug purposes.
 		//Handler debug = new ConsoleHandler();
 		//debug.setLevel(Level.ALL);
 		//this.logger.addHandler(debug);
@@ -330,9 +404,9 @@ public class Server {
         String keyStorePass = properties.getProperty("SERVER_KEY_STORE_PASSWORD");
         
         String msg = "Kryptose server starting on port " + portNumber + "...";
-        System.out.println(msg); // TODO: don't hardcode system.out?
+        System.out.println(msg);
         this.logger.log(Level.INFO, msg);
-        
+
         // Start incoming connection listener.
         this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();

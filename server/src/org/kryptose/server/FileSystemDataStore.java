@@ -21,7 +21,6 @@ public class FileSystemDataStore implements DataStore {
 	private static final String DATASTORE_PREFIX = "datastore/";
 	private static final String USER_BLOB_PREFIX = DATASTORE_PREFIX + "blobs/";
 	private static final String USER_LOG_PREFIX = DATASTORE_PREFIX + "userlogs/";
-	private static final File SYSTEM_LOG_FILE = new File(DATASTORE_PREFIX + "kryptose.log");
 
 
     private Logger logger;
@@ -50,14 +49,6 @@ public class FileSystemDataStore implements DataStore {
     	return new File(USER_LOG_PREFIX + user.getUsername() + ".log");
     }
     
-    /**
-     * Get the file location of the system log. 
-     * @return
-     */
-    private static File getSystemLogFile() {
-    	return SYSTEM_LOG_FILE;
-    }
-    
     @Override
 	public boolean userHasBlob(User user) {
         return getUserBlobFile(user).exists();
@@ -71,8 +62,7 @@ public class FileSystemDataStore implements DataStore {
     		return WriteResult.STALE_WRITE;
     	}
     	if (oldDigest != null && !hasBlob) {
-    		// TODO not quite the right error condition.
-    		return WriteResult.USER_DOES_NOT_EXIST;
+    		return WriteResult.STALE_WRITE;
     	}
     	if (oldDigest != null && hasBlob && !Arrays.equals(oldDigest, (this.readBlob(user).getDigest()))) {
             return WriteResult.STALE_WRITE;
@@ -136,28 +126,20 @@ public class FileSystemDataStore implements DataStore {
     public ArrayList<Log> readUserLogs(User user, int maxEntries) {
         return null;
     }
-    
+
     @Override
-    public WriteResult writeSystemLog(Log log) {
+    public boolean deleteBlob(User u) {
+        File file = getUserBlobFile(u);
 
-    	File file = getSystemLogFile();
-
-    	synchronized(SYSTEM_LOG_FILE) {
-    		ensureExists(file);
-    		//try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file, true));) {
-    		//	oos.writeObject(log);
-        	try (FileWriter fw = new FileWriter(file, true);) {
-    			fw.write(log.toString());
-    		} catch (IOException e) {
-    			// TODO: hmm. this is somewhat circular.
-    			String errorMsg = "Error writing system log: " + SYSTEM_LOG_FILE;
-    			logger.log(Level.SEVERE, errorMsg, e);
-    			return WriteResult.INTERNAL_ERROR;
-    		}
-    		return WriteResult.SUCCESS;
-    	}
+        if (!file.exists() || file.delete()) {
+            return true;
+        } else {
+            String errorMsg = "Error deleting account: " + u.getUsername();
+            logger.log(Level.SEVERE, errorMsg);
+            return false;
+        }
     }
-    
+
     /**
      * Ensure that the file has been created, and that all its parent directories exist.
      * @param file The file to ensure has been created.

@@ -37,6 +37,8 @@ public interface DataStore {
 	 */
 	public abstract Blob readBlob(User user);
 
+    public abstract boolean deleteBlob(User user);
+
     /**
      * Write a user-specific log entry.
      *
@@ -54,14 +56,6 @@ public interface DataStore {
 	 * @return The outcome of the write.
 	 */
 	public abstract WriteResult writeUserLog(User user, Log log);
-
-	/**
-	 * 
-	 * TODO: remove this; obsoleted by java.util.logging.
-	 * @param log
-	 * @return
-	 */
-	public abstract WriteResult writeSystemLog(Log log);
 
 	
     public enum WriteResult {

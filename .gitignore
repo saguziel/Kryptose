@@ -19,6 +19,9 @@ hs_err_pid*
 
 # Server data
 server/datastore/*
+server/usertable.bin
+server/usertable.bin.bak
+server/logPassfile
 
 # Extraneous .gitignores
 server/.gitignore
@@ -29,3 +32,7 @@ common/.gitignore
 server/bin/*
 client/bin/*
 common/bin/*
+
+# meta
+.idea/*
+.metadata/*

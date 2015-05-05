@@ -6,12 +6,16 @@ package org.kryptose.exceptions;
  * @author jshi
  */
 public class RecoverableException extends Exception {
+	private static final long serialVersionUID = 4384928253759960805L;
 
 	public RecoverableException() {
+		super("An error occurred. Please try again.");
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 	public RecoverableException(String message) {
 		super(message);
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 }

@@ -12,13 +12,16 @@ package org.kryptose.exceptions;
  * @author jshi
  */
 public class InternalServerErrorException extends Exception {
-	
+	private static final long serialVersionUID = -102224301046864950L;
+
 	public InternalServerErrorException() {
-		super();
+		super("An internal server error has occurred.");
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 
 	public InternalServerErrorException(String message) {
 		super(message);
+		this.setStackTrace(new StackTraceElement[0]);
 	}
 	
 	// We don't want to send the client details about the internal server error.

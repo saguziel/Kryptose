@@ -3,6 +3,7 @@ package org.kryptose.server;
 
 import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 
 import javax.net.ServerSocketFactory;
@@ -52,9 +53,15 @@ public class SecureServerListener{
     	    this.server.getLogger().log(Level.CONFIG, printServerSocketInfo(this.serverListener));
 		    
         } catch (IOException ex) {
-    		String errorMsg = "Error setting up socket to listen to incoming connections... exiting program.";
-			this.server.getLogger().log(Level.SEVERE, errorMsg, ex);
-			throw new FatalError(ex);
+			if(ex.getCause() instanceof NoSuchAlgorithmException){
+				String errorMsg = "Error setting up the SSL Socket. Might be due to missing certificate files or wrong password... exiting program.";
+				this.server.getLogger().log(Level.SEVERE, errorMsg, ex);
+				throw new FatalError(ex);
+			}else{//generic IOException
+	    		String errorMsg = "Error setting up socket to listen to incoming connections... exiting program.";
+				this.server.getLogger().log(Level.SEVERE, errorMsg, ex);
+				throw new FatalError(ex);
+			}				
         }
     	
     }
@@ -216,19 +223,7 @@ public class SecureServerListener{
 	      
 	      return builder.toString();
 	   } 
-/*
 
-	   //TODO: remove afterwards. For testing only
-	   public static void main(String[] args) {
-		   		System.setProperty("javax.net.debug", "all");
-		   		System.out.println("Server is runningAA");
-		   		SecureServerListener listener = new SecureServerListener(5002);
-		   		listener.start();
-		   		System.out.println("Server is runningAA");
-		   		
-		   	}
-
-*/
 	
 }
 

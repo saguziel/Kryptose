@@ -1,29 +1,38 @@
-
 package org.kryptose.client;
 
+import org.kryptose.client.Model.PasswordForm;
+import org.kryptose.client.Model.CredentialAddOrEditForm;
+import org.kryptose.client.Model.TextForm;
 
 
+/**
+ * Created by jeff on 4/27/15.
+ */
+public interface View {
 
-public abstract class View {
+    public void updateMasterCredentials();
 
-    abstract void promptUserName();
+    public void updateLogs();
 
-	abstract void promptPassword();
+    public void updateLastMod();
 
-    abstract void promptCmd();
+    public void updatePasswordFile();
 
-	abstract void promptCmd(String s);
+    public void updateServerException();
 
-	abstract void logout();
+    public void updateSyncStatus();
 
-    abstract void promptStart();
+	public void updateTextForm(TextForm form);
 
-    abstract void displayMessage(String s);
+	public void updatePasswordForm(PasswordForm form);
 
-    abstract void createUsername();
+	public void updateSelection(CredentialAddOrEditForm selection);
 
-    abstract void createPass();
+	public void updateViewState();
 
-    abstract void set();
+	public void shutdown();
+
+	public void updateShowPasswords();
+
 
 }

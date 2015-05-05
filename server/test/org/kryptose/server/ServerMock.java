@@ -1,4 +1,4 @@
-package org.kryptose.server.test;
+package org.kryptose.server;
 
 import java.util.logging.Logger;
 
@@ -18,7 +18,6 @@ public class ServerMock extends Server {
 
 	@Override
 	public Response handleRequest(Request request) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

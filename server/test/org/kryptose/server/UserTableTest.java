@@ -1,5 +1,5 @@
 
-package org.kryptose.server.test;
+package org.kryptose.server;
 
 import static org.junit.Assert.*;
 
@@ -17,9 +17,9 @@ import org.kryptose.server.UserTable;
 import org.kryptose.server.UserTable.Result;
 
 /**
- *
- * @author jshi
- */
+*
+* @author jshi
+*/
 public class UserTableTest {
 
 	private static Logger LOGGER = Logger.getLogger(UserTableTest.class.getCanonicalName());
@@ -52,11 +52,15 @@ public class UserTableTest {
 
 	@After
 	public void tearDown() throws Exception {
-		// TODO: a way to wait for writing to finish
 		try { Thread.sleep(10); }
-		catch (InterruptedException ex) {}
-		new File(testFile).delete();
-		new File(testFile + ".tmp").delete();
+		catch (InterruptedException ex) {
+			ex.printStackTrace();
+		}
+		boolean success1 = new File(testFile).delete();
+		boolean success2 = new File(testFile + ".bak").delete();
+		if (!success1 || !success2) {
+			System.err.println(testFile + " or " + testFile + ".bak not deleted.");
+		}
 	}
 
 	@Test
@@ -67,31 +71,36 @@ public class UserTableTest {
 	@Test
 	public void testCanPersist() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		ut.ensurePersist();
+		try {
+			ut.ensurePersist(true);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		assertTrue("save file doesn't exist", new File(testFile).exists());
 	}
 
 	@Test
 	public void testTempFileNotExist() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		ut.ensurePersist();
+		try {
+			ut.ensurePersist(true);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		assertFalse("tmp file exists", new File(testFile + ".tmp").exists());
 	}
 
 	@Test
 	public void testCanPersistMultiple() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		Thread[] t = new Thread[50];
-		for (int i = 0; i < t.length; i++) {
-			t[i] = ut.ensurePersistNewThread();
-		}
-		ut.ensurePersist();
-		for (int i = 0; i < t.length; i++) {
-			try {
-				t[i].join();
-			} catch (InterruptedException e) {
-				fail("Thread interrupted.");
+		try {
+			for (int i = 0; i < 50; i++) {
+				ut.ensurePersist();
+				Thread.sleep(10);
 			}
+			ut.ensurePersist(true);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		assertTrue("save file doesn't exist", new File(testFile).exists());
 	}
@@ -153,9 +162,8 @@ public class UserTableTest {
 	@Test
 	public void testReadBackEmpty() {
 		UserTable ut = new UserTable(LOGGER, testFile);
-		ut.ensurePersist();
 		try {
-			Thread.sleep(1000);
+			ut.ensurePersist(true);
 			assertTrue("save file doesn't exist", new File(testFile).exists());
 			UserTable ut2 = UserTable.loadFromFile(LOGGER, testFile);
 			assertFalse(ut2.contains(TEST_USERNAME));
@@ -170,9 +178,8 @@ public class UserTableTest {
 	public void testReadBackOneUser() {
 		UserTable ut = new UserTable(LOGGER, testFile);
 		assertEquals(ut.addUser(TEST_USER), Result.USER_ADDED);
-		ut.ensurePersist();
 		try {
-			Thread.sleep(1000);
+			ut.ensurePersist(true);
 			assertTrue("save file doesn't exist", new File(testFile).exists());
 			UserTable ut2 = UserTable.loadFromFile(LOGGER, testFile);
 			assertTrue(ut2.contains(TEST_USERNAME));
@@ -196,5 +203,46 @@ public class UserTableTest {
 		assertEquals(ut.auth(TEST_BAD_USER), Result.WRONG_CREDENTIALS);
 		assertEquals(ut.auth(TEST_USER), Result.AUTHENTICATION_SUCCESS);
 	}
+
+	@Test
+	public void testChangeAuthKeyWithWrongOldKey() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
+		assertEquals(ut.auth(TEST_BAD_USER), Result.AUTHENTICATION_SUCCESS);
+		assertEquals(ut.auth(TEST_USER), Result.WRONG_CREDENTIALS);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME, TEST_PASSKEY_2, TEST_PASSKEY), Result.WRONG_CREDENTIALS);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME, TEST_PASSKEY_2, TEST_BAD_PASSKEY), Result.WRONG_CREDENTIALS);
+		assertEquals(ut.auth(TEST_BAD_USER), Result.AUTHENTICATION_SUCCESS);
+		assertEquals(ut.auth(TEST_USER), Result.WRONG_CREDENTIALS);
+	}
+
+	@Test
+	public void testChangeAuthKeyForNonExistingUser() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
+		assertEquals(ut.changeAuthKey(TEST_USERNAME_2, TEST_PASSKEY_2, TEST_PASSKEY), Result.USER_NOT_FOUND);
+		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
+	}
+
+	@Test
+	public void testDeleteUsers() {
+		UserTable ut = new UserTable(LOGGER, testFile);
+		assertEquals(ut.addUser(TEST_BAD_USER), Result.USER_ADDED);
+		assertFalse(ut.deleteUser(TEST_USER));
+		assertEquals(ut.auth(TEST_USER_2), Result.USER_NOT_FOUND);
+	}
+
+	@Test
+	public void testEqualsUser() {
+		assertTrue(TEST_USER.equals(TEST_USER));
+		assertTrue((new User(TEST_USERNAME, TEST_PASSKEY)).equals(new User(TEST_USERNAME, TEST_PASSKEY)));
+		
+		//Two users are equal if they have the same username, even if they have different passwords.
+		assertTrue((new User(TEST_USERNAME, TEST_PASSKEY)).equals(new User(TEST_USERNAME, TEST_PASSKEY_2)));
+		
+		assertFalse((new User(TEST_USERNAME, TEST_PASSKEY)).equals(new User(TEST_USERNAME_2, TEST_PASSKEY)));
+		assertTrue((new User(TEST_USERNAME, TEST_PASSKEY)).hashCode()==  (new User(TEST_USERNAME, TEST_PASSKEY)).hashCode());
+	}
+
 
 }

@@ -41,8 +41,10 @@ class ClientHandler implements Runnable {
 			Response resp = this.server.handleRequest(request);
 
 			// Send back the response.
-			if (resp != null) speak(resp);
-			// TODO: should resp ever be null?
+			if (resp != null) {
+				
+				speak(resp);
+			}
 		}
 		finally {
 			try {
@@ -66,12 +68,14 @@ class ClientHandler implements Runnable {
 
 		try {
 			in = new ObjectInputStream(sock.getInputStream());
-			return (Request)in.readObject();
+			Request retVal = (Request)in.readObject();
+			retVal.validateInstance();
+			return retVal;
 		} catch (IOException ex) {
 			String errorMsg = "Error reading a client's request. Aborting.";
 			this.server.getLogger().log(Level.INFO, errorMsg, ex);
 			return null;
-		} catch (ClassNotFoundException | ClassCastException e) {
+		} catch (ClassNotFoundException | ClassCastException | IllegalArgumentException e) {
 			String errorMsg = "Client sent unexpected object in connection. " +
 					"Might be attempt to hack server. Aborting."
 					+ "\nConnection: " + sock.hashCode();;

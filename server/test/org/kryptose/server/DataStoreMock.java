@@ -1,4 +1,4 @@
-package org.kryptose.server.test;
+package org.kryptose.server;
 
 import java.util.ArrayList;
 
@@ -35,8 +35,8 @@ public class DataStoreMock implements DataStore {
 	}
 
 	@Override
-	public WriteResult writeSystemLog(Log log) {
-		return null;
+	public boolean deleteBlob(User user) {
+		return false;
 	}
 
 }
