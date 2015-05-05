@@ -245,6 +245,17 @@ public class PasswordFile implements Destroyable {
 		this.changeSupport.addPropertyChangeListener(listener);
 	}
 
+	
+	public boolean existsCredential(String domain, String username){
+		if(this.credentials == null || username == null || domain == null) return false;
+		
+		for (Credential cred : this.credentials) {
+			if(username.equals(cred.getUsername()) && domain.equals(cred.getDomain()))
+				return true;
+		}
+		return false;
+	}
+	
 	public String[] getDomains() {
 		Set<String> domains = new HashSet<String>();
 		for (Credential cred : this.credentials) {

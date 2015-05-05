@@ -354,7 +354,8 @@ public class ViewGUI implements View {
       };
       //tableModel.addRow(new Object[]{"v1", "v2"});
     JTable managedCredentialTable = new JTable(tableModel);
-	
+    
+    
 	
 	private Action logInAction = new AbstractAction("Log in") {
 		@Override
@@ -371,7 +372,7 @@ public class ViewGUI implements View {
 	private Action deleteCredentialAction = new AbstractAction("Delete Credential") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Delete this credential set?", "Delete", JOptionPane.YES_NO_OPTION);
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Delete this credential?", "Delete", JOptionPane.YES_NO_OPTION);
 			if (val != JOptionPane.YES_OPTION) return;
 			control.delete();
 		}
@@ -488,6 +489,7 @@ public class ViewGUI implements View {
 	private Action editCredentialAction = new AbstractAction("Done") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
+			control.set(setType.EDIT);
 			control.requestViewState(ViewState.MANAGING);
 		}
 	};
@@ -915,10 +917,14 @@ public class ViewGUI implements View {
 		        DefaultTableModel dtm = (DefaultTableModel) managedCredentialTable.getModel();
 		        
 		        if(e.getValueIsAdjusting()) return;
-		        if (lsm.isSelectionEmpty())  return;
+		        if (lsm.isSelectionEmpty()){
+		        	model.setSelectedCredential(null, null);
+		        }
 				int selRowIndex = lsm.getMinSelectionIndex();
 		        if (lsm.isSelectedIndex(selRowIndex)) {
 					model.setSelectedCredential((String) dtm.getValueAt(selRowIndex, 0), (String) dtm.getValueAt(selRowIndex, 1));
+		        }else{
+		        	model.setSelectedCredential(null, null);
 		        }
 			}
 		});
@@ -953,6 +959,7 @@ public class ViewGUI implements View {
 				);
 		this.addCredentialDialog.setLocationRelativeTo(null);
 		this.addCredentialDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
 		
 		this.changeMasterPasswordDialog = this.createModalDialog(
 				this.hoverFrame, "Change Master Password",
@@ -1202,9 +1209,11 @@ public class ViewGUI implements View {
 			editCredentialAction.setEnabled(false);
 			addCredentialAction.setEnabled(false);
 			deleteCredentialAction.setEnabled(false);
+			//editCredentialDialogAction.setEnabled(false);
 		} else {
 			boolean setEnabled = false;
 			boolean delEnabled = false;
+			//boolean editEnabled = false;
 			
 			PasswordFile pFile = model.getPasswordFile();
 			if (pFile != null) {

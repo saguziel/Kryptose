@@ -600,7 +600,7 @@ public class Controller {
 			new ViewState[] { ViewState.WAITING, ViewState.DELETE_ACCOUNT},
 			new ViewState[] { ViewState.DELETE_ACCOUNT, ViewState.WAITING},
 			
-			new ViewState[] { ViewState.MANAGING, ViewState.EDITING},
+			//new ViewState[] { ViewState.MANAGING, ViewState.EDITING},    //HANDLED SEPARATELY
 			new ViewState[] { ViewState.EDITING, ViewState.MANAGING},
 			new ViewState[] { ViewState.MANAGING, ViewState.ADDING},
 			new ViewState[] { ViewState.ADDING, ViewState.MANAGING},
@@ -613,13 +613,29 @@ public class Controller {
 				return;
 			}
 		}
+		
+		if(oldState == viewState.MANAGING && viewState == viewState.EDITING){
+			System.out.println(model.selectedDomain);
+			System.out.println(model.selectedUser);
+			System.out.println(model.selectedUser);
+			System.out.println(model.getPasswordFile().existsCredential(model.selectedDomain, model.selectedUser));
+			
+			if(!model.getPasswordFile().existsCredential(model.selectedDomain, model.selectedUser)){
+				model.setLastException(new RecoverableException("Please select a Credential before editing"));
+				return;
+			}else{
+				this.doStateTransition(viewState);
+				return;
+			}
+
+		}
 			
 		logger.log(Level.SEVERE, "Bad view state transition from " + oldState + " to " + viewState);
 	}
 
 	private void doStateTransition(ViewState viewState) {
 		ViewState oldState = this.model.getViewState();
-
+		
         if ((oldState == ViewState.LOGIN || oldState == ViewState.CREATE_ACCOUNT)
 				&& viewState == ViewState.WAITING) {
 			this.model.setFormText(TextForm.LOGIN_MASTER_USERNAME, null);
@@ -652,22 +668,32 @@ public class Controller {
 			this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
 		}
 
-		if (viewState == viewState.EDITING && oldState == viewState.MANAGING){
+		if (oldState == viewState.MANAGING && viewState == viewState.EDITING){
+
 			this.model.setFormText(TextForm.CRED_DOMAIN, model.selectedDomain);
-			this.model.setFormText(TextForm.CRED_USERNAME, model.selectedUser);
+			this.model.setFormText(TextForm.CRED_USERNAME, model.selectedUser);			
 			
-			this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+			if(model.getPasswordFile().getVal(model.selectedDomain, model.selectedUser) == null){
+				this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+			}else{
+				this.model.setFormPassword(PasswordForm.CRED_PASSWORD, model.getPasswordFile().getVal(model.selectedDomain, model.selectedUser).toCharArray());
+			}
+			
 			this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
 		}
-
-//        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
-//        model.setFormOptions(OptionsForm.CRED_USERNAME, null);
-        model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
-        model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+		
+		
+		if(!(oldState == viewState.MANAGING && viewState == viewState.EDITING)){
+			model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+        	model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);        
+        	for(PasswordForm e : PasswordForm.values())
+        		model.setFormPassword(e, null);
+			}
         model.setFormPassword(PasswordForm.CREATE_CONFIRM_PASSWORD, null);
-        for(PasswordForm e : PasswordForm.values())
-            model.setFormPassword(e, null);
-
+        
+//        model.selectedDomain = null;
+//        model.selectedUser = null;
+        
 		this.model.setViewState(viewState);
 	}
 	

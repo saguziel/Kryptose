@@ -74,7 +74,7 @@ public class Model implements PropertyChangeListener {
 		logger.fine("Master credentials changed.");
 	}
 	
-	public synchronized void setSelectedCredential(String sUsername, String sDomain) {
+	public synchronized void setSelectedCredential(String sDomain, String sUsername) {
 		
 		selectedDomain = sDomain;
 		selectedUser =  sUsername;
