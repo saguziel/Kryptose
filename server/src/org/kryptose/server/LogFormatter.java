@@ -1,7 +1,6 @@
 package org.kryptose.server;
 
 import javax.crypto.*;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -11,7 +10,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -63,11 +61,7 @@ public class LogFormatter extends Formatter {
             Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
             c.init(Cipher.ENCRYPT_MODE, sks);
             byte[] output = c.doFinal(s.getBytes("UTF-8"));
-            Cipher c2 = Cipher.getInstance("AES/CBC/PKCS5Padding");
             byte[] IV = c.getIV();
-            IvParameterSpec iv_spec = new IvParameterSpec(IV);
-            c2.init(Cipher.DECRYPT_MODE, sks, iv_spec);
-            c2.doFinal(output);
 
             //create tag with ak
             SecretKeySpec mac_key = new SecretKeySpec(this.auth_key, "AES");
@@ -97,7 +91,7 @@ public class LogFormatter extends Formatter {
                 throw new FatalError(e);
             }
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
-                IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException | UnsupportedEncodingException e) {
+                IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
             System.out.println(e.getMessage());
         }
         return sb.toString();
