@@ -615,7 +615,7 @@ public class Controller {
             this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
         }
 
-        if (viewState == viewState.ADDING) {
+        if (viewState == ViewState.ADDING) {
             this.model.setFormText(TextForm.CRED_DOMAIN, null);
             this.model.setFormText(TextForm.CRED_USERNAME, null);
             this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
@@ -623,7 +623,7 @@ public class Controller {
 			this.model.setShowPassword(false);
         }
 
-        if (oldState == viewState.MANAGING && viewState == viewState.EDITING) {
+        if (oldState == ViewState.MANAGING && viewState == ViewState.EDITING) {
 
             this.model.setFormText(TextForm.CRED_DOMAIN, model.selectedDomain);
             this.model.setFormText(TextForm.CRED_USERNAME, model.selectedUser);
@@ -641,7 +641,7 @@ public class Controller {
         }
 
 
-        if (!(oldState == viewState.MANAGING && viewState == viewState.EDITING)) {
+        if (!(oldState == ViewState.MANAGING && viewState == ViewState.EDITING)) {
             model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
             model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
             for (PasswordForm e : PasswordForm.values())
@@ -659,7 +659,6 @@ public class Controller {
         PasswordFile pFile = model.getPasswordFile();
 
         String domain = model.getFormText(TextForm.CRED_DOMAIN);
-        String username = model.getFormText(TextForm.CRED_USERNAME);
 
         String[] domainOptions = pFile.getDomains();
         String[] usernameOptions = pFile.getUsernames(domain);

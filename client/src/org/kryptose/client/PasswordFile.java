@@ -4,7 +4,6 @@ import org.kryptose.Utils;
 import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.exceptions.CryptoPrimitiveNotSupportedException;
 import org.kryptose.requests.Blob;
-import org.kryptose.requests.KeyDerivator;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

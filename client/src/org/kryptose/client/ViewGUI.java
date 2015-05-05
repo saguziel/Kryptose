@@ -34,21 +34,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-
-
-
 
 
 
 import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -78,7 +71,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import javax.swing.text.GapContent;
 import javax.swing.text.PlainDocument;
 
@@ -88,9 +80,10 @@ import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
-import org.kryptose.exceptions.RecoverableException;
 import org.kryptose.requests.User;
 
+
+@SuppressWarnings("serial")
 public class ViewGUI implements View {
 	
 	private static final float HOVER_DEFAULT_OPACITY = 0.4f;
@@ -313,7 +306,7 @@ public class ViewGUI implements View {
 	
 	
     String headers[] = {"Domain", "Username"};
-    DefaultTableModel tableModel =
+	DefaultTableModel tableModel =
       new DefaultTableModel(headers,0) {
         // Make read-only
         public boolean isCellEditable(int x, int y) {
@@ -385,12 +378,6 @@ public class ViewGUI implements View {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			control.requestViewState(ViewState.WAITING);
-		}
-	};
-	private Action showPasswordsAction = new AbstractAction("Show Password") {
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			boolean b = ((AbstractButton) ev.getSource()).getModel().isSelected();
 		}
 	};
 	
@@ -701,7 +688,7 @@ public class ViewGUI implements View {
 						"Confirm Password: ", editCredentialAction, NO_TOOL_TIP)
 				);
 
-		JCheckBox showPasswordCheckBox = new JCheckBox(showPasswordsAction);
+		JCheckBox showPasswordCheckBox = new JCheckBox();
 		showPasswordCheckBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
@@ -738,7 +725,7 @@ public class ViewGUI implements View {
 						"Confirm Password: ", addCredentialAction, NO_TOOL_TIP)
 				);
 		
-		JCheckBox showPasswordCheckBox = new JCheckBox(showPasswordsAction);
+		JCheckBox showPasswordCheckBox = new JCheckBox();
 		showPasswordCheckBox.addItemListener(new ItemListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {

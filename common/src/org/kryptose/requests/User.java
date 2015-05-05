@@ -18,7 +18,8 @@ import javax.security.auth.Destroyable;
  * @author jshi
  */
 public final class User implements Comparable<User>, Serializable, Destroyable {
-
+	private static final long serialVersionUID = 7532365996430996545L;
+	
 	// This requirement is a standard industry practice. Uppercase letters are bad for Windows filesystems.
 	public static final String VALID_USERNAME_DOC =
 			"Usernames must be 3-15 characters, consisting only of lowercase Latin letters a-z, Arabic digits 0-9, hyphen, and underscore.";
