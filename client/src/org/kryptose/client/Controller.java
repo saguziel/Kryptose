@@ -520,7 +520,7 @@ public class Controller {
             return e;
         }
 
-        RequestChangePassword req = new RequestChangePassword(mCred.getUser(), newMCred.getAuthKey(), newBlob, pFile.getOldDigest());
+        RequestChangePassword req = new RequestChangePassword(mCred.getUser(), newMCred.getAuthKey(), newBlob, (pFile==null) ? null : pFile.getOldDigest());
         try {
         	ResponseChangePassword r = this.sendRequest(req, ResponseChangePassword.class);
 			r.getDigest();

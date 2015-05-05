@@ -19,7 +19,7 @@ public final class RequestChangePassword extends Request {
         super(u);
         this.newAuthkey = newAuthkey;
         this.newBlob = newBlob;
-        this.oldDigest = oldDigest.clone();
+        this.oldDigest = (oldDigest == null) ? null : oldDigest.clone();
         this.validateInstance();
     }
 
