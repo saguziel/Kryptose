@@ -606,10 +606,9 @@ public class Controller {
 			}
 		}
 		
-		if(oldState == viewState.MANAGING && viewState == viewState.EDITING){
+		if(oldState == ViewState.MANAGING && viewState == ViewState.EDITING){
 			if(!model.getPasswordFile().existsCredential(model.selectedDomain, model.selectedUser)){
-				//TODO Jonathan
-				//model.setLastException(new RecoverableException("Please select a Credential before editing"));
+				model.setException(new RecoverableException("Please select a Credential before editing"));
 				return;
 			}else{
 				this.doStateTransition(viewState);
