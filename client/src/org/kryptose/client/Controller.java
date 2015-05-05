@@ -657,7 +657,8 @@ public class Controller {
 
     private void refreshCredentialTable() {
         PasswordFile pFile = model.getPasswordFile();
-
+        if (pFile == null) return;
+        
         String domain = model.getFormText(TextForm.CRED_DOMAIN);
 
         String[] domainOptions = pFile.getDomains();
