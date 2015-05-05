@@ -32,7 +32,7 @@ public class Controller {
 	private final View view;
     private final Logger logger = Logger.getLogger(Controller.class.getCanonicalName());
     private RequestHandler reqHandler;
-	private Properties properties;
+    private Properties properties;
 
     public Controller() {
         this.model = new Model();
@@ -123,11 +123,11 @@ public class Controller {
 
     public void set(setType s) {
         this.pool.submit(new LongTaskRunner() {
-			@Override
+            @Override
 			Exception doRun() {
                 return doSet(s);
             }
-		});
+        });
     }
 
     private Exception doSet(setType s) {
@@ -417,11 +417,11 @@ public class Controller {
 
     public void deleteAccount() {
         this.pool.submit(new LongTaskRunner() {
-			@Override
+            @Override
 			Exception doRun() {
                 return doDeleteAccount();
             }
-		});
+        });
     }
 
     private Exception doDeleteAccount() {
@@ -515,10 +515,10 @@ public class Controller {
         if (!this.pool.isShutdown())
             this.pool.submit(new QuickTaskRunner() {
                 @Override
-            void doRun() {
-                model.setFormPassword(form, password);
+                void doRun() {
+                    model.setFormPassword(form, password);
                 }
-		});
+            });
     }
 
     public void exit() {
@@ -535,10 +535,10 @@ public class Controller {
     public void requestViewState(final ViewState viewState) {
         this.pool.submit(new QuickTaskRunner() {
             @Override
-			void doRun() {
+            void doRun() {
                 doRequestViewState(viewState);
             }
-		});
+        });
     }
 
     private void doRequestViewState(ViewState viewState) {
@@ -688,7 +688,7 @@ public class Controller {
                 model.setException(exception);
                 model.setWaitingOnServer(false);
             }
-		}
+        }
     }
 
     private abstract class QuickTaskRunner implements Runnable {
