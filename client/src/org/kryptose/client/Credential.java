@@ -3,6 +3,7 @@ package org.kryptose.client;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import javax.security.auth.Destroyable;
 
@@ -96,7 +97,7 @@ public class Credential implements Serializable, Destroyable {
 		if (password == null) {
 			if (other.password != null)
 				return false;
-		} else if (!password.equals(other.password))
+		} else if (!Arrays.equals(password,other.password))
 			return false;
 		if (username == null) {
 			if (other.username != null)

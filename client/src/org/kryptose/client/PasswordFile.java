@@ -122,9 +122,9 @@ public class PasswordFile implements Destroyable {
         if (mCred == null){
         	throw new BadBlobException("credentials for Blob decryption not available");
         }
-    	byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(mCred.getUsername(), mCred.getPassword());
+    	//byte[] raw_key = KeyDerivator.getEncryptionKeyBytes(mCred.getUsername(), mCred.getPassword());
 
-        byte[] decrypted = rawBlobDecrypt(b, raw_key);
+        byte[] decrypted = rawBlobDecrypt(b, mCred.getCryptKey());
     	//TODO ALEX: destroy raw_key;
 
         try {
