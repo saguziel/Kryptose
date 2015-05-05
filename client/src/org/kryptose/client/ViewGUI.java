@@ -302,7 +302,7 @@ public class ViewGUI implements View {
 	private JMenu copyPasswordMenu;
 	
 	private List<JPasswordField> unblindablePasswordFields = new ArrayList<JPasswordField>();
-	
+	/*
 	private CheckBoxListener showPasswordCheckBowListener = new ItemListener() {
 		
 		@Override
@@ -313,7 +313,7 @@ public class ViewGUI implements View {
 				model.setShowPassword(false);
 		}
 	};
-	
+	*/
 	private List<TextFieldListener> textFieldListeners = new ArrayList<TextFieldListener>();
 	private List<PasswordFieldListener> passwordFieldListeners = new ArrayList<PasswordFieldListener>();
 	
