@@ -487,7 +487,7 @@ public class ViewGUI implements View {
 	private Action editCredentialAction = new AbstractAction("Done") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {			
-			control.set(setType.ADD);			
+			control.set(setType.EDIT);			
 		}
 	};
 	private Action cancelEditingCredentialAction = new AbstractAction("Cancel") {
@@ -633,6 +633,7 @@ public class ViewGUI implements View {
 	private void addPasswordFieldToGrid(Container cont, PasswordForm form,
 			String label, Action action, String toolTip) {
 		JPasswordField passwordField = new JPasswordField(18);
+		
 		addGridWithLabel(cont, label, toolTip, passwordField);
 		PasswordFieldListener pfl = new PasswordFieldListener(form, action);
 		this.passwordFieldListeners.add(pfl);
