@@ -18,7 +18,6 @@ public class ServerMock extends Server {
 
 	@Override
 	public Response handleRequest(Request request) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

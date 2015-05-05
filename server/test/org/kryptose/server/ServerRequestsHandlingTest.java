@@ -15,9 +15,9 @@ import org.kryptose.requests.User;
 
 public class ServerRequestsHandlingTest {
 
-	public static byte[] TEST_BYTE_ARRAY = {0,15,12,1,1};
-	public static Blob	TEST_BLOB = new Blob(TEST_BYTE_ARRAY, TEST_BYTE_ARRAY);
-	public static User USER = new User("antonio",TEST_BYTE_ARRAY);
+	private final static byte[] TEST_BYTE_ARRAY = {0,15,12,1,1};
+	private final static Blob	TEST_BLOB = new Blob(TEST_BYTE_ARRAY, TEST_BYTE_ARRAY);
+	private final static User USER = new User("antonio",TEST_BYTE_ARRAY);
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {

@@ -9,8 +9,9 @@ import java.io.ObjectInputStream;
  * Created by alexguziel on 3/15/15.
  */
 public final class RequestDeleteAccount extends Request {
+	private static final long serialVersionUID = 3564545138688163849L;
 
-    public RequestDeleteAccount(User u) {
+	public RequestDeleteAccount(User u) {
         super(u);
         this.validateInstance();
     }
@@ -29,6 +30,6 @@ public final class RequestDeleteAccount extends Request {
 
     @Override
     public String logEntry() {
-        return String.format("REQUEST: Delete account from %s\n", super.getUser().getUsername());
+        return String.format("REQUEST: Delete account from %s%n", super.getUser().getUsername());
     }
 }

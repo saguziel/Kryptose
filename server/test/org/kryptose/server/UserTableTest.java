@@ -56,8 +56,11 @@ public class UserTableTest {
 		catch (InterruptedException ex) {
 			ex.printStackTrace();
 		}
-		new File(testFile).delete();
-		new File(testFile + ".bak").delete();
+		boolean success1 = new File(testFile).delete();
+		boolean success2 = new File(testFile + ".bak").delete();
+		if (!success1 || !success2) {
+			System.err.println(testFile + " or " + testFile + ".bak not deleted.");
+		}
 	}
 
 	@Test
@@ -231,7 +234,6 @@ public class UserTableTest {
 
 	@Test
 	public void testEqualsUser() {
-		UserTable ut = new UserTable(LOGGER, testFile);
 		assertTrue(TEST_USER.equals(TEST_USER));
 		assertTrue((new User(TEST_USERNAME, TEST_PASSKEY)).equals(new User(TEST_USERNAME, TEST_PASSKEY)));
 		

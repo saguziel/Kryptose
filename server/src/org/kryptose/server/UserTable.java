@@ -55,7 +55,6 @@ public class UserTable implements Serializable {
         this.bakFileName = fileName + FILENAME_BACKUP_SUFFIX;
         this.salt_size = salt_size;
         this.users = new ConcurrentHashMap<String, UserRecord>();
-//		Users.put("me", new UserRecord("me", "AAAAAAAAAAAAAAAA", "A"));
     }
 
     public static UserTable loadFromFile(Logger logger) throws IOException {
@@ -85,7 +84,6 @@ public class UserTable implements Serializable {
         this.logger = logger;
         this.fileName = fileName;
         this.bakFileName = fileName + FILENAME_BACKUP_SUFFIX;
-        this.persistReqLock = new Object();
         this.nextPersistReq = new RepersistRequest();
     }
 
@@ -98,7 +96,7 @@ public class UserTable implements Serializable {
             return Result.USER_ALREADY_EXISTS;
 
         users.put(user.getUsername(),
-                new UserRecord(user.getUsername(), user.getPasskey()));
+                new UserRecord(user.getUsername(), user.getPasskey(), salt_size));
 
         this.ensurePersist();
 
@@ -136,7 +134,7 @@ public class UserTable implements Serializable {
             return Result.USER_NOT_FOUND;
         else {
             // Do change.
-            boolean success = this.users.get(username).changeUserAuthKey(old_key, new_key);
+            boolean success = this.users.get(username).changeUserAuthKey(old_key, new_key, salt_size);
             // Persist changes to disk.
             this.ensurePersist();
             // Return result.
@@ -180,6 +178,9 @@ public class UserTable implements Serializable {
             req = this.nextPersistReq;
         }
         req.makeRequest();
+        if (Thread.currentThread().isInterrupted()) {
+        	this.persistThread.interrupt();
+        }
         if (block) req.waitForDone();
     }
 
@@ -254,16 +255,16 @@ public class UserTable implements Serializable {
         }
     }
 
-    private class UserRecord implements Serializable {
+    private static class UserRecord implements Serializable {
         private static final long serialVersionUID = 8562908652006397891L;
         final String username;
         byte[] salt;
         byte[] auth_key_hash;
 
-        //TODO: for final
+        //TODO: implement login attempts
         int login_attempts;
 
-        public UserRecord(String username, byte[] auth_key) {
+        public UserRecord(String username, byte[] auth_key, int salt_size) {
             this.username = username;
 
             try {
@@ -294,7 +295,8 @@ public class UserTable implements Serializable {
                 factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
                 KeySpec spec = new PBEKeySpec(DatatypeConverter.printHexBinary(tentative_key).toCharArray(), salt, 65536, 256);
 
-                //TODO: secure erase.
+                // TODO: secure erase. unfortunately would require homebrewing a byte->char array converter.
+                // also wouldn't be effective in Java <=8 anyway.
                 DatatypeConverter.printHexBinary(auth_key_hash);
                 DatatypeConverter.printHexBinary(factory.generateSecret(spec).getEncoded());
 
@@ -305,7 +307,7 @@ public class UserTable implements Serializable {
 
         }
 
-        public boolean changeUserAuthKey(byte[] old_key, byte[] new_key) {
+        public boolean changeUserAuthKey(byte[] old_key, byte[] new_key, int salt_size) {
             if (!authenticate(old_key))
                 return false;
 
@@ -338,7 +340,6 @@ public class UserTable implements Serializable {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
             result = prime * result + Arrays.hashCode(auth_key_hash);
             result = prime * result + login_attempts;
             result = prime * result + Arrays.hashCode(salt);
@@ -356,8 +357,6 @@ public class UserTable implements Serializable {
             if (getClass() != obj.getClass())
                 return false;
             UserRecord other = (UserRecord) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
             if (!Arrays.equals(auth_key_hash, other.auth_key_hash))
                 return false;
             if (login_attempts != other.login_attempts)
@@ -370,10 +369,6 @@ public class UserTable implements Serializable {
             } else if (!username.equals(other.username))
                 return false;
             return true;
-        }
-
-        private UserTable getOuterType() {
-            return UserTable.this;
         }
 
 
@@ -401,7 +396,6 @@ public class UserTable implements Serializable {
                     nextPersistReq = new RepersistRequest();
                 }
             }
-            // TODO this design might lose a request or prevent shutdown.
             boolean keepRunning = true;
             while (keepRunning || nextPersistReq.requested) {
                 while (!nextPersistReq.requested) {

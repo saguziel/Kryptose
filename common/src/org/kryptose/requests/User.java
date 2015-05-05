@@ -1,11 +1,12 @@
 package org.kryptose.requests;
 
-import javax.security.auth.Destroyable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.regex.Pattern;
+
+import javax.security.auth.Destroyable;
 
 /**
  * Represents a user.
@@ -27,11 +28,24 @@ public final class User implements Comparable<User>, Serializable, Destroyable {
     private byte[] passkey;
     
     /**
+     * Checks a username for validity.
+     * 
+     * @param username The candidate username whose validity to check.
+     * @return true if and only if the username is valid.
+     * 
+     * @see #VALID_USERNAME_DOC
+     * @see #VALID_USERNAME_PATTERN
+     */
+    public static boolean isValidUsername(String username) {
+    	return username != null && VALID_USERNAME_PATTERN.matcher(username).matches();
+    }
+
+    /**
      * Constructs a User.
-     *
+     * 
      * @param name The username of the user.
      * @param passkey The passkey used to authenticate with the server.
-     *
+     * 
      * @throws IllegalArgumentException if name does not validate.
      * @see #isValidUsername(String)
      * @see #VALID_USERNAME_DOC
@@ -40,21 +54,8 @@ public final class User implements Comparable<User>, Serializable, Destroyable {
     public User(String name, byte[] passkey) {
         this.username = name;
         if (passkey != null) this.passkey = passkey.clone();
-
+        
         this.validateInstance();
-    }
-
-    /**
-     * Checks a username for validity.
-     *
-     * @param username The candidate username whose validity to check.
-     * @return true if and only if the username is valid.
-     *
-     * @see #VALID_USERNAME_DOC
-     * @see #VALID_USERNAME_PATTERN
-     */
-    public static boolean isValidUsername(String username) {
-        return username != null && VALID_USERNAME_PATTERN.matcher(username).matches();
     }
 
     /**

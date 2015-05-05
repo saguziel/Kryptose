@@ -122,13 +122,16 @@ public class Server {
         } else if (request instanceof RequestDeleteAccount) {
             return this.handleRequestDeleteAccount((RequestDeleteAccount) request);
         } else {
-        	// TODO: make sure this is included on server logs.
+        	String username = request.getUser() == null ? "null" : request.getUser().getUsername();
+        	String connectId = request.getConnection() == null ? "null" : "" + request.getConnection().getId();
+        	logger.log(Level.WARNING, "Unexpected Request: " + request.toString()
+        			+ " from user " + username 
+        			+ " on connection " + connectId);
             return new ResponseErrorReport(new MalformedRequestException());
         }
     }
 
     private Response handleRequestDeleteAccount(RequestDeleteAccount request) {
-        Response response;
         User u = request.getUser();
 
         if (this.dataStore.userHasBlob(u)) {
@@ -208,7 +211,7 @@ public class Server {
 
         Result result = this.userTable.addUser(u);
         if (result == Result.USER_ADDED) {
-        	response = new ResponseCreateAccount(); // TODO userauditlog
+        	response = new ResponseCreateAccount();
         } else if (result == Result.USER_ALREADY_EXISTS) {
         	response = new ResponseCreateAccount(new UsernameInUseException());
         } else {
@@ -231,7 +234,7 @@ public class Server {
             Blob b = this.dataStore.readBlob(u);
 
             if (b != null) {
-                response = new ResponseGet(b); // TODO userauditlog
+                response = new ResponseGet(b);
             } else {
                 response = new ResponseErrorReport(new InternalServerErrorException());
                 String errorMsg = "Blob was null, but hasBlob was true. User: " + u.getUsername();
@@ -239,9 +242,7 @@ public class Server {
             }
         } else {
         	// User has not yet stored a blob.
-            response = new ResponseGet((Blob)null); // TODO userauditlog
-            // TODO is this an exceptional response? Do we need to create an exception?
-            // ^ probably not.
+            response = new ResponseGet((Blob)null);
         }
 
         this.dataStore.writeUserLog(u, new Log(u, request, response));
@@ -340,7 +341,7 @@ public class Server {
     private void initLogger() {
 		this.logger.setLevel(Level.ALL);
 		
-		// TODO this log Handler is for debug purposes. remove or configure.
+		// This log Handler is for debug purposes.
 		//Handler debug = new ConsoleHandler();
 		//debug.setLevel(Level.ALL);
 		//this.logger.addHandler(debug);
@@ -403,7 +404,7 @@ public class Server {
         String keyStorePass = properties.getProperty("SERVER_KEY_STORE_PASSWORD");
         
         String msg = "Kryptose server starting on port " + portNumber + "...";
-        System.out.println(msg); // TODO: don't hardcode system.out?
+        System.out.println(msg);
         this.logger.log(Level.INFO, msg);
 
         // Start incoming connection listener.

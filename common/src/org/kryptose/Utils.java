@@ -1,4 +1,4 @@
-package org.kryptose.client;
+package org.kryptose;
 
 import java.util.Arrays;
 

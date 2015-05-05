@@ -6,6 +6,7 @@ import org.kryptose.exceptions.UsernameInUseException;
  * Created by alexguziel on 3/15/15.
  */
 public final class ResponseCreateAccount extends Response {
+	private static final long serialVersionUID = -1189422938339598496L;
 
 	private UsernameInUseException uiuex = null;
 	

@@ -4,8 +4,9 @@ package org.kryptose.requests;
  * Created by alexguziel on 3/15/15.
  */
 public final class ResponseDeleteAccount extends Response {
+	private static final long serialVersionUID = 9029411847420961975L;
 
-    private boolean successful;
+	private boolean successful;
 
     public ResponseDeleteAccount(boolean successful) {
         super();

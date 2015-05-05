@@ -14,7 +14,8 @@ import org.kryptose.exceptions.MalformedRequestException;
  * @see Request
  */
 public abstract class Response implements Serializable {
-	
+	private static final long serialVersionUID = -2677279346126015739L;
+
 	public Response() {
 	}
 

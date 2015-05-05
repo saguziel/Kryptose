@@ -2,6 +2,7 @@ package org.kryptose.client;
 
 import javax.security.auth.Destroyable;
 
+import org.kryptose.Utils;
 import org.kryptose.requests.KeyDerivator;
 import org.kryptose.requests.User;
 
@@ -21,7 +22,9 @@ public class MasterCredentials implements Destroyable {
 			throw new IllegalArgumentException("Not a valid password.");
 		}
 		this.username = username;
-		this.password = password;
+		this.password = password.clone();
+		Utils.destroyPassword(password);
+		
         this.authKey = KeyDerivator.getAuthenticationKeyBytes(this.username, password);
         this.cryptKey = KeyDerivator.getEncryptionKeyBytes(username, password);
 		this.user = new User(getUsername(), getAuthKey());

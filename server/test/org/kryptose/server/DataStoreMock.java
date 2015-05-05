@@ -35,13 +35,7 @@ public class DataStoreMock implements DataStore {
 	}
 
 	@Override
-	public WriteResult writeSystemLog(Log log) {
-		return null;
-	}
-
-	@Override
 	public boolean deleteBlob(User user) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
