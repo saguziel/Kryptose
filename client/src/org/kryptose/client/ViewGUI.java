@@ -375,6 +375,7 @@ public class ViewGUI implements View {
 			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Delete this credential?", "Delete", JOptionPane.YES_NO_OPTION);
 			if (val != JOptionPane.YES_OPTION) return;
 			control.delete();
+			control.requestViewState(ViewState.MANAGING);
 		}
 	};
 
@@ -730,6 +731,7 @@ public class ViewGUI implements View {
 		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
 		addGridLeft(panel, new JButton(this.cancelEditingCredentialAction));
 		addGridRight(panel, new JButton(this.editCredentialAction));
+		addGridRight(panel, new JButton(this.deleteCredentialAction));
 		
 		return panel;
 	}
@@ -776,7 +778,7 @@ public class ViewGUI implements View {
 	    
 	    
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
-		buttonPanel.add(new JButton(this.deleteCredentialAction));
+		//buttonPanel.add(new JButton(this.deleteCredentialAction));
 		buttonPanel.add(new JButton(this.addCredentialDialogAction));
 		buttonPanel.add(new JButton(this.editCredentialDialogAction));
 		buttonPanel.add(new JButton(this.doneManagingAction));
@@ -996,7 +998,6 @@ public class ViewGUI implements View {
 				// and maybe also avoid having inner anonymous classes
 				// in inner anonymous classes in inner anonymous classes.
 				
-				//TODO Jonathan: this should be a char array since it contains password.
 				char[] content = copyPass ? pFile.getVal(domain, username) : (username== null ? null : username.toCharArray());
 				String mime = DataFlavor.getTextPlainUnicodeFlavor().getMimeType();
 				DataHandler t = new DataHandler(content, mime);

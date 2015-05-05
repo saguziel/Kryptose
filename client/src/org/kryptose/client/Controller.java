@@ -601,11 +601,6 @@ public class Controller {
 		}
 		
 		if(oldState == viewState.MANAGING && viewState == viewState.EDITING){
-			System.out.println(model.selectedDomain);
-			System.out.println(model.selectedUser);
-			System.out.println(model.selectedUser);
-			System.out.println(model.getPasswordFile().existsCredential(model.selectedDomain, model.selectedUser));
-			
 			if(!model.getPasswordFile().existsCredential(model.selectedDomain, model.selectedUser)){
 				//TODO Jonathan
 				//model.setLastException(new RecoverableException("Please select a Credential before editing"));
