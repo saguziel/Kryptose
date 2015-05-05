@@ -74,33 +74,5 @@ public class RequestHandler {
                
         		
 	}
-	
-/*
-	//TODO: Constructor for testing only (has common parameters built in). Remove later.
-	RequestHandler(){
-		serverHostname = "127.0.0.1";
-		serverPort = 5003;
-
-		this.serverHostname = serverHostname;
-		this.serverPort = serverPort;
-		
-		clientTrustStore = "src/org/kryptose/certificates/ClientTrustStore.jks";
-		clientTrustStorePassword= "aaaaaa"; 
-		//System.setProperty("javax.net.debug", "all");
-		System.setProperty("javax.net.ssl.trustStore", clientTrustStore);
-		System.setProperty("javax.net.ssl.trustStorePassword", clientTrustStorePassword);
-		
-		sslsocketfactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-	}
-		
-	public static void main(String[] args) {
-		RequestHandler handler = new RequestHandler();
-		System.out.println("Client is running");
-		handler.send(new RequestTest("-My first request-")).toString();
-		handler.send(new RequestTest("-My second request-")).toString();
-
-	}
-	
-*/
 
 }

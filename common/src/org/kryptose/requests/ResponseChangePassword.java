@@ -6,11 +6,9 @@ import org.kryptose.exceptions.StaleWriteException;
  * Created by alexguziel on 3/15/15.
  */
 public final class ResponseChangePassword extends Response {
+	private static final long serialVersionUID = -492016377863076776L;
 
-    // TODO: is digest allowed to be null? if not, that needs to be checked,
-    // both during construction and during deserialization.
-    private final byte[] digest;
-
+	private final byte[] digest;
     private StaleWriteException swex = null;
 
     public ResponseChangePassword(byte[] digest) {

@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kryptose.client.RequestHandler;
-import org.kryptose.exceptions.CryptoErrorException;
 import org.kryptose.requests.Request;
 //import org.kryptose.server.FatalError;
 

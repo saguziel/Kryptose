@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.kryptose.Utils;
 import org.kryptose.client.Model.OptionsForm;
 import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.TextForm;
@@ -179,7 +180,6 @@ public class Controller {
     		validationError = "Please enter a domain.";
     	} else if (username == null || username.length() == 0) {
     		validationError = "Please enter a username.";
-    		// TODO: maybe allow null usernames?
     	} else if (password == null || password.length == 0) {
     		validationError = "Please enter a password.";
     	} else if (!Arrays.equals(password,confirm)) {

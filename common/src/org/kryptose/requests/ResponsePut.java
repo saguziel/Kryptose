@@ -6,11 +6,9 @@ import org.kryptose.exceptions.StaleWriteException;
  * Created by alexguziel on 3/15/15.
  */
 public final class ResponsePut extends Response {
-    
-	// TODO: is digest allowed to be null? if not, that needs to be checked,
-	// both during construction and during deserialization.
+	private static final long serialVersionUID = -537090414981386094L;
+
 	private final byte[] digest;
-	
 	private StaleWriteException swex = null;
 
     public ResponsePut(byte[] digest) {

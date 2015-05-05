@@ -2,6 +2,7 @@ package org.kryptose.client;
 
 import javax.security.auth.Destroyable;
 
+import org.kryptose.Utils;
 import org.kryptose.requests.KeyDerivator;
 import org.kryptose.requests.User;
 

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.kryptose.Utils;
 import org.kryptose.requests.Log;
 
 public class Model implements PropertyChangeListener {

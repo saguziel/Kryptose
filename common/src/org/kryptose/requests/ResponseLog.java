@@ -7,9 +7,9 @@ import java.util.ArrayList;
  * Created by alexguziel on 3/15/15.
  */
 public final class ResponseLog extends Response {
-
-
-    private final ArrayList<Log> entries;
+	private static final long serialVersionUID = 4477428916300635545L;
+	
+	private final ArrayList<Log> entries;
 
     public ResponseLog(ArrayList<Log> entries) {
         super();
