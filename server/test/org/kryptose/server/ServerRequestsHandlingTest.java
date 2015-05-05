@@ -33,14 +33,19 @@ public class ServerRequestsHandlingTest {
 
 	@After
 	public void tearDown() throws Exception {
+		//System.exit(0);
 	}
 
 	@Test
 	public void test() {
 		Server s = new Server();
-		//s.start();
+		new Thread(() -> s.start()).start();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+		}
 		Response r = s.handleRequest(new RequestChangePassword(USER, TEST_BYTE_ARRAY, TEST_BLOB, TEST_BYTE_ARRAY));
-		assertTrue(r instanceof ResponseChangePassword);
+		assertTrue("" + r.logEntry(), r instanceof ResponseChangePassword);
 	}
 
 }
