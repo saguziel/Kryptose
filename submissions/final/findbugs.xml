@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<BugCollection version="3.0.1-dev-20150306-5afe4d1" sequence="1" timestamp="1430788288598" analysisTimestamp="1430788284606" release="">
+  <Project projectName="kryptose server">
+    <Jar>C:\Users\myncknm\git\Kryptose\server\bin</Jar>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\common\bin</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files (x86)\Eclipse\eclipse\plugins\org.junit_4.11.0.v201303080030\junit.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files (x86)\Eclipse\eclipse\plugins\org.hamcrest.core_1.3.0.v201303031735.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\common\mockito-all-1.9.5.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\server\bin</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files\Java\jre1.8.0_40\lib\rt.jar</AuxClasspathEntry>
+    <SrcDir>C:\Users\myncknm\git\Kryptose\server\src</SrcDir>
+    <SrcDir>C:\Users\myncknm\git\Kryptose\server\test</SrcDir>
+    <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud" online="false"></Cloud>
+  </Project>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" first="1">
+    <Class classname="org.kryptose.server.FileSystemDataStore">
+      <SourceLine classname="org.kryptose.server.FileSystemDataStore" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.FileSystemDataStore" name="writeUserLog" signature="(Lorg/kryptose/requests/User;Lorg/kryptose/requests/Log;)Lorg/kryptose/server/DataStore$WriteResult;" isStatic="false">
+      <SourceLine classname="org.kryptose.server.FileSystemDataStore" start="109" end="122" startBytecode="0" endBytecode="355" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java"/>
+    </Method>
+    <Method classname="java.io.FileWriter" name="&lt;init&gt;" signature="(Ljava/io/File;Z)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.FileWriter"/>
+    </Method>
+    <SourceLine classname="org.kryptose.server.FileSystemDataStore" start="114" end="114" startBytecode="22" endBytecode="22" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java"/>
+    <SourceLine classname="org.kryptose.server.FileSystemDataStore" start="114" end="114" startBytecode="22" endBytecode="22" sourcefile="FileSystemDataStore.java" sourcepath="org/kryptose/server/FileSystemDataStore.java"/>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" first="1">
+    <Class classname="org.kryptose.server.LogReader">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="main" signature="([Ljava/lang/String;)V" isStatic="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="79" end="186" startBytecode="0" endBytecode="1670" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Method>
+    <Method classname="java.io.FileReader" name="&lt;init&gt;" signature="(Ljava/lang/String;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.FileReader"/>
+    </Method>
+    <SourceLine classname="org.kryptose.server.LogReader" start="129" end="129" startBytecode="349" endBytecode="349" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    <SourceLine classname="org.kryptose.server.LogReader" start="129" end="129" startBytecode="349" endBytecode="349" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" first="1">
+    <Class classname="org.kryptose.server.LogReader">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="main" signature="([Ljava/lang/String;)V" isStatic="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="79" end="186" startBytecode="0" endBytecode="1670" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Method>
+    <Method classname="java.io.FileWriter" name="&lt;init&gt;" signature="(Ljava/lang/String;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.FileWriter"/>
+    </Method>
+    <SourceLine classname="org.kryptose.server.LogReader" start="132" end="132" startBytecode="387" endBytecode="387" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    <SourceLine classname="org.kryptose.server.LogReader" start="132" end="132" startBytecode="387" endBytecode="387" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+  </BugInstance>
+  <BugInstance type="DM_DEFAULT_ENCODING" priority="1" rank="19" abbrev="Dm" category="I18N" first="1">
+    <Class classname="org.kryptose.server.LogReader">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="main" signature="([Ljava/lang/String;)V" isStatic="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="79" end="186" startBytecode="0" endBytecode="1670" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Method>
+    <Method classname="java.io.InputStreamReader" name="&lt;init&gt;" signature="(Ljava/io/InputStream;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.InputStreamReader"/>
+    </Method>
+    <SourceLine classname="org.kryptose.server.LogReader" start="79" end="79" startBytecode="7" endBytecode="7" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    <SourceLine classname="org.kryptose.server.LogReader" start="79" end="79" startBytecode="7" endBytecode="7" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+  </BugInstance>
+  <BugInstance type="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE" priority="2" rank="13" abbrev="NP" category="STYLE" first="1">
+    <Class classname="org.kryptose.server.LogReader">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="main" signature="([Ljava/lang/String;)V" isStatic="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="79" end="186" startBytecode="0" endBytecode="1670" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Method>
+    <LocalVariable name="?" register="-1" pc="186" role="LOCAL_VARIABLE_UNKNOWN"/>
+    <SourceLine classname="org.kryptose.server.LogReader" start="98" end="98" startBytecode="186" endBytecode="186" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" role="SOURCE_LINE_INVOKED"/>
+    <SourceLine classname="org.kryptose.server.LogReader" start="98" end="98" startBytecode="177" endBytecode="177" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java" role="SOURCE_LINE_KNOWN_NULL"/>
+  </BugInstance>
+  <BugInstance type="RR_NOT_CHECKED" priority="2" rank="16" abbrev="RR" category="BAD_PRACTICE" first="1">
+    <Class classname="org.kryptose.server.LogReader">
+      <SourceLine classname="org.kryptose.server.LogReader" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.LogReader" name="readToNewline" signature="(Ljava/io/InputStreamReader;I)[C" isStatic="true">
+      <SourceLine classname="org.kryptose.server.LogReader" start="46" end="67" startBytecode="0" endBytecode="292" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    </Method>
+    <Method classname="java.io.InputStreamReader" name="read" signature="([CII)I" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="java.io.InputStreamReader"/>
+    </Method>
+    <SourceLine classname="org.kryptose.server.LogReader" start="50" end="50" startBytecode="14" endBytecode="14" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+    <SourceLine classname="org.kryptose.server.LogReader" start="50" end="50" startBytecode="14" endBytecode="14" sourcefile="LogReader.java" sourcepath="org/kryptose/server/LogReader.java"/>
+  </BugInstance>
+  <BugInstance type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" priority="2" rank="17" abbrev="RV" category="STYLE" first="1">
+    <Class classname="org.kryptose.server.SecureServerListenerTest">
+      <SourceLine classname="org.kryptose.server.SecureServerListenerTest" sourcefile="SecureServerListenerTest.java" sourcepath="org/kryptose/server/SecureServerListenerTest.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.SecureServerListenerTest" name="testConstructor" signature="()V" isStatic="false">
+      <SourceLine classname="org.kryptose.server.SecureServerListenerTest" start="34" end="35" startBytecode="0" endBytecode="67" sourcefile="SecureServerListenerTest.java" sourcepath="org/kryptose/server/SecureServerListenerTest.java"/>
+    </Method>
+    <Method classname="org.kryptose.server.SecureServerListener" name="&lt;init&gt;" signature="(Lorg/kryptose/server/Server;ILjava/lang/String;Ljava/lang/String;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="org.kryptose.server.SecureServerListener" start="29" end="34" startBytecode="0" endBytecode="127" sourcefile="SecureServerListener.java" sourcepath="org/kryptose/server/SecureServerListener.java"/>
+    </Method>
+    <SourceLine classname="org.kryptose.server.SecureServerListenerTest" start="34" end="34" startBytecode="18" endBytecode="18" sourcefile="SecureServerListenerTest.java" sourcepath="org/kryptose/server/SecureServerListenerTest.java"/>
+    <SourceLine classname="org.kryptose.server.SecureServerListenerTest" start="34" end="34" startBytecode="18" endBytecode="18" sourcefile="SecureServerListenerTest.java" sourcepath="org/kryptose/server/SecureServerListenerTest.java"/>
+  </BugInstance>
+  <BugInstance type="SE_TRANSIENT_FIELD_NOT_RESTORED" priority="2" rank="16" abbrev="Se" category="BAD_PRACTICE" first="1">
+    <Class classname="org.kryptose.server.UserTable">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java"/>
+    </Class>
+    <Field classname="org.kryptose.server.UserTable" name="persistReqLock" signature="Ljava/lang/Object;" isStatic="false">
+      <SourceLine classname="org.kryptose.server.UserTable" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java"/>
+    </Field>
+  </BugInstance>
+  <BugInstance type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" priority="2" rank="17" abbrev="RV" category="STYLE" first="1">
+    <Class classname="org.kryptose.server.UserTableTest">
+      <SourceLine classname="org.kryptose.server.UserTableTest" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/UserTableTest.java"/>
+    </Class>
+    <Method classname="org.kryptose.server.UserTableTest" name="testConstructor" signature="()V" isStatic="false">
+      <SourceLine classname="org.kryptose.server.UserTableTest" start="68" end="69" startBytecode="0" endBytecode="59" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/UserTableTest.java"/>
+    </Method>
+    <Method classname="org.kryptose.server.UserTable" name="&lt;init&gt;" signature="(Ljava/util/logging/Logger;Ljava/lang/String;)V" isStatic="false" role="METHOD_CALLED">
+      <SourceLine classname="org.kryptose.server.UserTable" start="48" end="49" startBytecode="0" endBytecode="74" sourcefile="UserTable.java" sourcepath="org/kryptose/server/UserTable.java"/>
+    </Method>
+    <SourceLine classname="org.kryptose.server.UserTableTest" start="68" end="68" startBytecode="10" endBytecode="10" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/UserTableTest.java"/>
+    <SourceLine classname="org.kryptose.server.UserTableTest" start="68" end="68" startBytecode="10" endBytecode="10" sourcefile="UserTableTest.java" sourcepath="org/kryptose/server/UserTableTest.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Mon, 4 May 2015 21:10:27 -0400" total_classes="23" referenced_classes="194" total_bugs="9" total_size="1339" num_packages="1" java_version="1.8.0_40" vm_version="25.40-b25" cpu_seconds="9.11" clock_seconds="3.99" peak_mbytes="618.03" alloc_mbytes="455.50" gc_seconds="0.41" priority_2="5" priority_1="4">
+    <PackageStats package="org.kryptose.server" total_bugs="9" total_types="23" total_size="1339" priority_2="5" priority_1="4">
+      <ClassStats class="org.kryptose.server.ClientHandler" sourceFile="ClientHandler.java" interface="false" size="51" bugs="0"/>
+      <ClassStats class="org.kryptose.server.DataStore" sourceFile="DataStore.java" interface="true" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.server.DataStore$WriteResult" sourceFile="DataStore.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="org.kryptose.server.DataStoreMock" sourceFile="DataStoreMock.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="org.kryptose.server.FatalError" sourceFile="FatalError.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.server.FileSystemDataStore" sourceFile="FileSystemDataStore.java" interface="false" size="83" bugs="1" priority_1="1"/>
+      <ClassStats class="org.kryptose.server.LogFormatter" sourceFile="LogFormatter.java" interface="false" size="60" bugs="0"/>
+      <ClassStats class="org.kryptose.server.LogFormatterTest" sourceFile="LogFormatterTest.java" interface="false" size="38" bugs="0"/>
+      <ClassStats class="org.kryptose.server.LogReader" sourceFile="LogReader.java" interface="false" size="161" bugs="5" priority_2="2" priority_1="3"/>
+      <ClassStats class="org.kryptose.server.SecureServerListener" sourceFile="SecureServerListener.java" interface="false" size="120" bugs="0"/>
+      <ClassStats class="org.kryptose.server.SecureServerListener$1" sourceFile="SecureServerListener.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.server.SecureServerListenerTest" sourceFile="SecureServerListenerTest.java" interface="false" size="17" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.server.Server" sourceFile="Server.java" interface="false" size="221" bugs="0"/>
+      <ClassStats class="org.kryptose.server.Server$1" sourceFile="Server.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="org.kryptose.server.ServerMock" sourceFile="ServerMock.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="org.kryptose.server.ServerRequestsHandlingTest" sourceFile="ServerRequestsHandlingTest.java" interface="false" size="23" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable" sourceFile="UserTable.java" interface="false" size="141" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.server.UserTable$PersistWorkerThread" sourceFile="UserTable.java" interface="false" size="29" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable$PersistWorkerThread$1" sourceFile="UserTable.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable$RepersistRequest" sourceFile="UserTable.java" interface="false" size="34" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable$Result" sourceFile="UserTable.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTable$UserRecord" sourceFile="UserTable.java" interface="false" size="67" bugs="0"/>
+      <ClassStats class="org.kryptose.server.UserTableTest" sourceFile="UserTableTest.java" interface="false" size="171" bugs="1" priority_2="1"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="486" invocations="945" avgMicrosecondsPerInvocation="514" maxMicrosecondsPerInvocation="69798" standardDeviationMircosecondsPerInvocation="2615"/>
+      <ClassProfile name="de.tobject.findbugs.builder.FindBugs2Eclipse" totalMilliseconds="268" invocations="2" avgMicrosecondsPerInvocation="134439" maxMicrosecondsPerInvocation="183767" standardDeviationMircosecondsPerInvocation="49328"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="237" invocations="950" avgMicrosecondsPerInvocation="249" maxMicrosecondsPerInvocation="32546" standardDeviationMircosecondsPerInvocation="1051"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="226" invocations="194" avgMicrosecondsPerInvocation="1165" maxMicrosecondsPerInvocation="82516" standardDeviationMircosecondsPerInvocation="5982"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="204" invocations="166" avgMicrosecondsPerInvocation="1231" maxMicrosecondsPerInvocation="30922" standardDeviationMircosecondsPerInvocation="3291"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="181" invocations="194" avgMicrosecondsPerInvocation="937" maxMicrosecondsPerInvocation="28922" standardDeviationMircosecondsPerInvocation="2409"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="156" invocations="39" avgMicrosecondsPerInvocation="4000" maxMicrosecondsPerInvocation="94198" standardDeviationMircosecondsPerInvocation="14736"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="149" invocations="579" avgMicrosecondsPerInvocation="258" maxMicrosecondsPerInvocation="3134" standardDeviationMircosecondsPerInvocation="301"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="137" invocations="166" avgMicrosecondsPerInvocation="826" maxMicrosecondsPerInvocation="108667" standardDeviationMircosecondsPerInvocation="8406"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="132" invocations="189" avgMicrosecondsPerInvocation="700" maxMicrosecondsPerInvocation="13046" standardDeviationMircosecondsPerInvocation="1530"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="128" invocations="166" avgMicrosecondsPerInvocation="772" maxMicrosecondsPerInvocation="16848" standardDeviationMircosecondsPerInvocation="1649"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="111" invocations="188" avgMicrosecondsPerInvocation="591" maxMicrosecondsPerInvocation="10587" standardDeviationMircosecondsPerInvocation="1103"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="106" invocations="194" avgMicrosecondsPerInvocation="546" maxMicrosecondsPerInvocation="75776" standardDeviationMircosecondsPerInvocation="5422"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="103" invocations="166" avgMicrosecondsPerInvocation="624" maxMicrosecondsPerInvocation="14532" standardDeviationMircosecondsPerInvocation="1452"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="68" invocations="131" avgMicrosecondsPerInvocation="519" maxMicrosecondsPerInvocation="7535" standardDeviationMircosecondsPerInvocation="966"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="53" invocations="166" avgMicrosecondsPerInvocation="324" maxMicrosecondsPerInvocation="2619" standardDeviationMircosecondsPerInvocation="396"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="44" invocations="194" avgMicrosecondsPerInvocation="230" maxMicrosecondsPerInvocation="3417" standardDeviationMircosecondsPerInvocation="394"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="39" invocations="885" avgMicrosecondsPerInvocation="44" maxMicrosecondsPerInvocation="3927" standardDeviationMircosecondsPerInvocation="142"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="34" invocations="23" avgMicrosecondsPerInvocation="1497" maxMicrosecondsPerInvocation="8126" standardDeviationMircosecondsPerInvocation="2305"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="31" invocations="194" avgMicrosecondsPerInvocation="164" maxMicrosecondsPerInvocation="13427" standardDeviationMircosecondsPerInvocation="1053"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="31" invocations="23" avgMicrosecondsPerInvocation="1361" maxMicrosecondsPerInvocation="6830" standardDeviationMircosecondsPerInvocation="1720"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="29" invocations="194" avgMicrosecondsPerInvocation="152" maxMicrosecondsPerInvocation="2191" standardDeviationMircosecondsPerInvocation="272"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="29" invocations="246" avgMicrosecondsPerInvocation="117" maxMicrosecondsPerInvocation="942" standardDeviationMircosecondsPerInvocation="144"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History>
+    <AppVersion sequence="0" timestamp="1430788288594" release="" codeSize="0" numClasses="0"/>
+  </History>
+</BugCollection>
+<BugCollection version="3.0.1-dev-20150306-5afe4d1" sequence="1" timestamp="1430788257510" analysisTimestamp="1430788255746" release="">
+  <Project projectName="kryptose common">
+    <Jar>C:\Users\myncknm\git\Kryptose\common\bin</Jar>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\common\bin</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files (x86)\Eclipse\eclipse\plugins\org.junit_4.11.0.v201303080030\junit.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files (x86)\Eclipse\eclipse\plugins\org.hamcrest.core_1.3.0.v201303031735.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\common\mockito-all-1.9.5.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files\Java\jre1.8.0_40\lib\rt.jar</AuxClasspathEntry>
+    <SrcDir>C:\Users\myncknm\git\Kryptose\common\src</SrcDir>
+    <SrcDir>C:\Users\myncknm\git\Kryptose\common\test</SrcDir>
+    <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud" online="false"></Cloud>
+  </Project>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" first="1">
+    <Class classname="org.kryptose.requests.RequestChangePassword">
+      <SourceLine classname="org.kryptose.requests.RequestChangePassword" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    </Class>
+    <Method classname="org.kryptose.requests.RequestChangePassword" name="getNewAuthkey" signature="()[B" isStatic="false">
+      <SourceLine classname="org.kryptose.requests.RequestChangePassword" start="33" end="33" startBytecode="0" endBytecode="46" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    </Method>
+    <Field classname="org.kryptose.requests.RequestChangePassword" name="newAuthkey" signature="[B" isStatic="false">
+      <SourceLine classname="org.kryptose.requests.RequestChangePassword" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    </Field>
+    <SourceLine classname="org.kryptose.requests.RequestChangePassword" start="33" end="33" startBytecode="4" endBytecode="4" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    <SourceLine classname="org.kryptose.requests.RequestChangePassword" start="33" end="33" startBytecode="4" endBytecode="4" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP2" priority="2" rank="18" abbrev="EI2" category="MALICIOUS_CODE" first="1">
+    <Class classname="org.kryptose.requests.RequestChangePassword">
+      <SourceLine classname="org.kryptose.requests.RequestChangePassword" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    </Class>
+    <Method classname="org.kryptose.requests.RequestChangePassword" name="&lt;init&gt;" signature="(Lorg/kryptose/requests/User;[BLorg/kryptose/requests/Blob;[B)V" isStatic="false">
+      <SourceLine classname="org.kryptose.requests.RequestChangePassword" start="19" end="24" startBytecode="0" endBytecode="133" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    </Method>
+    <Field classname="org.kryptose.requests.RequestChangePassword" name="newAuthkey" signature="[B" isStatic="false">
+      <SourceLine classname="org.kryptose.requests.RequestChangePassword" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    </Field>
+    <LocalVariable name="newAuthkey" register="2" pc="7" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="org.kryptose.requests.RequestChangePassword" start="20" end="20" startBytecode="7" endBytecode="7" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+    <SourceLine classname="org.kryptose.requests.RequestChangePassword" start="20" end="20" startBytecode="7" endBytecode="7" sourcefile="RequestChangePassword.java" sourcepath="org/kryptose/requests/RequestChangePassword.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Mon, 4 May 2015 21:10:27 -0400" total_classes="32" referenced_classes="86" total_bugs="2" total_size="606" num_packages="5" java_version="1.8.0_40" vm_version="25.40-b25" cpu_seconds="3.97" clock_seconds="1.76" peak_mbytes="607.19" alloc_mbytes="455.50" gc_seconds="0.03" priority_2="2">
+    <PackageStats package="org.kryptose" total_bugs="0" total_types="1" total_size="9">
+      <ClassStats class="org.kryptose.Utils" sourceFile="Utils.java" interface="false" size="9" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.common" total_bugs="0" total_types="3" total_size="68">
+      <ClassStats class="org.kryptose.common.KeyDerivatorTest" sourceFile="KeyDerivatorTest.java" interface="false" size="34" bugs="0"/>
+      <ClassStats class="org.kryptose.common.RequestTest" sourceFile="RequestTest.java" interface="false" size="24" bugs="0"/>
+      <ClassStats class="org.kryptose.common.ResponseTest" sourceFile="ResponseTest.java" interface="false" size="10" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.exceptions" total_bugs="0" total_types="8" total_size="95">
+      <ClassStats class="org.kryptose.exceptions.CryptoErrorException" sourceFile="CryptoErrorException.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.CryptoPrimitiveNotSupportedException" sourceFile="CryptoPrimitiveNotSupportedException.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.InternalServerErrorException" sourceFile="InternalServerErrorException.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.InvalidCredentialsException" sourceFile="InvalidCredentialsException.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.MalformedRequestException" sourceFile="MalformedRequestException.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.RecoverableException" sourceFile="RecoverableException.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.StaleWriteException" sourceFile="StaleWriteException.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.exceptions.UsernameInUseException" sourceFile="UsernameInUseException.java" interface="false" size="10" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.requests" total_bugs="2" total_types="19" total_size="415" priority_2="2">
+      <ClassStats class="org.kryptose.requests.Blob" sourceFile="Blob.java" interface="false" size="32" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.KeyDerivator" sourceFile="KeyDerivator.java" interface="false" size="29" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.Log" sourceFile="Log.java" interface="false" size="21" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.Request" sourceFile="Request.java" interface="false" size="20" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.RequestChangePassword" sourceFile="RequestChangePassword.java" interface="false" size="27" bugs="2" priority_2="2"/>
+      <ClassStats class="org.kryptose.requests.RequestCreateAccount" sourceFile="RequestCreateAccount.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.RequestDeleteAccount" sourceFile="RequestDeleteAccount.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.RequestGet" sourceFile="RequestGet.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.RequestLog" sourceFile="RequestLog.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.RequestPut" sourceFile="RequestPut.java" interface="false" size="27" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.Response" sourceFile="Response.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseChangePassword" sourceFile="ResponseChangePassword.java" interface="false" size="27" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseCreateAccount" sourceFile="ResponseCreateAccount.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseDeleteAccount" sourceFile="ResponseDeleteAccount.java" interface="false" size="13" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseErrorReport" sourceFile="ResponseErrorReport.java" interface="false" size="38" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseGet" sourceFile="ResponseGet.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponseLog" sourceFile="ResponseLog.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.ResponsePut" sourceFile="ResponsePut.java" interface="false" size="27" bugs="0"/>
+      <ClassStats class="org.kryptose.requests.User" sourceFile="User.java" interface="false" size="48" bugs="0"/>
+    </PackageStats>
+    <PackageStats package="org.kryptose.server" total_bugs="0" total_types="1" total_size="19">
+      <ClassStats class="org.kryptose.server.Connection" sourceFile="Connection.java" interface="false" size="19" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="317" invocations="696" avgMicrosecondsPerInvocation="455" maxMicrosecondsPerInvocation="9550" standardDeviationMircosecondsPerInvocation="905"/>
+      <ClassProfile name="de.tobject.findbugs.builder.FindBugs2Eclipse" totalMilliseconds="231" invocations="2" avgMicrosecondsPerInvocation="115739" maxMicrosecondsPerInvocation="156265" standardDeviationMircosecondsPerInvocation="40526"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="122" invocations="698" avgMicrosecondsPerInvocation="175" maxMicrosecondsPerInvocation="1440" standardDeviationMircosecondsPerInvocation="92"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="91" invocations="86" avgMicrosecondsPerInvocation="1063" maxMicrosecondsPerInvocation="13629" standardDeviationMircosecondsPerInvocation="2174"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="76" invocations="368" avgMicrosecondsPerInvocation="206" maxMicrosecondsPerInvocation="1840" standardDeviationMircosecondsPerInvocation="280"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="67" invocations="86" avgMicrosecondsPerInvocation="789" maxMicrosecondsPerInvocation="8519" standardDeviationMircosecondsPerInvocation="1523"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="62" invocations="654" avgMicrosecondsPerInvocation="95" maxMicrosecondsPerInvocation="32495" standardDeviationMircosecondsPerInvocation="1270"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="42" invocations="138" avgMicrosecondsPerInvocation="305" maxMicrosecondsPerInvocation="6322" standardDeviationMircosecondsPerInvocation="696"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="38" invocations="134" avgMicrosecondsPerInvocation="284" maxMicrosecondsPerInvocation="4898" standardDeviationMircosecondsPerInvocation="521"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="37" invocations="133" avgMicrosecondsPerInvocation="284" maxMicrosecondsPerInvocation="2922" standardDeviationMircosecondsPerInvocation="450"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="36" invocations="134" avgMicrosecondsPerInvocation="271" maxMicrosecondsPerInvocation="14252" standardDeviationMircosecondsPerInvocation="1220"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="31" invocations="141" avgMicrosecondsPerInvocation="222" maxMicrosecondsPerInvocation="2169" standardDeviationMircosecondsPerInvocation="296"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="29" invocations="134" avgMicrosecondsPerInvocation="221" maxMicrosecondsPerInvocation="2397" standardDeviationMircosecondsPerInvocation="287"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DoInsideDoPrivileged" totalMilliseconds="26" invocations="32" avgMicrosecondsPerInvocation="827" maxMicrosecondsPerInvocation="24171" standardDeviationMircosecondsPerInvocation="4194"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="21" invocations="86" avgMicrosecondsPerInvocation="249" maxMicrosecondsPerInvocation="1910" standardDeviationMircosecondsPerInvocation="382"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="18" invocations="86" avgMicrosecondsPerInvocation="215" maxMicrosecondsPerInvocation="2426" standardDeviationMircosecondsPerInvocation="430"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="17" invocations="109" avgMicrosecondsPerInvocation="162" maxMicrosecondsPerInvocation="2223" standardDeviationMircosecondsPerInvocation="235"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="17" invocations="86" avgMicrosecondsPerInvocation="201" maxMicrosecondsPerInvocation="1767" standardDeviationMircosecondsPerInvocation="349"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="16" invocations="86" avgMicrosecondsPerInvocation="191" maxMicrosecondsPerInvocation="1771" standardDeviationMircosecondsPerInvocation="338"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="15" invocations="137" avgMicrosecondsPerInvocation="110" maxMicrosecondsPerInvocation="1050" standardDeviationMircosecondsPerInvocation="161"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="14" invocations="86" avgMicrosecondsPerInvocation="167" maxMicrosecondsPerInvocation="2365" standardDeviationMircosecondsPerInvocation="360"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History>
+    <AppVersion sequence="0" timestamp="1430788257506" release="" codeSize="0" numClasses="0"/>
+  </History>
+</BugCollection>
+<BugCollection version="3.0.1-dev-20150306-5afe4d1" sequence="1" timestamp="1430788275992" analysisTimestamp="1430788270368" release="">
+  <Project projectName="kryptose client">
+    <Jar>C:\Users\myncknm\git\Kryptose\client\bin</Jar>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\client\bin</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\common\bin</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files (x86)\Eclipse\eclipse\plugins\org.junit_4.11.0.v201303080030\junit.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files (x86)\Eclipse\eclipse\plugins\org.hamcrest.core_1.3.0.v201303031735.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Users\myncknm\git\Kryptose\common\mockito-all-1.9.5.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>C:\Program Files\Java\jre1.8.0_40\lib\rt.jar</AuxClasspathEntry>
+    <SrcDir>C:\Users\myncknm\git\Kryptose\client\src</SrcDir>
+    <SrcDir>C:\Users\myncknm\git\Kryptose\client\test</SrcDir>
+    <Cloud id="edu.umd.cs.findbugs.cloud.doNothingCloud" online="false"></Cloud>
+  </Project>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE" first="1">
+    <Class classname="org.kryptose.client.Controller">
+      <SourceLine classname="org.kryptose.client.Controller" sourcefile="Controller.java" sourcepath="org/kryptose/client/Controller.java"/>
+    </Class>
+    <Method classname="org.kryptose.client.Controller" name="refreshCredOptions" signature="()V" isStatic="false">
+      <SourceLine classname="org.kryptose.client.Controller" start="627" end="650" startBytecode="0" endBytecode="85" sourcefile="Controller.java" sourcepath="org/kryptose/client/Controller.java"/>
+    </Method>
+    <LocalVariable name="password" register="7" pc="67" role="LOCAL_VARIABLE_NAMED"/>
+    <SourceLine classname="org.kryptose.client.Controller" start="637" end="637" startBytecode="65" endBytecode="65" sourcefile="Controller.java" sourcepath="org/kryptose/client/Controller.java"/>
+    <SourceLine classname="org.kryptose.client.Controller" start="637" end="637" startBytecode="65" endBytecode="65" sourcefile="Controller.java" sourcepath="org/kryptose/client/Controller.java"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="password"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" first="1">
+    <Class classname="org.kryptose.client.MasterCredentials">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Class>
+    <Method classname="org.kryptose.client.MasterCredentials" name="getAuthKey" signature="()[B" isStatic="false">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" start="43" end="43" startBytecode="0" endBytecode="46" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Method>
+    <Field classname="org.kryptose.client.MasterCredentials" name="authKey" signature="[B" isStatic="false">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Field>
+    <SourceLine classname="org.kryptose.client.MasterCredentials" start="43" end="43" startBytecode="4" endBytecode="4" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    <SourceLine classname="org.kryptose.client.MasterCredentials" start="43" end="43" startBytecode="4" endBytecode="4" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" first="1">
+    <Class classname="org.kryptose.client.MasterCredentials">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Class>
+    <Method classname="org.kryptose.client.MasterCredentials" name="getCryptKey" signature="()[B" isStatic="false">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" start="47" end="47" startBytecode="0" endBytecode="46" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Method>
+    <Field classname="org.kryptose.client.MasterCredentials" name="cryptKey" signature="[B" isStatic="false">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Field>
+    <SourceLine classname="org.kryptose.client.MasterCredentials" start="47" end="47" startBytecode="4" endBytecode="4" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    <SourceLine classname="org.kryptose.client.MasterCredentials" start="47" end="47" startBytecode="4" endBytecode="4" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+  </BugInstance>
+  <BugInstance type="EI_EXPOSE_REP" priority="2" rank="18" abbrev="EI" category="MALICIOUS_CODE" first="1">
+    <Class classname="org.kryptose.client.MasterCredentials">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Class>
+    <Method classname="org.kryptose.client.MasterCredentials" name="getPassword" signature="()[C" isStatic="false">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" start="39" end="39" startBytecode="0" endBytecode="46" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Method>
+    <Field classname="org.kryptose.client.MasterCredentials" name="password" signature="[C" isStatic="false">
+      <SourceLine classname="org.kryptose.client.MasterCredentials" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    </Field>
+    <SourceLine classname="org.kryptose.client.MasterCredentials" start="39" end="39" startBytecode="4" endBytecode="4" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+    <SourceLine classname="org.kryptose.client.MasterCredentials" start="39" end="39" startBytecode="4" endBytecode="4" sourcefile="MasterCredentials.java" sourcepath="org/kryptose/client/MasterCredentials.java"/>
+  </BugInstance>
+  <BugInstance type="URF_UNREAD_FIELD" priority="2" rank="18" abbrev="UrF" category="PERFORMANCE" first="1">
+    <Class classname="org.kryptose.client.PasswordFile">
+      <SourceLine classname="org.kryptose.client.PasswordFile" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java"/>
+    </Class>
+    <Field classname="org.kryptose.client.PasswordFile" name="timestamp" signature="Ljava/time/LocalDateTime;" isStatic="false">
+      <SourceLine classname="org.kryptose.client.PasswordFile" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java"/>
+    </Field>
+    <SourceLine classname="org.kryptose.client.PasswordFile" start="51" end="51" startBytecode="30" endBytecode="30" sourcefile="PasswordFile.java" sourcepath="org/kryptose/client/PasswordFile.java"/>
+  </BugInstance>
+  <Errors errors="0" missingClasses="0"></Errors>
+  <FindBugsSummary timestamp="Mon, 4 May 2015 20:57:00 -0400" total_classes="78" referenced_classes="316" total_bugs="5" total_size="2236" num_packages="1" java_version="1.8.0_40" vm_version="25.40-b25" cpu_seconds="12.42" clock_seconds="5.62" peak_mbytes="614.65" alloc_mbytes="455.50" gc_seconds="0.28" priority_2="5">
+    <PackageStats package="org.kryptose.client" total_bugs="5" total_types="78" total_size="2236" priority_2="5">
+      <ClassStats class="org.kryptose.client.Client" sourceFile="Client.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller" sourceFile="Controller.java" interface="false" size="377" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.client.Controller$1" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$10" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$11" sourceFile="Controller.java" interface="false" size="12" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$12" sourceFile="Controller.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$13" sourceFile="Controller.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$14" sourceFile="Controller.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$2" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$3" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$4" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$5" sourceFile="Controller.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$6" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$7" sourceFile="Controller.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$8" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$9" sourceFile="Controller.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$LongTaskRunner" sourceFile="Controller.java" interface="false" size="17" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Controller$QuickTaskRunner" sourceFile="Controller.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Credential" sourceFile="Credential.java" interface="false" size="70" bugs="0"/>
+      <ClassStats class="org.kryptose.client.MasterCredentials" sourceFile="MasterCredentials.java" interface="false" size="39" bugs="3" priority_2="3"/>
+      <ClassStats class="org.kryptose.client.Model" sourceFile="Model.java" interface="false" size="130" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Model$OptionsForm" sourceFile="Model.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Model$PasswordForm" sourceFile="Model.java" interface="false" size="22" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Model$TextForm" sourceFile="Model.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="org.kryptose.client.Model$ViewState" sourceFile="Model.java" interface="false" size="15" bugs="0"/>
+      <ClassStats class="org.kryptose.client.PasswordFile" sourceFile="PasswordFile.java" interface="false" size="181" bugs="1" priority_2="1"/>
+      <ClassStats class="org.kryptose.client.PasswordFile$BadBlobException" sourceFile="PasswordFile.java" interface="false" size="5" bugs="0"/>
+      <ClassStats class="org.kryptose.client.PasswordFileTest" sourceFile="PasswordFileTest.java" interface="false" size="83" bugs="0"/>
+      <ClassStats class="org.kryptose.client.RequestHandler" sourceFile="RequestHandler.java" interface="false" size="32" bugs="0"/>
+      <ClassStats class="org.kryptose.client.RequestHandlerTest" sourceFile="RequestHandlerTest.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="org.kryptose.client.SevereClientException" sourceFile="SevereClientException.java" interface="false" size="14" bugs="0"/>
+      <ClassStats class="org.kryptose.client.View" sourceFile="View.java" interface="true" size="12" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI" sourceFile="ViewGUI.java" interface="false" size="444" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$1" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$10" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$11" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$12" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$13" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$14" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$15" sourceFile="ViewGUI.java" interface="false" size="16" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$16" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$17" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$18" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$19" sourceFile="ViewGUI.java" interface="false" size="19" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$19$1" sourceFile="ViewGUI.java" interface="false" size="23" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$1CopyAction" sourceFile="ViewGUI.java" interface="false" size="24" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$1CopyAction$1ClipboardWatcher" sourceFile="ViewGUI.java" interface="false" size="59" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$1CopyAction$1ClipboardWatcher$1" sourceFile="ViewGUI.java" interface="false" size="18" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$2" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$20" sourceFile="ViewGUI.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$21" sourceFile="ViewGUI.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$22" sourceFile="ViewGUI.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$23" sourceFile="ViewGUI.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$24" sourceFile="ViewGUI.java" interface="false" size="7" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$25" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$26" sourceFile="ViewGUI.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$27" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$28" sourceFile="ViewGUI.java" interface="false" size="13" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$29" sourceFile="ViewGUI.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$3" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$30" sourceFile="ViewGUI.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$31" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$32" sourceFile="ViewGUI.java" interface="false" size="9" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$4" sourceFile="ViewGUI.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$5" sourceFile="ViewGUI.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$6" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$7" sourceFile="ViewGUI.java" interface="false" size="10" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$8" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$9" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$DragMoveListener" sourceFile="ViewGUI.java" interface="false" size="23" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$FormListener" sourceFile="ViewGUI.java" interface="false" size="21" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$OpacityAdjuster" sourceFile="ViewGUI.java" interface="false" size="26" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$OptionsListener" sourceFile="ViewGUI.java" interface="false" size="34" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$OptionsListener$1" sourceFile="ViewGUI.java" interface="false" size="11" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$PasswordFieldListener" sourceFile="ViewGUI.java" interface="false" size="30" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$PasswordFieldListener$1PasswordContent" sourceFile="ViewGUI.java" interface="false" size="8" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$TextFieldListener" sourceFile="ViewGUI.java" interface="false" size="24" bugs="0"/>
+      <ClassStats class="org.kryptose.client.ViewGUI$WindowCloseHandler" sourceFile="ViewGUI.java" interface="false" size="18" bugs="0"/>
+    </PackageStats>
+    <FindBugsProfile>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="899" invocations="1558" avgMicrosecondsPerInvocation="577" maxMicrosecondsPerInvocation="68877" standardDeviationMircosecondsPerInvocation="2380"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="396" invocations="316" avgMicrosecondsPerInvocation="1255" maxMicrosecondsPerInvocation="45421" standardDeviationMircosecondsPerInvocation="3687"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="380" invocations="1562" avgMicrosecondsPerInvocation="243" maxMicrosecondsPerInvocation="12005" standardDeviationMircosecondsPerInvocation="316"/>
+      <ClassProfile name="de.tobject.findbugs.builder.FindBugs2Eclipse" totalMilliseconds="312" invocations="2" avgMicrosecondsPerInvocation="156304" maxMicrosecondsPerInvocation="201303" standardDeviationMircosecondsPerInvocation="44999"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="309" invocations="316" avgMicrosecondsPerInvocation="979" maxMicrosecondsPerInvocation="22960" standardDeviationMircosecondsPerInvocation="2146"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="245" invocations="359" avgMicrosecondsPerInvocation="684" maxMicrosecondsPerInvocation="61458" standardDeviationMircosecondsPerInvocation="3360"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="213" invocations="929" avgMicrosecondsPerInvocation="230" maxMicrosecondsPerInvocation="7899" standardDeviationMircosecondsPerInvocation="395"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="161" invocations="380" avgMicrosecondsPerInvocation="425" maxMicrosecondsPerInvocation="6669" standardDeviationMircosecondsPerInvocation="788"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="157" invocations="359" avgMicrosecondsPerInvocation="438" maxMicrosecondsPerInvocation="71749" standardDeviationMircosecondsPerInvocation="3781"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="148" invocations="359" avgMicrosecondsPerInvocation="413" maxMicrosecondsPerInvocation="6525" standardDeviationMircosecondsPerInvocation="721"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="131" invocations="359" avgMicrosecondsPerInvocation="365" maxMicrosecondsPerInvocation="6602" standardDeviationMircosecondsPerInvocation="703"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="131" invocations="374" avgMicrosecondsPerInvocation="350" maxMicrosecondsPerInvocation="4232" standardDeviationMircosecondsPerInvocation="575"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="92" invocations="310" avgMicrosecondsPerInvocation="299" maxMicrosecondsPerInvocation="2887" standardDeviationMircosecondsPerInvocation="472"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="85" invocations="316" avgMicrosecondsPerInvocation="272" maxMicrosecondsPerInvocation="4666" standardDeviationMircosecondsPerInvocation="513"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="84" invocations="316" avgMicrosecondsPerInvocation="267" maxMicrosecondsPerInvocation="16500" standardDeviationMircosecondsPerInvocation="1369"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="75" invocations="316" avgMicrosecondsPerInvocation="239" maxMicrosecondsPerInvocation="15451" standardDeviationMircosecondsPerInvocation="947"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="68" invocations="1500" avgMicrosecondsPerInvocation="45" maxMicrosecondsPerInvocation="901" standardDeviationMircosecondsPerInvocation="74"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="55" invocations="316" avgMicrosecondsPerInvocation="176" maxMicrosecondsPerInvocation="4297" standardDeviationMircosecondsPerInvocation="414"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="54" invocations="316" avgMicrosecondsPerInvocation="173" maxMicrosecondsPerInvocation="2444" standardDeviationMircosecondsPerInvocation="287"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="50" invocations="402" avgMicrosecondsPerInvocation="124" maxMicrosecondsPerInvocation="1475" standardDeviationMircosecondsPerInvocation="170"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="46" invocations="316" avgMicrosecondsPerInvocation="146" maxMicrosecondsPerInvocation="2209" standardDeviationMircosecondsPerInvocation="268"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="46" invocations="78" avgMicrosecondsPerInvocation="590" maxMicrosecondsPerInvocation="19425" standardDeviationMircosecondsPerInvocation="2311"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="42" invocations="316" avgMicrosecondsPerInvocation="135" maxMicrosecondsPerInvocation="2335" standardDeviationMircosecondsPerInvocation="296"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="42" invocations="316" avgMicrosecondsPerInvocation="133" maxMicrosecondsPerInvocation="2337" standardDeviationMircosecondsPerInvocation="289"/>
+    </FindBugsProfile>
+  </FindBugsSummary>
+  <ClassFeatures></ClassFeatures>
+  <History>
+    <AppVersion sequence="0" timestamp="1430788275992" release="" codeSize="0" numClasses="0"/>
+  </History>
+</BugCollection>
