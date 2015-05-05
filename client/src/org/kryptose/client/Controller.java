@@ -496,7 +496,6 @@ public class Controller {
     }
 
     private Exception doChangeMasterPassword() {
-		logger.severe("changeMasterPassword not implemented in Controller");
 		
 		MasterCredentials mCred = model.getMasterCredentials();
 		char[] oldPasswordConfirm = model.getFormPasswordClone(PasswordForm.CHANGE_OLD_MASTER_PASSWORD);
