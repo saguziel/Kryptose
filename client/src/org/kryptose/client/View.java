@@ -1,7 +1,7 @@
 package org.kryptose.client;
 
 import org.kryptose.client.Model.PasswordForm;
-import org.kryptose.client.Model.OptionsForm;
+import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.TextForm;
 
 
@@ -26,7 +26,7 @@ public interface View {
 
 	public void updatePasswordForm(PasswordForm form);
 
-	public void updateSelection(OptionsForm selection);
+	public void updateSelection(CredentialAddOrEditForm selection);
 
 	public void updateViewState();
 

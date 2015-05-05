@@ -14,7 +14,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.kryptose.client.Model.OptionsForm;
+import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
@@ -176,16 +176,18 @@ public class Controller {
 		return true;
     }
 
-
-    public void set() {
+    public static enum setType{ADD, EDIT};
+    
+    public void set(setType s) {
 		this.pool.submit(new LongTaskRunner() {
 			@Override
 			boolean doRun() {
-				return doSet();
+				return doSet(s);
 			}
 		});
     }
-    private boolean doSet() {
+    
+    private boolean doSet(setType s) {
     	String domain = model.getFormText(TextForm.CRED_DOMAIN);
     	String username = model.getFormText(TextForm.CRED_USERNAME);
     	char[] password = model.getFormPasswordClone(PasswordForm.CRED_PASSWORD);
@@ -205,12 +207,20 @@ public class Controller {
     		validationError = "Entered passwords do not match.";
     	}
 		Utils.destroyPassword(confirm);
+
+		if(validationError == null && s == setType.ADD && model.getPasswordFile().getVal(domain, username)!= null)
+			validationError = "A credential for the same domain and username already exists. Please edit or delete it.";		
+
+		if(validationError == null && s == setType.EDIT && model.getPasswordFile().getVal(domain, username)== null)
+			validationError = "You tried to edit a credential, but it seems the credential you want to edit does not exist. This is a bug. Please contact Kryptose to have it fixed.";				
 		
     	if (validationError != null) {
     		Utils.destroyPassword(password);
     		model.setLastException(new RecoverableException(validationError));
             return false;
     	}
+    	
+
     	
     	model.getPasswordFile().setVal(domain, username, new String(password));
     	
@@ -545,20 +555,22 @@ public class Controller {
     }
     
     public void updateFormText(TextForm form, String value) {
-		this.pool.submit(new QuickTaskRunner() {
+    	if (!this.pool.isShutdown())
+    		this.pool.submit(new QuickTaskRunner() {
 			@Override
 			void doRun() {
 		    	// TODO validate value? (probably too much work)
 				model.setFormText(form, value);
 				if (form == TextForm.CRED_DOMAIN || form == TextForm.CRED_USERNAME) {
-					refreshCredOptions();
+					refreshCredentialTable();
 				}
 			}
 		});
     }
 
 	public void updateFormPassword(PasswordForm form, char[] password) {
-		this.pool.submit(new QuickTaskRunner() {
+		if (!this.pool.isShutdown())
+			this.pool.submit(new QuickTaskRunner() {
 			@Override
 			void doRun() {
 				model.setFormPassword(form, password);
@@ -597,6 +609,12 @@ public class Controller {
 			new ViewState[] { ViewState.CHANGE_MASTER_PASSWORD, ViewState.WAITING},
 			new ViewState[] { ViewState.WAITING, ViewState.DELETE_ACCOUNT},
 			new ViewState[] { ViewState.DELETE_ACCOUNT, ViewState.WAITING},
+			
+			//new ViewState[] { ViewState.MANAGING, ViewState.EDITING},    //HANDLED SEPARATELY
+			new ViewState[] { ViewState.EDITING, ViewState.MANAGING},
+			new ViewState[] { ViewState.MANAGING, ViewState.ADDING},
+			new ViewState[] { ViewState.ADDING, ViewState.MANAGING},
+						
 		};
 		
 		for (ViewState[] transition : allowedTransitions) {
@@ -605,13 +623,29 @@ public class Controller {
 				return;
 			}
 		}
+		
+		if(oldState == viewState.MANAGING && viewState == viewState.EDITING){
+			System.out.println(model.selectedDomain);
+			System.out.println(model.selectedUser);
+			System.out.println(model.selectedUser);
+			System.out.println(model.getPasswordFile().existsCredential(model.selectedDomain, model.selectedUser));
+			
+			if(!model.getPasswordFile().existsCredential(model.selectedDomain, model.selectedUser)){
+				model.setLastException(new RecoverableException("Please select a Credential before editing"));
+				return;
+			}else{
+				this.doStateTransition(viewState);
+				return;
+			}
+
+		}
 			
 		logger.log(Level.SEVERE, "Bad view state transition from " + oldState + " to " + viewState);
 	}
 
 	private void doStateTransition(ViewState viewState) {
 		ViewState oldState = this.model.getViewState();
-
+		
         if ((oldState == ViewState.LOGIN || oldState == ViewState.CREATE_ACCOUNT)
 				&& viewState == ViewState.WAITING) {
 			this.model.setFormText(TextForm.LOGIN_MASTER_USERNAME, null);
@@ -624,7 +658,7 @@ public class Controller {
 		}
 		
 		if (viewState == ViewState.MANAGING) {
-			this.refreshCredOptions();
+			this.refreshCredentialTable();
 		}
 		
 		if (oldState == ViewState.CHANGE_MASTER_PASSWORD) {
@@ -636,18 +670,44 @@ public class Controller {
 		if (oldState == ViewState.DELETE_ACCOUNT) {
 			this.model.setFormPassword(PasswordForm.DELETE_ACCOUNT_CONFIRM_PASSWORD, null);
 		}
-//        model.setFormOptions(OptionsForm.CRED_DOMAIN, null);
-//        model.setFormOptions(OptionsForm.CRED_USERNAME, null);
-        model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
-        model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
-        model.setFormPassword(PasswordForm.CREATE_CONFIRM_PASSWORD, null);
-        for(PasswordForm e : PasswordForm.values())
-            model.setFormPassword(e, null);
+		
+		if (viewState == viewState.ADDING){
+			this.model.setFormText(TextForm.CRED_DOMAIN, null);
+			this.model.setFormText(TextForm.CRED_USERNAME, null);
+			this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+			this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+		}
 
+		if (oldState == viewState.MANAGING && viewState == viewState.EDITING){
+
+			this.model.setFormText(TextForm.CRED_DOMAIN, model.selectedDomain);
+			this.model.setFormText(TextForm.CRED_USERNAME, model.selectedUser);			
+			
+			if(model.getPasswordFile().getVal(model.selectedDomain, model.selectedUser) == null){
+				this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+			}else{
+				this.model.setFormPassword(PasswordForm.CRED_PASSWORD, model.getPasswordFile().getVal(model.selectedDomain, model.selectedUser).toCharArray());
+			}
+			
+			this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
+		}
+		
+		
+		if(!(oldState == viewState.MANAGING && viewState == viewState.EDITING)){
+			model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
+        	model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);        
+        	for(PasswordForm e : PasswordForm.values())
+        		model.setFormPassword(e, null);
+			}
+        model.setFormPassword(PasswordForm.CREATE_CONFIRM_PASSWORD, null);
+        
+//        model.selectedDomain = null;
+//        model.selectedUser = null;
+        
 		this.model.setViewState(viewState);
 	}
 	
-	private void refreshCredOptions() {
+	private void refreshCredentialTable() {
 		PasswordFile pFile = model.getPasswordFile();
 		
 		String domain = model.getFormText(TextForm.CRED_DOMAIN);
@@ -667,8 +727,8 @@ public class Controller {
 
 		model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
 		model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
-		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptionsWithNull);
-		model.setFormOptions(OptionsForm.CRED_USERNAME,
+		model.setFormOptions(CredentialAddOrEditForm.CRED_DOMAIN, domainOptionsWithNull);
+		model.setFormOptions(CredentialAddOrEditForm.CRED_USERNAME,
 				usernameOptions.length <= 1 ? usernameOptions : usernameOptionsWithNull);
 		
 	}

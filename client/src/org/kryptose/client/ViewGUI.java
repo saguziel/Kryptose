@@ -37,13 +37,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javafx.scene.control.TextFormatter;
+
 import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -55,17 +59,25 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.text.GapContent;
 import javax.swing.text.PlainDocument;
 
+import org.kryptose.client.Controller.setType;
 import org.kryptose.client.Model.PasswordForm;
-import org.kryptose.client.Model.OptionsForm;
+import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
 import org.kryptose.exceptions.RecoverableException;
@@ -173,11 +185,11 @@ public class ViewGUI implements View {
 			return this.passwordField;
 		}
 	}
-	private class OptionsListener extends FormListener {
+/*	private class OptionsListener extends FormListener {
 		private JComboBox<String> comboBox;
 		private TextForm textForm;
-		private OptionsForm optionsForm;
-		OptionsListener(TextForm textForm, OptionsForm optionsForm, Action action) {
+		private CredentialAddOrEditForm optionsForm;		
+		OptionsListener(TextForm textForm, CredentialAddOrEditForm optionsForm, Action action) {
 			super(action);
 			this.textForm = textForm;
 			this.optionsForm = optionsForm;
@@ -202,7 +214,7 @@ public class ViewGUI implements View {
 				this.comboBox.setSelectedItem(value);
 			}
 		}
-		void updateOptionsForm(OptionsForm form) {
+		void updateOptionsForm(CredentialAddOrEditForm form) {
 			if (this.optionsForm == form) {
 				String[] values = model.getFormOptions(form);
 				this.comboBox.removeAllItems();
@@ -220,7 +232,7 @@ public class ViewGUI implements View {
 			return this.comboBox;
 		}
 	}
-	
+	*/
 	private final class WindowCloseHandler extends WindowAdapter {
 		private Action action;
 		private Window source;
@@ -319,6 +331,8 @@ public class ViewGUI implements View {
 	
 	private JDialog createAccountDialog;
 	private JDialog manageCredentialsDialog;
+	private JDialog editCredentialDialog;
+	private JDialog addCredentialDialog;
 	private JDialog changeMasterPasswordDialog;
 	private JDialog deleteAccountDialog;
 
@@ -328,7 +342,20 @@ public class ViewGUI implements View {
 	
 	private List<TextFieldListener> textFieldListeners = new ArrayList<TextFieldListener>();
 	private List<PasswordFieldListener> passwordFieldListeners = new ArrayList<PasswordFieldListener>();
-	private List<OptionsListener> optionsListeners = new ArrayList<OptionsListener>();
+//	private List<OptionsListener> optionsListeners = new ArrayList<OptionsListener>();
+	
+    String headers[] = {"Domain", "Username"};
+    DefaultTableModel tableModel =
+      new DefaultTableModel(headers,0) {
+        // Make read-only
+        public boolean isCellEditable(int x, int y) {
+          return false;
+        }
+      };
+      //tableModel.addRow(new Object[]{"v1", "v2"});
+    JTable managedCredentialTable = new JTable(tableModel);
+    
+    
 	
 	private Action logInAction = new AbstractAction("Log in") {
 		@Override
@@ -342,16 +369,10 @@ public class ViewGUI implements View {
 			control.createAccount();
 		}
 	};
-	private Action setCredentialAction = new AbstractAction("Save Credential") {
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			control.set();
-		}
-	};
 	private Action deleteCredentialAction = new AbstractAction("Delete Credential") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Delete this credential set?", "Delete", JOptionPane.YES_NO_OPTION);
+			int val = JOptionPane.showConfirmDialog(getCurrentActiveWindow(), "Delete this credential?", "Delete", JOptionPane.YES_NO_OPTION);
 			if (val != JOptionPane.YES_OPTION) return;
 			control.delete();
 		}
@@ -405,6 +426,12 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.WAITING);
 		}
 	};
+	private Action showPasswordAction = new AbstractAction("Show Password") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.WAITING);
+		}
+	};
 
 	private Action changeMasterPasswordDialogAction = new AbstractAction("Change Master Password") {
 		@Override
@@ -451,6 +478,49 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.WAITING);
 		}
 	};
+	
+	
+	private Action editCredentialDialogAction = new AbstractAction("Edit Credential") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.EDITING);
+		}
+	};
+	private Action editCredentialAction = new AbstractAction("Done") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.set(setType.EDIT);
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+	private Action cancelEditingCredentialAction = new AbstractAction("Cancel") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+
+	private Action addCredentialDialogAction = new AbstractAction("New Credential") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.requestViewState(ViewState.ADDING);
+		}
+	};
+	private Action addCredentialAction = new AbstractAction("Done") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.set(setType.ADD);
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+	private Action cancelAddingCredentialAction = new AbstractAction("Cancel") {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			control.set(setType.EDIT);
+			control.requestViewState(ViewState.MANAGING);
+		}
+	};
+	
 	
 	private Action minimizeAction = new AbstractAction("Minimize") {
 		@Override
@@ -512,6 +582,17 @@ public class ViewGUI implements View {
 		cont.add(comp,gbc);
 	}
 	
+	private static void addGridBelow(Container cont, Component comp) {
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.insets = new Insets(GAP, GAP/2, GAP, GAP/2);
+		gbc.gridy =  GridBagConstraints.RELATIVE;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.gridwidth = GridBagConstraints.RELATIVE;
+		cont.add(comp,gbc);
+	}
+
+	
 	private static void addGridWithLabel(Container cont, String labelText, String tooltip, JComponent comp) {
 		JLabel label = new JLabel(labelText);
 		label.setLabelFor(comp);
@@ -542,6 +623,17 @@ public class ViewGUI implements View {
 		this.textFieldListeners.add(tfl);
 		tfl.bindTo(textField);
 	}
+
+	private void addDisabledTextFieldToGrid(Container cont, TextForm form,
+			String label, Action action, String toolTip) {
+		JTextField textField = new JTextField(18);
+		textField.setEnabled(false);
+		addGridWithLabel(cont, label, toolTip, textField);
+		TextFieldListener tfl = new TextFieldListener(form, action);
+		this.textFieldListeners.add(tfl);
+		tfl.bindTo(textField);
+	}
+
 	
 	private void addPasswordFieldToGrid(Container cont, PasswordForm form,
 			String label, Action action, String toolTip) {
@@ -633,34 +725,79 @@ public class ViewGUI implements View {
 		return panel;
 	}
 	
-	private JPanel createManagePanel() {
+	private JPanel createEditCredentialPanel() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		
-		JComboBox<String> domainBox = new JComboBox<String>();
-		domainBox.setEditable(true);
 		String domainTooltip = "Name of website or application to be logged into";
-		addGridWithLabel(panel, "Domain: ", domainTooltip, domainBox);
-		OptionsListener dol = new OptionsListener(TextForm.CRED_DOMAIN, OptionsForm.CRED_DOMAIN, null);
-		this.optionsListeners.add(dol);
-		dol.bindTo(domainBox);
-
-		JComboBox<String> usernameBox = new JComboBox<String>();
-		usernameBox.setEditable(true);
+		this.addDisabledTextFieldToGrid(panel, TextForm.CRED_DOMAIN, "Domain: ", TRANSFER_FOCUS_ACTION, domainTooltip);
+		
 		String usernameTooltip = "Username for this website or application";
-		addGridWithLabel(panel, "Username: ", usernameTooltip, usernameBox);
-		OptionsListener uol = new OptionsListener(TextForm.CRED_USERNAME, OptionsForm.CRED_USERNAME, null);
-		this.optionsListeners.add(uol);
-		uol.bindTo(usernameBox);
-
+		this.addDisabledTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
+		
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
 				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
 
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
-				"Confirm Password: ", setCredentialAction, NO_TOOL_TIP);
+				"Confirm Password: ", editCredentialAction, NO_TOOL_TIP);
 
-		addGridLeft(panel, new JButton(this.deleteCredentialAction));
-		addGridRight(panel, new JButton(this.setCredentialAction));
-		addGridRight(panel, new JButton(this.doneManagingAction));
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
+		addGridLeft(panel, new JButton(this.cancelEditingCredentialAction));
+		addGridRight(panel, new JButton(this.editCredentialAction));
+		
+		return panel;
+	}
+
+	private JPanel createAddCredentialPanel() {
+		JPanel panel = new JPanel(new GridBagLayout());
+		
+		String domainTooltip = "Name of website or application to be logged into";
+		this.addTextFieldToGrid(panel, TextForm.CRED_DOMAIN, "Domain: ", TRANSFER_FOCUS_ACTION, domainTooltip);
+		
+		String usernameTooltip = "Username for this website or application";
+		this.addTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
+		
+		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
+				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
+
+		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
+				"Confirm Password: ", addCredentialAction, NO_TOOL_TIP);
+
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
+		addGridLeft(panel, new JButton(this.cancelAddingCredentialAction));		
+		addGridRight(panel, new JButton(this.addCredentialAction));
+		
+		return panel;
+	}
+
+	
+	private JPanel createManagePanel() {
+		JPanel panel = new JPanel();
+		
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+
+	    // Set selection to first row
+	    ListSelectionModel selectionModel =
+	      this.managedCredentialTable.getSelectionModel();
+	    //selectionModel.setSelectionInterval(0, 0);
+	    selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	    // Add to screen so scrollable
+	    JScrollPane credentialScrollableTable = new JScrollPane (this.managedCredentialTable);
+	    credentialScrollableTable.setSize(200,100);	    
+	    panel.add(credentialScrollableTable);
+	    
+	    
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
+		buttonPanel.add(new JButton(this.deleteCredentialAction));
+		buttonPanel.add(new JButton(this.addCredentialDialogAction));
+		buttonPanel.add(new JButton(this.editCredentialDialogAction));
+		buttonPanel.add(new JButton(this.doneManagingAction));
+		
+		panel.add(buttonPanel);
+		
+		
+
 		
 		return panel;
 	}
@@ -712,7 +849,7 @@ public class ViewGUI implements View {
 		
 		mainMenu = new JMenu("Kryptose\u2122");
 		mainMenu.add(this.copyUsernameMenu);
-		mainMenu.add(this.copyPasswordMenu);;
+		mainMenu.add(this.copyPasswordMenu);
 		mainMenu.add(new JMenuItem(this.managingDialogAction));
 		mainMenu.add(new JMenuItem(this.reloadAction));
 		mainMenu.add(accountSettingsMenu);
@@ -773,6 +910,25 @@ public class ViewGUI implements View {
 		mainMenu.addMouseListener(adjuster);
 		mainMenu.addMenuListener(adjuster);
 		
+		this.managedCredentialTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+		        ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+		        DefaultTableModel dtm = (DefaultTableModel) managedCredentialTable.getModel();
+		        
+		        if(e.getValueIsAdjusting()) return;
+		        if (lsm.isSelectionEmpty()){
+		        	model.setSelectedCredential(null, null);
+		        }
+				int selRowIndex = lsm.getMinSelectionIndex();
+		        if (lsm.isSelectedIndex(selRowIndex)) {
+					model.setSelectedCredential((String) dtm.getValueAt(selRowIndex, 0), (String) dtm.getValueAt(selRowIndex, 1));
+		        }else{
+		        	model.setSelectedCredential(null, null);
+		        }
+			}
+		});
+				
 		try {
 			if (icon != null) {
 				Image logoIconImage = ImageIO.read(icon);
@@ -782,12 +938,28 @@ public class ViewGUI implements View {
 		} catch (IOException e) {
 			logger.log(Level.INFO, "Could not load logo icon image.", e);
 		}
-
+		
+		
 		this.manageCredentialsDialog = this.createModalDialog(
 				this.hoverFrame, "Manage Credentials",
 				this.doneManagingAction, this.createManagePanel()
 				);
 		this.manageCredentialsDialog.setLocationRelativeTo(null);
+		
+		this.editCredentialDialog = this.createModalDialog(
+				this.manageCredentialsDialog, "Edit Credential",
+				this.cancelEditingCredentialAction, this.createEditCredentialPanel()
+				);
+		this.editCredentialDialog.setLocationRelativeTo(null);
+		this.editCredentialDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		this.addCredentialDialog = this.createModalDialog(
+				this.manageCredentialsDialog, "Add New Credential",
+				this.cancelAddingCredentialAction, this.createAddCredentialPanel()
+				);
+		this.addCredentialDialog.setLocationRelativeTo(null);
+		this.addCredentialDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
 		
 		this.changeMasterPasswordDialog = this.createModalDialog(
 				this.hoverFrame, "Change Master Password",
@@ -809,6 +981,7 @@ public class ViewGUI implements View {
 			@Override
 			public void run() {
 				syncCredentialMenuItems();
+				syncCredentialTable();
 				handleActionStatuses();
 			}
 		});
@@ -938,6 +1111,23 @@ public class ViewGUI implements View {
 			}
 		}
 	}
+	
+	private void syncCredentialTable() {
+		PasswordFile pFile = model.getPasswordFile();
+		
+		DefaultTableModel table =  (DefaultTableModel) managedCredentialTable.getModel();
+		table.setRowCount(0);//Removes all rows
+		
+		
+		if (pFile == null) return;
+		
+		for(final Credential c : pFile.credentials){
+			table.addRow(new Object[]{c.getDomain(), c.getUsername()});			
+		}
+		
+	}
+
+	
 
 	@Override
 	public void updateLogs() {
@@ -1002,7 +1192,11 @@ public class ViewGUI implements View {
 		Action[] actionsToToggle = new Action[] {
 				logInAction, createAccountAction, logOutAction,
 				createAccountDialogAction, cancelCreateAccountAction,
-				reloadAction, managingDialogAction, doneManagingAction,
+				reloadAction, 
+				managingDialogAction, doneManagingAction,
+				
+				editCredentialDialogAction, editCredentialAction,cancelEditingCredentialAction,
+				
 				changeMasterPasswordAction,
 				cancelChangeMasterPasswordAction, changeMasterPasswordDialogAction,
 				deleteAccountAction, reloadAction
@@ -1012,11 +1206,14 @@ public class ViewGUI implements View {
 		}
 		
 		if (waitingOnServer) {
-			setCredentialAction.setEnabled(false);
+			editCredentialAction.setEnabled(false);
+			addCredentialAction.setEnabled(false);
 			deleteCredentialAction.setEnabled(false);
+			//editCredentialDialogAction.setEnabled(false);
 		} else {
 			boolean setEnabled = false;
 			boolean delEnabled = false;
+			//boolean editEnabled = false;
 			
 			PasswordFile pFile = model.getPasswordFile();
 			if (pFile != null) {
@@ -1034,7 +1231,8 @@ public class ViewGUI implements View {
 				Utils.destroyPassword(passwordUI);
 				Utils.destroyPassword(passwordSaved); // TODO: see above WARNING about passwordFile destroying passwords
 			}
-			setCredentialAction.setEnabled(setEnabled);
+			addCredentialAction.setEnabled(setEnabled);
+			editCredentialAction.setEnabled(setEnabled);
 			deleteCredentialAction.setEnabled(delEnabled);
 		}
 		
@@ -1068,9 +1266,9 @@ public class ViewGUI implements View {
 				for (TextFieldListener tfl : textFieldListeners) {
 					tfl.updateTextForm(form);
 				}
-				for (OptionsListener ol : optionsListeners) {
+/*				for (OptionsListener ol : optionsListeners) {
 					ol.updateTextForm(form);
-				}
+				}*/
 				handleActionStatuses();
 			}
 		});
@@ -1090,13 +1288,13 @@ public class ViewGUI implements View {
 	}
 
 	@Override
-	public void updateSelection(OptionsForm form) {
+	public void updateSelection(CredentialAddOrEditForm form) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				for (OptionsListener ol : optionsListeners) {
+/*				for (OptionsListener ol : optionsListeners) {
 					ol.updateOptionsForm(form);
-				}
+				}*/
 				handleActionStatuses();
 			}
 		});
@@ -1113,6 +1311,10 @@ public class ViewGUI implements View {
 			return this.hoverFrame;
 		case MANAGING:
 			return this.manageCredentialsDialog;
+		case EDITING:
+			return this.editCredentialDialog;
+		case ADDING:
+			return this.addCredentialDialog;
 		case CHANGE_MASTER_PASSWORD:
 			return this.changeMasterPasswordDialog;
 		case DELETE_ACCOUNT:
@@ -1141,17 +1343,22 @@ public class ViewGUI implements View {
 		
 		Window[] windows = new Window[] {
 				createAccountDialog,
-				manageCredentialsDialog, changeMasterPasswordDialog, deleteAccountDialog,
+				manageCredentialsDialog, 
+				editCredentialDialog,
+				addCredentialDialog,
+				changeMasterPasswordDialog, deleteAccountDialog,
 				loginFrame, hoverFrame,
 		};
 		Window activeWindow = this.getCurrentActiveWindow();
 		for (Window window : windows) {
-			window.setVisible(false);
+			if (!window.isAncestorOf(activeWindow) && window != activeWindow) {
+				window.setVisible(false);
+			}
 		}
 		for (Window window : windows) {
-			if (window.isAncestorOf(activeWindow)
-					&& window instanceof JFrame)
-			window.setVisible(true);
+			if (window.isAncestorOf(activeWindow) && window instanceof JFrame) {
+				window.setVisible(true);
+			}
 		}
 		activeWindow.setVisible(true);
 	}

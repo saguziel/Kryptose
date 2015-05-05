@@ -33,16 +33,23 @@ public class Model implements PropertyChangeListener {
 		CHANGE_OLD_MASTER_PASSWORD, CHANGE_NEW_MASTER_PASSWORD, CHANGE_CONFIRM_NEW_MASTER_PASSWORD,
 		DELETE_ACCOUNT_CONFIRM_PASSWORD
 	}
-	public static enum OptionsForm {
+	public static enum CredentialAddOrEditForm {
 		CRED_DOMAIN, CRED_USERNAME
 	}
+	
+	
+	public String selectedUser;
+	public String selectedDomain;
+
+	public static boolean showPassword = false;
+	
 	public static enum ViewState {
-		LOGIN, CREATE_ACCOUNT, WAITING, MANAGING, CHANGE_MASTER_PASSWORD, DELETE_ACCOUNT
+		LOGIN, CREATE_ACCOUNT, WAITING, MANAGING, EDITING, ADDING, CHANGE_MASTER_PASSWORD, DELETE_ACCOUNT
 	}
 	private ViewState viewState = null;
 	private Map<TextForm,String> formTexts = new EnumMap<TextForm,String>(TextForm.class);
 	private Map<PasswordForm,char[]> formPasses = new EnumMap<PasswordForm,char[]>(PasswordForm.class);
-	private Map<OptionsForm,String[]> formOptions = new EnumMap<OptionsForm,String[]>(OptionsForm.class);
+	private Map<CredentialAddOrEditForm,String[]> formOptions = new EnumMap<CredentialAddOrEditForm,String[]>(CredentialAddOrEditForm.class);
 	
 	private View view;
 	
@@ -65,6 +72,14 @@ public class Model implements PropertyChangeListener {
 		this.masterCredentials = masterCredentials;
         view.updateMasterCredentials();
 		logger.fine("Master credentials changed.");
+	}
+	
+	public synchronized void setSelectedCredential(String sDomain, String sUsername) {
+		
+		selectedDomain = sDomain;
+		selectedUser =  sUsername;
+		
+		logger.fine("Selected credentials changed.");
 	}
 	
 	public synchronized PasswordFile getPasswordFile() {
@@ -186,11 +201,11 @@ public class Model implements PropertyChangeListener {
 		logger.fine("Form value updated: " + form);
 	}
 	
-	public synchronized String[] getFormOptions(OptionsForm options) {
+	public synchronized String[] getFormOptions(CredentialAddOrEditForm options) {
 		return this.formOptions.get(options);
 	}
 	
-	public synchronized void setFormOptions(OptionsForm options, String[] values) {
+	public synchronized void setFormOptions(CredentialAddOrEditForm options, String[] values) {
 		// Store empty as null
 		if (values != null && values.length == 0) values = null;
 
@@ -203,6 +218,15 @@ public class Model implements PropertyChangeListener {
 		this.view.updateSelection(options);
 		logger.fine("Form value updated: " + options + " => " + Arrays.toString(values));
 	}
+	
+	public synchronized void setShowPassword(boolean b){
+		showPassword = b;
+	}
+	
+	public synchronized boolean getShowPassword(){
+		return showPassword;
+	}
+
 	
 	private static boolean equals(Object a, Object b) {
 		if (a == null) {
