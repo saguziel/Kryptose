@@ -66,15 +66,18 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.text.GapContent;
 import javax.swing.text.PlainDocument;
 
 import org.kryptose.client.Controller.setType;
 import org.kryptose.client.Model.PasswordForm;
-import org.kryptose.client.Model.OptionsForm;
+import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
 import org.kryptose.exceptions.RecoverableException;
@@ -182,11 +185,11 @@ public class ViewGUI implements View {
 			return this.passwordField;
 		}
 	}
-	private class OptionsListener extends FormListener {
+/*	private class OptionsListener extends FormListener {
 		private JComboBox<String> comboBox;
 		private TextForm textForm;
-		private OptionsForm optionsForm;
-		OptionsListener(TextForm textForm, OptionsForm optionsForm, Action action) {
+		private CredentialAddOrEditForm optionsForm;		
+		OptionsListener(TextForm textForm, CredentialAddOrEditForm optionsForm, Action action) {
 			super(action);
 			this.textForm = textForm;
 			this.optionsForm = optionsForm;
@@ -211,7 +214,7 @@ public class ViewGUI implements View {
 				this.comboBox.setSelectedItem(value);
 			}
 		}
-		void updateOptionsForm(OptionsForm form) {
+		void updateOptionsForm(CredentialAddOrEditForm form) {
 			if (this.optionsForm == form) {
 				String[] values = model.getFormOptions(form);
 				this.comboBox.removeAllItems();
@@ -229,7 +232,7 @@ public class ViewGUI implements View {
 			return this.comboBox;
 		}
 	}
-	
+	*/
 	private final class WindowCloseHandler extends WindowAdapter {
 		private Action action;
 		private Window source;
@@ -339,7 +342,19 @@ public class ViewGUI implements View {
 	
 	private List<TextFieldListener> textFieldListeners = new ArrayList<TextFieldListener>();
 	private List<PasswordFieldListener> passwordFieldListeners = new ArrayList<PasswordFieldListener>();
-	private List<OptionsListener> optionsListeners = new ArrayList<OptionsListener>();
+//	private List<OptionsListener> optionsListeners = new ArrayList<OptionsListener>();
+	
+    String headers[] = {"Domain", "Username"};
+    DefaultTableModel tableModel =
+      new DefaultTableModel(headers,0) {
+        // Make read-only
+        public boolean isCellEditable(int x, int y) {
+          return false;
+        }
+      };
+      //tableModel.addRow(new Object[]{"v1", "v2"});
+    JTable managedCredentialTable = new JTable(tableModel);
+	
 	
 	private Action logInAction = new AbstractAction("Log in") {
 		@Override
@@ -712,10 +727,10 @@ public class ViewGUI implements View {
 		JPanel panel = new JPanel(new GridBagLayout());
 		
 		String domainTooltip = "Name of website or application to be logged into";
-		this.addTextFieldToGrid(panel, TextForm.CRED_DOMAIN, "Domain: ", TRANSFER_FOCUS_ACTION, domainTooltip);
+		this.addDisabledTextFieldToGrid(panel, TextForm.CRED_DOMAIN, "Domain: ", TRANSFER_FOCUS_ACTION, domainTooltip);
 		
 		String usernameTooltip = "Username for this website or application";
-		this.addTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
+		this.addDisabledTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
 		
 		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
 				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
@@ -759,37 +774,17 @@ public class ViewGUI implements View {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		
-	    String headers[] = {"Domain", "Username"};
-	    String data[][] = {
-	      {"google", "antonio"},
-	      {"yahoo", "Jonathan"},
-	      {"google", "Jeff"},
-	    };
-	    DefaultTableModel model =
-	      new DefaultTableModel(data, headers) {
-	        // Make read-only
-	        public boolean isCellEditable(int x, int y) {
-	          return false;
-	        }
-	      };
-
-	      model.addRow(new Object[]{"v1", "v2"});
-
-	    JTable table = new JTable(model);
 
 	    // Set selection to first row
 	    ListSelectionModel selectionModel =
-	      table.getSelectionModel();
-	    selectionModel.setSelectionInterval(0, 0);
-	    selectionModel.setSelectionMode(
-	      ListSelectionModel.SINGLE_SELECTION);
+	      this.managedCredentialTable.getSelectionModel();
+	    //selectionModel.setSelectionInterval(0, 0);
+	    selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	    // Add to screen so scrollable
-	    JScrollPane credentialScrollableTable = new JScrollPane (table);
-	    credentialScrollableTable.setSize(200,100);
-	    
+	    JScrollPane credentialScrollableTable = new JScrollPane (this.managedCredentialTable);
+	    credentialScrollableTable.setSize(200,100);	    
 	    panel.add(credentialScrollableTable);
 	    
-
 	    
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, GAP, GAP));
 		buttonPanel.add(new JButton(this.deleteCredentialAction));
@@ -913,6 +908,21 @@ public class ViewGUI implements View {
 		mainMenu.addMouseListener(adjuster);
 		mainMenu.addMenuListener(adjuster);
 		
+		this.managedCredentialTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+		        ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+		        DefaultTableModel dtm = (DefaultTableModel) managedCredentialTable.getModel();
+		        
+		        if(e.getValueIsAdjusting()) return;
+		        if (lsm.isSelectionEmpty())  return;
+				int selRowIndex = lsm.getMinSelectionIndex();
+		        if (lsm.isSelectedIndex(selRowIndex)) {
+					model.setSelectedCredential((String) dtm.getValueAt(selRowIndex, 0), (String) dtm.getValueAt(selRowIndex, 1));
+		        }
+			}
+		});
+				
 		try {
 			if (icon != null) {
 				Image logoIconImage = ImageIO.read(icon);
@@ -929,18 +939,20 @@ public class ViewGUI implements View {
 				this.doneManagingAction, this.createManagePanel()
 				);
 		this.manageCredentialsDialog.setLocationRelativeTo(null);
-
+		
 		this.editCredentialDialog = this.createModalDialog(
 				this.manageCredentialsDialog, "Edit Credential",
 				this.cancelEditingCredentialAction, this.createEditCredentialPanel()
 				);
 		this.editCredentialDialog.setLocationRelativeTo(null);
-
+		this.editCredentialDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
 		this.addCredentialDialog = this.createModalDialog(
 				this.manageCredentialsDialog, "Add New Credential",
 				this.cancelAddingCredentialAction, this.createAddCredentialPanel()
 				);
 		this.addCredentialDialog.setLocationRelativeTo(null);
+		this.addCredentialDialog.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		this.changeMasterPasswordDialog = this.createModalDialog(
 				this.hoverFrame, "Change Master Password",
@@ -962,6 +974,7 @@ public class ViewGUI implements View {
 			@Override
 			public void run() {
 				syncCredentialMenuItems();
+				syncCredentialTable();
 				handleActionStatuses();
 			}
 		});
@@ -1091,6 +1104,23 @@ public class ViewGUI implements View {
 			}
 		}
 	}
+	
+	private void syncCredentialTable() {
+		PasswordFile pFile = model.getPasswordFile();
+		
+		DefaultTableModel table =  (DefaultTableModel) managedCredentialTable.getModel();
+		table.setRowCount(0);//Removes all rows
+		
+		
+		if (pFile == null) return;
+		
+		for(final Credential c : pFile.credentials){
+			table.addRow(new Object[]{c.getDomain(), c.getUsername()});			
+		}
+		
+	}
+
+	
 
 	@Override
 	public void updateLogs() {
@@ -1227,9 +1257,9 @@ public class ViewGUI implements View {
 				for (TextFieldListener tfl : textFieldListeners) {
 					tfl.updateTextForm(form);
 				}
-				for (OptionsListener ol : optionsListeners) {
+/*				for (OptionsListener ol : optionsListeners) {
 					ol.updateTextForm(form);
-				}
+				}*/
 				handleActionStatuses();
 			}
 		});
@@ -1249,13 +1279,13 @@ public class ViewGUI implements View {
 	}
 
 	@Override
-	public void updateSelection(OptionsForm form) {
+	public void updateSelection(CredentialAddOrEditForm form) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				for (OptionsListener ol : optionsListeners) {
+/*				for (OptionsListener ol : optionsListeners) {
 					ol.updateOptionsForm(form);
-				}
+				}*/
 				handleActionStatuses();
 			}
 		});

@@ -14,7 +14,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.kryptose.client.Model.OptionsForm;
+import org.kryptose.client.Model.CredentialAddOrEditForm;
 import org.kryptose.client.Model.PasswordForm;
 import org.kryptose.client.Model.TextForm;
 import org.kryptose.client.Model.ViewState;
@@ -545,20 +545,22 @@ public class Controller {
     }
     
     public void updateFormText(TextForm form, String value) {
-		this.pool.submit(new QuickTaskRunner() {
+    	if (!this.pool.isShutdown())
+    		this.pool.submit(new QuickTaskRunner() {
 			@Override
 			void doRun() {
 		    	// TODO validate value? (probably too much work)
 				model.setFormText(form, value);
 				if (form == TextForm.CRED_DOMAIN || form == TextForm.CRED_USERNAME) {
-					refreshCredOptions();
+					refreshCredentialTable();
 				}
 			}
 		});
     }
 
 	public void updateFormPassword(PasswordForm form, char[] password) {
-		this.pool.submit(new QuickTaskRunner() {
+		if (!this.pool.isShutdown())
+			this.pool.submit(new QuickTaskRunner() {
 			@Override
 			void doRun() {
 				model.setFormPassword(form, password);
@@ -630,7 +632,7 @@ public class Controller {
 		}
 		
 		if (viewState == ViewState.MANAGING) {
-			this.refreshCredOptions();
+			this.refreshCredentialTable();
 		}
 		
 		if (oldState == ViewState.CHANGE_MASTER_PASSWORD) {
@@ -651,9 +653,8 @@ public class Controller {
 		}
 
 		if (viewState == viewState.EDITING && oldState == viewState.MANAGING){
-			//TODO: whatever it is selected in the managing thing
-			this.model.setFormText(TextForm.CRED_DOMAIN, null);
-			this.model.setFormText(TextForm.CRED_USERNAME, null);
+			this.model.setFormText(TextForm.CRED_DOMAIN, model.selectedDomain);
+			this.model.setFormText(TextForm.CRED_USERNAME, model.selectedUser);
 			
 			this.model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
 			this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
@@ -670,7 +671,7 @@ public class Controller {
 		this.model.setViewState(viewState);
 	}
 	
-	private void refreshCredOptions() {
+	private void refreshCredentialTable() {
 		PasswordFile pFile = model.getPasswordFile();
 		
 		String domain = model.getFormText(TextForm.CRED_DOMAIN);
@@ -690,8 +691,8 @@ public class Controller {
 
 		model.setFormPassword(PasswordForm.CRED_PASSWORD, null);
 		model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
-		model.setFormOptions(OptionsForm.CRED_DOMAIN, domainOptionsWithNull);
-		model.setFormOptions(OptionsForm.CRED_USERNAME,
+		model.setFormOptions(CredentialAddOrEditForm.CRED_DOMAIN, domainOptionsWithNull);
+		model.setFormOptions(CredentialAddOrEditForm.CRED_USERNAME,
 				usernameOptions.length <= 1 ? usernameOptions : usernameOptionsWithNull);
 		
 	}
