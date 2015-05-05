@@ -131,10 +131,12 @@ public class Server {
         Response response;
         User u = request.getUser();
 
-        boolean result = this.dataStore.deleteBlob(u);
-        if (!result) {
-            System.out.println("no bono");
-            return new ResponseDeleteAccount(false);
+        if (this.dataStore.userHasBlob(u)) {
+            boolean result = this.dataStore.deleteBlob(u);
+            if (!result) {
+                System.out.println("no bono");
+                return new ResponseDeleteAccount(false);
+            }
         }
         boolean result2 = this.userTable.deleteUser(u);
         return new ResponseDeleteAccount(result2);
@@ -152,6 +154,14 @@ public class Server {
             this.getLogger().log(Level.SEVERE, errorMsg, result);
             this.dataStore.writeUserLog(u, new Log(u, request, response));
             return response;
+        }
+        if (!this.dataStore.userHasBlob(u)) {
+            response = new ResponseChangePassword((byte[]) null);
+            //no userlog
+            return response;
+        }
+        if (request.getNewBlob() == null) {
+            return new ResponseChangePassword(new StaleWriteException());
         }
         DataStore.WriteResult writeResult = this.dataStore.writeBlob(u, request.getNewBlob(), request.getOldDigest());
         switch (writeResult) {
@@ -395,7 +405,7 @@ public class Server {
         String msg = "Kryptose server starting on port " + portNumber + "...";
         System.out.println(msg); // TODO: don't hardcode system.out?
         this.logger.log(Level.INFO, msg);
-        
+
         // Start incoming connection listener.
         this.listener = new SecureServerListener(this, portNumber, keyStoreFile, keyStorePass);
         this.listener.start();

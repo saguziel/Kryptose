@@ -115,6 +115,9 @@ public class UserTable implements Serializable {
     }
 
     public Result auth(User user) {
+        if (user.getPasskey() == null) {
+            return Result.WRONG_CREDENTIALS;
+        }
         if (!this.contains(user.getUsername()))
             return Result.USER_NOT_FOUND;
         else {

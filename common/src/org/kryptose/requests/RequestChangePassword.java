@@ -42,6 +42,9 @@ public final class RequestChangePassword extends Request {
 
     @Override
     public void validateInstance() {
+        if (newAuthkey == null) {
+            throw new IllegalArgumentException("New auth key cannot be null");
+        }
         super.validateInstance();
     }
 
