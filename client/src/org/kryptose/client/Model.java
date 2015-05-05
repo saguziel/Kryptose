@@ -42,7 +42,7 @@ public class Model implements PropertyChangeListener {
 	public String selectedUser;
 	public String selectedDomain;
 
-	public static boolean showPassword = false;
+	private boolean showPassword = false;
 	
 	public static enum ViewState {
 		LOGIN, CREATE_ACCOUNT, WAITING, MANAGING, EDITING, ADDING, CHANGE_MASTER_PASSWORD, DELETE_ACCOUNT

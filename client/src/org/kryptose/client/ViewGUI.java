@@ -43,9 +43,11 @@ import java.util.logging.Logger;
 
 
 
+
 import javax.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -149,6 +151,8 @@ public class ViewGUI implements View {
 			return this.textField;
 		}
 	}
+	
+	
 	private class PasswordFieldListener extends FormListener {
 		private JPasswordField passwordField;
 		private PasswordForm form;
@@ -190,54 +194,6 @@ public class ViewGUI implements View {
 			return this.passwordField;
 		}
 	}
-/*	private class OptionsListener extends FormListener {
-		private JComboBox<String> comboBox;
-		private TextForm textForm;
-		private CredentialAddOrEditForm optionsForm;		
-		OptionsListener(TextForm textForm, CredentialAddOrEditForm optionsForm, Action action) {
-			super(action);
-			this.textForm = textForm;
-			this.optionsForm = optionsForm;
-		}
-		void bindTo(JComboBox<String> comboBox) {
-			this.comboBox = comboBox;
-			this.comboBox.addActionListener(this);
-			this.comboBox.addFocusListener(this);
-			this.comboBox.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent e) {
-					if (e.getStateChange() == ItemEvent.SELECTED) {
-						saveForm();
-						comboBox.getEditor().getEditorComponent().transferFocus();
-					}
-				}				
-			});
-		}
-		void updateTextForm(TextForm form) {
-			if (this.textForm == form) {
-				String value = model.getFormText(form);
-				this.comboBox.setSelectedItem(value);
-			}
-		}
-		void updateOptionsForm(CredentialAddOrEditForm form) {
-			if (this.optionsForm == form) {
-				String[] values = model.getFormOptions(form);
-				this.comboBox.removeAllItems();
-				if (values != null) {
-					for (String item : values) this.comboBox.addItem(item);
-				}
-			}
-		}
-		@Override
-		void saveForm() {
-			control.updateFormText(textForm, (String)comboBox.getSelectedItem());
-		}
-		@Override
-		Component getComponent() {
-			return this.comboBox;
-		}
-	}
-	*/
 	private final class WindowCloseHandler extends WindowAdapter {
 		private Action action;
 		private Window source;
@@ -345,9 +301,22 @@ public class ViewGUI implements View {
 	private JMenu copyUsernameMenu;
 	private JMenu copyPasswordMenu;
 	
+	private List<JPasswordField> unblindablePasswordFields = new ArrayList<JPasswordField>();
+	
+	private CheckBoxListener showPasswordCheckBowListener = new ItemListener() {
+		
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			if (e.getStateChange() == e.SELECTED)
+				model.setShowPassword(true);
+			else if(e.getStateChange() == e.DESELECTED)
+				model.setShowPassword(false);
+		}
+	};
+	
 	private List<TextFieldListener> textFieldListeners = new ArrayList<TextFieldListener>();
 	private List<PasswordFieldListener> passwordFieldListeners = new ArrayList<PasswordFieldListener>();
-//	private List<OptionsListener> optionsListeners = new ArrayList<OptionsListener>();
+	
 	
     String headers[] = {"Domain", "Username"};
     DefaultTableModel tableModel =
@@ -424,12 +393,19 @@ public class ViewGUI implements View {
 			control.requestViewState(ViewState.WAITING);
 		}
 	};
-	private Action showPasswordAction = new AbstractAction("Show Password") {
+	private Action showPasswordsAction = new AbstractAction("Show Password") {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			control.requestViewState(ViewState.WAITING);
+			boolean b = ((AbstractButton) ev.getSource()).getModel().isSelected();
+			char c = b ? (char) 0 : '*';
+			for(JPasswordField p : unblindablePasswordFields){
+					p.setEchoChar(c);
+			}
+			model.setShowPassword(b);
 		}
 	};
+	
+
 
 	private Action changeMasterPasswordDialogAction = new AbstractAction("Change Master Password") {
 		@Override
@@ -629,16 +605,18 @@ public class ViewGUI implements View {
 		tfl.bindTo(textField);
 	}
 
-	
-	private void addPasswordFieldToGrid(Container cont, PasswordForm form,
+	private JPasswordField addPasswordFieldToGrid(Container cont, PasswordForm form,
 			String label, Action action, String toolTip) {
 		JPasswordField passwordField = new JPasswordField(18);
-		
+				
 		addGridWithLabel(cont, label, toolTip, passwordField);
 		PasswordFieldListener pfl = new PasswordFieldListener(form, action);
 		this.passwordFieldListeners.add(pfl);
 		pfl.bindTo(passwordField);
+		
+		return passwordField;
 	}
+
 	
 	private JPanel createLoginPanel() {
 		JPanel panel = new JPanel(new BorderLayout());
@@ -724,14 +702,18 @@ public class ViewGUI implements View {
 		
 		String usernameTooltip = "Username for this website or application";
 		this.addDisabledTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
+
+		this.unblindablePasswordFields.add(
+				this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
+						"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP)
+				);
+		this.unblindablePasswordFields.add(
+				this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
+						"Confirm Password: ", editCredentialAction, NO_TOOL_TIP)
+				);
+
 		
-		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
-				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
-
-		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
-				"Confirm Password: ", editCredentialAction, NO_TOOL_TIP);
-
-		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox(showPasswordsAction));
 		addGridLeft(panel, new JButton(this.cancelEditingCredentialAction));
 		addGridRight(panel, new JButton(this.editCredentialAction));
 		addGridRight(panel, new JButton(this.deleteCredentialAction));
@@ -748,13 +730,16 @@ public class ViewGUI implements View {
 		String usernameTooltip = "Username for this website or application";
 		this.addTextFieldToGrid(panel, TextForm.CRED_USERNAME, "Username: ", TRANSFER_FOCUS_ACTION, usernameTooltip);
 		
-		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
-				"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP);
+		this.unblindablePasswordFields.add(
+				this.addPasswordFieldToGrid(panel, PasswordForm.CRED_PASSWORD,
+						"Password: ", TRANSFER_FOCUS_ACTION, NO_TOOL_TIP)
+				);
+		this.unblindablePasswordFields.add(
+				this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
+						"Confirm Password: ", addCredentialAction, NO_TOOL_TIP)
+				);
 
-		this.addPasswordFieldToGrid(panel, PasswordForm.CRED_CONFIRM_PASSWORD,
-				"Confirm Password: ", addCredentialAction, NO_TOOL_TIP);
-
-		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox());
+		addGridWithLabel(panel, "Show password: ", NO_TOOL_TIP, new JCheckBox(showPasswordsAction));
 		addGridLeft(panel, new JButton(this.cancelAddingCredentialAction));		
 		addGridRight(panel, new JButton(this.addCredentialAction));
 		
