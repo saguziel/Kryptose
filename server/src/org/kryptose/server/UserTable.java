@@ -84,6 +84,7 @@ public class UserTable implements Serializable {
         this.logger = logger;
         this.fileName = fileName;
         this.bakFileName = fileName + FILENAME_BACKUP_SUFFIX;
+        this.persistReqLock = new Object();
         this.nextPersistReq = new RepersistRequest();
     }
 
