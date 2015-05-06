@@ -23,11 +23,11 @@ public class MasterCredentials implements Destroyable {
 		}
 		this.username = username;
 		this.password = password.clone();
-		Utils.destroyPassword(password);
 		
         this.authKey = KeyDerivator.getAuthenticationKeyBytes(this.username, password);
         this.cryptKey = KeyDerivator.getEncryptionKeyBytes(username, password);
 		this.user = new User(getUsername(), getAuthKey());
+		Utils.destroyPassword(password);
 	}
 
 	public String getUsername() {
