@@ -634,7 +634,6 @@ public class Controller {
             } else {
                 this.model.setFormPassword(PasswordForm.CRED_PASSWORD, credPassword);
             }
-            Utils.destroyPassword(credPassword);
 
             this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
 			this.model.setShowPassword(false);
