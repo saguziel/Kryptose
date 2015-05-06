@@ -1042,9 +1042,9 @@ public class ViewGUI implements View {
 					synchronized void clear() {
 						if (!wiped) Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
 						setCleared();
-						Utils.destroyPassword(content);
 					}
 					synchronized void setCleared() {
+						Utils.destroyPassword(content);
 						wiped = true;
 						dialog.setVisible(false);
 						dialog.dispose();
