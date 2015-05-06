@@ -1042,6 +1042,7 @@ public class ViewGUI implements View {
 					synchronized void clear() {
 						if (!wiped) Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(""), null);
 						setCleared();
+						Utils.destroyPassword(content);
 					}
 					synchronized void setCleared() {
 						wiped = true;
@@ -1061,7 +1062,6 @@ public class ViewGUI implements View {
 				ClipboardWatcher watcher = new ClipboardWatcher();
 				watcher.start();
 				clip.setContents(t, watcher);
-				Utils.destroyPassword(content);
 			}
 		}
 		
