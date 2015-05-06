@@ -1,20 +1,20 @@
 diff --git a/client/src/org/kryptose/client/ViewGUI.java b/client/src/org/kryptose/client/ViewGUI.java
-index 0461d7d..f0acc9a 100644
+index f0acc9a..0461d7d 100644
 --- a/client/src/org/kryptose/client/ViewGUI.java
 +++ b/client/src/org/kryptose/client/ViewGUI.java
-@@ -1044,7 +1044,6 @@ public class ViewGUI implements View {
+@@ -1044,6 +1044,7 @@ public class ViewGUI implements View {
  						setCleared();
  					}
  					synchronized void setCleared() {
--						Utils.destroyPassword(content);
++						Utils.destroyPassword(content);
  						wiped = true;
  						dialog.setVisible(false);
  						dialog.dispose();
-@@ -1062,6 +1061,7 @@ public class ViewGUI implements View {
+@@ -1061,7 +1062,6 @@ public class ViewGUI implements View {
  				ClipboardWatcher watcher = new ClipboardWatcher();
  				watcher.start();
  				clip.setContents(t, watcher);
-+				Utils.destroyPassword(content);
+-				Utils.destroyPassword(content);
  			}
  		}
  		

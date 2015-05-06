@@ -1,12 +1,12 @@
 diff --git a/client/src/org/kryptose/client/Controller.java b/client/src/org/kryptose/client/Controller.java
-index 5f0704b..f400cef 100644
+index f400cef..5f0704b 100644
 --- a/client/src/org/kryptose/client/Controller.java
 +++ b/client/src/org/kryptose/client/Controller.java
-@@ -634,6 +634,7 @@ public class Controller {
+@@ -634,7 +634,6 @@ public class Controller {
              } else {
                  this.model.setFormPassword(PasswordForm.CRED_PASSWORD, credPassword);
              }
-+            Utils.destroyPassword(credPassword);
+-            Utils.destroyPassword(credPassword);
  
              this.model.setFormPassword(PasswordForm.CRED_CONFIRM_PASSWORD, null);
  			this.model.setShowPassword(false);
